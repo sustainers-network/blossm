@@ -1,1 +1,1 @@
-# blossm bootstrap
+# blossm project template 
