@@ -1,1 +1,1 @@
-# services-core
+# blossm bootstrap
