@@ -6,25 +6,27 @@ const deps = require("./deps");
 
 module.exports = async ({ payload }) => {
   // Create the root for this session.
-  const root = await deps.uuid();
+  const root = deps.uuid();
 
   // Create a long-lived token.
   const token = await deps.createJwt({
     options: {
       issuer: `session.${process.env.SERVICE}.${process.env.NETWORK}/start`,
-      audience: `${process.env.SERVICE}.${process.env.NETWORK}`,
+      audience: process.env.NETWORK,
       expiresIn: NINETY_DAYS
     },
     payload: {
       context: {
-        session: root,
-        service: process.env.SERVICE,
-        network: process.env.NETWORK
+        session: {
+          root,
+          service: process.env.SERVICE,
+          network: process.env.NETWORK
+        }
       }
     },
     signFn: deps.sign({
       ring: "jwt",
-      key: "session",
+      key: "access",
       location: "global",
       version: "1",
       project: process.env.GCP_PROJECT
@@ -43,6 +45,8 @@ module.exports = async ({ payload }) => {
         correctNumber: 0
       }
     ],
-    response: { tokens: { session: token } }
+    response: {
+      tokens: [{ network: process.env.NETWORK, type: "access", value: token }]
+    }
   };
 };

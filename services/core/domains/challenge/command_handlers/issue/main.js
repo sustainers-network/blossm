@@ -15,7 +15,7 @@ let sms;
 module.exports = async ({
   payload,
   context,
-  session,
+  claims,
   // `events` are any events to submit once the challenge is answered.
   // `principle` is the principle to set as the subject of the session token.
   options: { events, principle } = {}
@@ -47,13 +47,13 @@ module.exports = async ({
       "This phone number can't be used to challenge."
     );
 
-  if (session.sub && session.sub != identity.state.principle)
+  if (claims.sub && claims.sub != identity.state.principle.root)
     throw deps.badRequestError.message(
       "This principle can't be challenged during the current session."
     );
 
   // Create the root for this challenge.
-  const root = await deps.uuid();
+  const root = deps.uuid();
 
   // Create a token that can only access the answer challenge command.
   const token = await deps.createJwt({
@@ -65,9 +65,11 @@ module.exports = async ({
     payload: {
       context: {
         ...context,
-        challenge: root,
-        service: process.env.SERVICE,
-        network: process.env.NETWORK
+        challenge: {
+          root,
+          service: process.env.SERVICE,
+          network: process.env.NETWORK
+        }
       }
     },
     signFn: deps.sign({
@@ -97,7 +99,7 @@ module.exports = async ({
         payload: {
           code,
           principle: identity.state.principle,
-          session,
+          claims,
           issued: deps.stringDate(),
           expires: deps
             .moment()
@@ -106,9 +108,14 @@ module.exports = async ({
             .toISOString(),
           ...(events && { events })
         },
+        correctNumber: 0,
         root
       }
     ],
-    response: { tokens: { challenge: token } }
+    response: {
+      tokens: [
+        { network: process.env.NETWORK, type: "challenge", value: token }
+      ]
+    }
   };
 };

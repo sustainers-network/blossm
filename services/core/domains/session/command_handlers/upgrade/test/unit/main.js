@@ -9,20 +9,22 @@ const deps = require("../../deps");
 let clock;
 const now = new Date();
 
-const principle = "some-principle";
+const principleRoot = "some-principle-root";
 const payload = {
-  principle
+  principle: principleRoot
 };
 const token = "some-token";
 const project = "some-projectl";
 const root = "some-root";
 const context = "some-context";
+const service = "some-service";
+const network = "some-network";
 
 const iss = "some-iss";
 const aud = "some-aud";
 const sub = "some-sub";
 const exp = deps.stringFromDate(new Date(deps.fineTimestamp() + 300));
-const session = {
+const claims = {
   iss,
   aud,
   sub,
@@ -30,6 +32,8 @@ const session = {
 };
 
 process.env.GCP_PROJECT = project;
+process.env.SERVICE = service;
+process.env.NETWORK = network;
 
 describe("Command handler unit tests", () => {
   beforeEach(() => {
@@ -48,14 +52,14 @@ describe("Command handler unit tests", () => {
     replace(deps, "createJwt", createJwtFake);
 
     const aggregateFake = fake.returns({
-      aggregate: { terminated: false, upgraded: false }
+      aggregate: { upgraded: false }
     });
 
     const result = await main({
       payload,
       root,
       context,
-      session,
+      claims,
       aggregateFn: aggregateFake
     });
 
@@ -64,18 +68,28 @@ describe("Command handler unit tests", () => {
         {
           action: "upgrade",
           payload: {
-            ...payload,
+            principle: {
+              root: principleRoot,
+              service,
+              network
+            },
             upgraded: deps.stringDate()
           },
           root
+        },
+        {
+          root: principleRoot,
+          domain: "principle",
+          action: "add-roles",
+          payload: { roles: [{ id: "SessionAdmin", service, network }] }
         }
       ],
-      response: { tokens: { session: token } }
+      response: { tokens: [{ network, type: "access", value: token }] }
     });
     expect(aggregateFake).to.have.been.calledWith(root);
     expect(signFake).to.have.been.calledWith({
       ring: "jwt",
-      key: "session",
+      key: "access",
       location: "global",
       version: "1",
       project
@@ -83,12 +97,19 @@ describe("Command handler unit tests", () => {
     expect(createJwtFake).to.have.been.calledWith({
       options: {
         issuer: iss,
-        subject: principle,
+        subject: principleRoot,
         audience: aud,
         expiresIn: Date.parse(exp) - deps.fineTimestamp()
       },
       payload: {
-        context
+        context: {
+          ...context,
+          principle: {
+            root: principleRoot,
+            service,
+            network
+          }
+        }
       },
       signFn: signature
     });
@@ -101,7 +122,9 @@ describe("Command handler unit tests", () => {
     const createJwtFake = fake.returns(token);
     replace(deps, "createJwt", createJwtFake);
 
-    const aggregateFake = fake.returns({ aggregate: { terminated: true } });
+    const aggregateFake = fake.returns({
+      aggregate: { terminated: deps.stringDate() }
+    });
 
     const error = "some-error";
     const sessionTerminatedFake = fake.returns(error);
@@ -132,7 +155,7 @@ describe("Command handler unit tests", () => {
     replace(deps, "createJwt", createJwtFake);
 
     const aggregateFake = fake.returns({
-      aggregate: { terminated: false, upgraded: true }
+      aggregate: { upgraded: true }
     });
 
     const error = "some-error";
@@ -164,7 +187,7 @@ describe("Command handler unit tests", () => {
     replace(deps, "createJwt", createJwtFake);
 
     const aggregateFake = fake.returns({
-      aggregate: { terminated: false, upgraded: false }
+      aggregate: { upgraded: false }
     });
 
     try {
@@ -172,7 +195,7 @@ describe("Command handler unit tests", () => {
         payload,
         root,
         context,
-        session,
+        claims,
         aggregateFn: aggregateFake
       });
       //shouldn't get called

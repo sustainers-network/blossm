@@ -11,14 +11,13 @@ module.exports = {
       ...payload
     };
   },
-  logout: (state, payload) => {
+  terminate: (state, payload) => {
     return {
       ...state,
-      ...payload,
-      terminated: true
+      ...payload
     };
   },
-  "switch-context": (state, payload) => {
+  "change-scene": (state, payload) => {
     return {
       ...state,
       ...payload

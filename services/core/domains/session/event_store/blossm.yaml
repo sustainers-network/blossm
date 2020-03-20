@@ -3,10 +3,16 @@ service: core
 
 schema:
   started: Date
-  loggedout: Date
+  terminated: Date
   upgraded: Date
-  context: String
-  principle: String
+  scene:
+    root: String
+    service: String
+    network: String
+  principle:
+    root: String
+    service: String
+    network: String
   device:
     os: String
     version: String
@@ -15,11 +21,11 @@ schema:
     id: String
 
 actions:
-  - logout
+  - terminate
   - start
   - save
   - upgrade
-  - switch-context
+  - change-scene
 
 testing:
   examples:
@@ -38,7 +44,10 @@ testing:
       payload:
         started: 2020-12-31T00:00:00.000Z
         previous: some-previous-session-root
-        context: some-context-root
+        scene:
+          root: some-scene-root
+          service: some-scene-service
+          domain: some-scene-domain
         device:
           os: Android
           version: "10"
@@ -46,12 +55,15 @@ testing:
           manufacturer: Google
           id: some-other-device-id
     more:
-      - action: logout
+      - action: terminate
         payload:
-          loggedout: 2020-12-31T00:00:00.000Z
-      - action: switch-context
+          terminated: 2020-12-31T00:00:00.000Z
+      - action: change-scene
         payload:
-          context: some-context-root
+          context:
+            root: some-scene-root
+            service: some-scene-service
+            domain: some-scene-domain
 
   handlers:
     - action: start
@@ -68,8 +80,14 @@ testing:
           payload:
             started: 2021-01-03T00:02:15.000Z
             upgraded: 2021-01-03T00:02:15.000Z
-            principle: some-principle-root
-            context: some-context-root
+            principle:
+              root: some-principle-root
+              service: some-principle-service
+              domain: some-principle-domain
+            scene:
+              root: some-scene-root
+              service: some-scene-service
+              domain: some-scene-domain
             device:
               os: Android
               version: "10"
@@ -79,8 +97,14 @@ testing:
           result:
             started: 2021-01-03T00:02:15.000Z
             upgraded: 2021-01-03T00:02:15.000Z
-            principle: some-principle-root
-            context: some-context-root
+            principle:
+              root: some-principle-root
+              service: some-principle-service
+              domain: some-principle-domain
+            scene:
+              root: some-scene-root
+              service: some-scene-service
+              domain: some-scene-domain
             device:
               os: Android
               version: "10"
@@ -90,20 +114,25 @@ testing:
     - action: upgrade
       examples:
         - payload:
-            principle: some-principle-root
+            principle:
+              root: some-principle-root
+              service: some-principle-service
+              network: some-principle-network
             upgraded: 2021-01-03T00:02:15.000Z
-    - action: logout
+    - action: terminate
       examples:
         - state: {}
           payload:
-            loggedout: 2021-01-03T00:02:15.000Z
+            terminated: 2021-01-03T00:02:15.000Z
           result:
-            loggedout: 2021-01-03T00:02:15.000Z
-            terminated: true
-    - action: switch-context
+            terminated: 2021-01-03T00:02:15.000Z
+    - action: change-scene
       examples:
         - payload:
-            context: some-context-root
+            scene:
+              root: some-scene-root
+              service: some-scene-service
+              domain: some-scene-domain
 
 #don't change
-context: event-store
+procedure: event-store

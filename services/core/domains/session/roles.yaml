@@ -1,0 +1,4 @@
+SessionAdmin:
+  title: Session Admin
+  permissions:
+    - core:session:update

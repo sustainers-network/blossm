@@ -2,10 +2,20 @@ domain: principle
 service: core
 
 schema:
-  permissions: [String]
+  roles:
+    - id: String
+      service: String
+      network: String
+  scenes:
+    - root: String
+      service: String
+      network: String
 
 actions:
-  - add-permissions
+  - add-roles
+  - remove-roles
+  - add-scenes
+  - remove-scenes
 
 dependencies:
   "@blossm/array-difference": "*"
@@ -13,42 +23,152 @@ dependencies:
 testing:
   examples:
     first:
-      action: add-permissions
+      action: add-roles
       payload:
-        permissions:
-          - some-permission
-          - some-other-permission
+        roles:
+          - id: some-role
+            service: some-role-service
+            network: some-role-network
+          - id: some-other-role
+            service: some-other-role-service
+            network: some-other-role-network
     second:
-      action: remove-permissions
+      action: remove-roles
       payload:
-        permissions:
-          - some-permissions
+        roles:
+          - id: some-role
+            service: some-role-service
+            network: some-role-network
+    more:
+      - action: add-scenes
+        payload:
+          scenes:
+            - root: some-scene
+              service: some-scene-service
+              network: some-scene-network
+      - action: remove-scenes
+        payload:
+          scenes:
+            - root: some-scene
+              service: some-scene-service
+              network: some-scene-network
 
   handlers:
-    - action: add-permissions
+    - action: add-roles
       examples:
         - state:
-            permissions:
-              - some-permission
+            roles:
+              - id: some-role
+                service: some-role-service
+                network: some-role-network
           payload:
-            permissions:
-              - some-other-permission
+            roles:
+              - id: some-role
+                service: some-role-service
+                network: some-role-network
+              - id: some-other-role
+                service: some-other-role-service
+                network: some-other-role-network
           result:
-            permissions:
-              - some-permission
-              - some-other-permission
-    - action: remove-permissions
+            roles:
+              - id: some-role
+                service: some-role-service
+                network: some-role-network
+              - id: some-other-role
+                service: some-other-role-service
+                network: some-other-role-network
+        - state:
+            roles:
+              - id: some-role
+                service: some-role-service
+                network: some-role-network
+          payload:
+            roles:
+              - id: some-other-role
+                service: some-other-role-service
+                network: some-other-role-network
+          result:
+            roles:
+              - id: some-role
+                service: some-role-service
+                network: some-role-network
+              - id: some-other-role
+                service: some-other-role-service
+                network: some-other-role-network
+        - state: {}
+          payload:
+            roles:
+              - id: some-role
+                service: some-role-service
+                network: some-role-network
+          result:
+            roles:
+              - id: some-role
+                service: some-role-service
+                network: some-role-network
+    - action: remove-roles
       examples:
         - state:
-            permissions:
-              - some-permission
-              - some-other-permission
+            roles:
+              - id: some-role
+                service: some-role-service
+                network: some-role-network
+              - id: some-other-role
+                service: some-other-role-service
+                network: some-other-role-network
           payload:
-            permissions:
-              - some-permission
+            roles:
+              - id: some-role
+                service: some-role-service
+                network: some-role-network
           result:
-            permissions:
-              - some-other-permission
+            roles:
+              - id: some-other-role
+                service: some-other-role-service
+                network: some-other-role-network
+    - action: add-scenes
+      examples:
+        - state:
+            scenes:
+              - root: some-scene
+                service: some-scene-service
+                network: some-scene-network
+          payload:
+            scenes:
+              - root: some-scene
+                service: some-scene-service
+                network: some-scene-network
+              - root: some-other-scene
+                service: some-other-scene-service
+                network: some-other-scene-network
+          result:
+            scenes:
+              - root: some-scene
+                service: some-scene-service
+                network: some-scene-network
+              - root: some-other-scene
+                service: some-other-scene-service
+                network: some-other-scene-network
+    - action: remove-scenes
+      examples:
+        - state:
+            scenes:
+              - root: some-scene
+                service: some-scene-service
+                network: some-scene-network
+              - root: some-other-scene
+                service: some-other-scene-service
+                network: some-other-scene-network
+          payload:
+            scenes:
+              - root: some-scene
+                service: some-scene-service
+                network: some-scene-network
+          result:
+            scenes:
+              - root: some-other-scene
+                service: some-other-scene-service
+                network: some-other-scene-network
 
 #don't change
-context: event-store
+procedure: event-store

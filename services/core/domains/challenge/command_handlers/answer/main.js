@@ -1,7 +1,7 @@
 const deps = require("./deps");
 
 module.exports = async ({ payload, context, aggregateFn }) => {
-  const root = context.challenge;
+  const root = context.challenge.root;
 
   // Look for the challenge being answered.
   const { aggregate: challengeAggregate } = await aggregateFn(root);
@@ -30,7 +30,7 @@ module.exports = async ({ payload, context, aggregateFn }) => {
   ];
 
   // If there's already a subject associated with this session, no need to upgrade the session.
-  if (challengeAggregate.session.sub) return { events };
+  if (challengeAggregate.claims.sub) return { events };
 
   // Upgrade the session with the principle specified in the challenge.
   const { tokens } = await deps
@@ -40,14 +40,14 @@ module.exports = async ({ payload, context, aggregateFn }) => {
     })
     .set({
       context,
-      session: challengeAggregate.session,
+      claims: challengeAggregate.claims,
       tokenFn: deps.gcpToken
     })
     .issue(
       {
-        principle: challengeAggregate.principle
+        principle: challengeAggregate.principle.root
       },
-      { root: context.session }
+      { root: context.session.root }
     );
 
   return { events, response: { tokens } };

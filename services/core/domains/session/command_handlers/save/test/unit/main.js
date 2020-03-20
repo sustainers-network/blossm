@@ -14,20 +14,34 @@ const phone = "some-phone";
 const payload = { id, phone };
 const tokens = "some-tokens";
 const context = "some-context";
+const service = "some-service";
+const network = "some-network";
 
 const sub = "some-sub";
-const session = {
+const claims = {
   sub
 };
 
-const principle = "some-principle";
+const principleRoot = "some-principle-root";
+const principleService = "some--principle-service";
+const principleNetwork = "some--principle-network";
+
 const identity = {
   state: {
-    principle
+    principle: {
+      root: principleRoot,
+      service: principleService,
+      network: principleNetwork
+    }
   }
 };
-const principleAggregate = { permissions: ["some-permission"] };
-const sessionPrincipleAggregate = { permissions: ["some-other-permission"] };
+const principleAggregate = { roles: [{ id: "some-role", service, network }] };
+const sessionPrincipleAggregate = {
+  roles: [{ id: "some-other-role", service, network }]
+};
+
+process.env.SERVICE = service;
+process.env.NETWORK = network;
 
 describe("Command handler unit tests", () => {
   beforeEach(() => {
@@ -80,7 +94,7 @@ describe("Command handler unit tests", () => {
     const result = await main({
       payload,
       context,
-      session,
+      claims,
       aggregateFn: aggregateFake
     });
 
@@ -90,11 +104,11 @@ describe("Command handler unit tests", () => {
     expect(eventStoreFake).to.have.been.calledWith({ domain: "identity" });
     expect(setFake).to.have.been.calledWith({
       context,
-      session,
+      claims,
       tokenFn: deps.gcpToken
     });
     expect(queryFake).to.have.been.calledWith({ key: "id", value: id });
-    expect(aggregateFake).to.have.been.calledWith(principle, {
+    expect(aggregateFake).to.have.been.calledWith(principleRoot, {
       domain: "principle"
     });
     expect(aggregateFake).to.have.been.calledWith(sub, {
@@ -107,9 +121,9 @@ describe("Command handler unit tests", () => {
     });
     expect(anotherSetFake).to.have.been.calledWith({
       context,
-      session: {
-        ...session,
-        sub: principle
+      claims: {
+        ...claims,
+        sub: principleRoot
       },
       tokenFn: deps.gcpToken
     });
@@ -117,14 +131,18 @@ describe("Command handler unit tests", () => {
       { id, phone },
       {
         options: {
-          principle,
+          principle: {
+            root: principleRoot,
+            service: principleService,
+            network: principleNetwork
+          },
           events: [
             {
-              action: "add-permissions",
+              action: "add-roles",
               domain: "principle",
-              root: principle,
+              root: principleRoot,
               payload: {
-                permissions: ["some-other-permission"]
+                roles: [{ id: "some-other-role", service, network }]
               }
             }
           ]
@@ -132,7 +150,7 @@ describe("Command handler unit tests", () => {
       }
     );
   });
-  it("should return successfully if identity is found and there are no new permissions to add", async () => {
+  it("should return successfully if identity is found and there are no new roles to add", async () => {
     const queryFake = fake.returns([identity]);
     const otherQueryFake = fake.returns([]);
     const setFake = fake.returns({
@@ -175,7 +193,7 @@ describe("Command handler unit tests", () => {
     const result = await main({
       payload,
       context,
-      session,
+      claims,
       aggregateFn: aggregateFake
     });
 
@@ -185,11 +203,11 @@ describe("Command handler unit tests", () => {
     expect(eventStoreFake).to.have.been.calledWith({ domain: "identity" });
     expect(setFake).to.have.been.calledWith({
       context,
-      session,
+      claims,
       tokenFn: deps.gcpToken
     });
     expect(queryFake).to.have.been.calledWith({ key: "id", value: id });
-    expect(aggregateFake).to.have.been.calledWith(principle, {
+    expect(aggregateFake).to.have.been.calledWith(principleRoot, {
       domain: "principle"
     });
     expect(aggregateFake).to.have.been.calledWith(sub, {
@@ -202,9 +220,9 @@ describe("Command handler unit tests", () => {
     });
     expect(anotherSetFake).to.have.been.calledWith({
       context,
-      session: {
-        ...session,
-        sub: principle
+      claims: {
+        ...claims,
+        sub: principleRoot
       },
       tokenFn: deps.gcpToken
     });
@@ -212,7 +230,11 @@ describe("Command handler unit tests", () => {
       { phone, id },
       {
         options: {
-          principle,
+          principle: {
+            root: principleRoot,
+            service: principleService,
+            network: principleNetwork
+          },
           events: []
         }
       }
@@ -257,7 +279,7 @@ describe("Command handler unit tests", () => {
     const result = await main({
       payload,
       context,
-      session: {}
+      claims: {}
     });
 
     expect(result).to.deep.equal({
@@ -266,7 +288,7 @@ describe("Command handler unit tests", () => {
     expect(eventStoreFake).to.have.been.calledWith({ domain: "identity" });
     expect(setFake).to.have.been.calledWith({
       context,
-      session: {},
+      claims: {},
       tokenFn: deps.gcpToken
     });
     expect(queryFake).to.have.been.calledWith({ key: "id", value: id });
@@ -277,7 +299,7 @@ describe("Command handler unit tests", () => {
     });
     expect(anotherSetFake).to.have.been.calledWith({
       context,
-      session: {
+      claims: {
         sub: principleRoot
       },
       tokenFn: deps.gcpToken
@@ -286,7 +308,7 @@ describe("Command handler unit tests", () => {
       { id, phone },
       {
         options: {
-          principle: principleRoot,
+          principle: { root: principleRoot, service, network },
           events: [
             {
               action: "register",
@@ -295,15 +317,15 @@ describe("Command handler unit tests", () => {
               payload: {
                 phone: phoneHash,
                 id,
-                principle: principleRoot
+                principle: { root: principleRoot, service, network }
               }
             },
             {
-              action: "principle",
-              domain: "add-permissions",
+              action: "add-roles",
+              domain: "principle",
               root: principleRoot,
               payload: {
-                permissions: [`identity:admin:${identityRoot}`]
+                roles: [{ id: `IdentityAdmin`, service, network }]
               }
             }
           ]
@@ -344,7 +366,7 @@ describe("Command handler unit tests", () => {
     const result = await main({
       payload,
       context,
-      session
+      claims
     });
 
     expect(result).to.deep.equal({
@@ -353,7 +375,7 @@ describe("Command handler unit tests", () => {
     expect(eventStoreFake).to.have.been.calledWith({ domain: "identity" });
     expect(setFake).to.have.been.calledWith({
       context,
-      session,
+      claims,
       tokenFn: deps.gcpToken
     });
     expect(queryFake).to.have.been.calledWith({ key: "id", value: id });
@@ -364,14 +386,14 @@ describe("Command handler unit tests", () => {
     });
     expect(anotherSetFake).to.have.been.calledWith({
       context,
-      session,
+      claims,
       tokenFn: deps.gcpToken
     });
     expect(issueFake).to.have.been.calledWith(
       { id, phone },
       {
         options: {
-          principle: sub,
+          principle: { root: sub, service, network },
           events: [
             {
               action: "register",
@@ -380,15 +402,15 @@ describe("Command handler unit tests", () => {
               payload: {
                 phone: phoneHash,
                 id,
-                principle: sub
+                principle: { root: sub, service, network }
               }
             },
             {
-              action: "principle",
-              domain: "add-permissions",
+              action: "add-roles",
+              domain: "principle",
               root: sub,
               payload: {
-                permissions: [`identity:admin:${identityRoot}`]
+                roles: [{ id: "IdentityAdmin", service, network }]
               }
             }
           ]
@@ -398,7 +420,7 @@ describe("Command handler unit tests", () => {
   });
 
   it("should return nothing if sub is the identity's principle", async () => {
-    const queryFake = fake.returns([{ state: { principle: sub } }]);
+    const queryFake = fake.returns([{ state: { principle: { root: sub } } }]);
     const setFake = fake.returns({
       query: queryFake
     });
@@ -411,10 +433,47 @@ describe("Command handler unit tests", () => {
     const result = await main({
       payload,
       context,
-      session
+      claims
     });
 
     expect(result).to.deep.equal({});
+  });
+  it("should throw correctly if the session is saved to a different identity", async () => {
+    const firstQueryFake = fake.returns([
+      { state: { principle: { root: "some-random-root" } } }
+    ]);
+    const secondQueryFake = fake.returns(["something"]);
+    const firstSetFake = fake.returns({
+      query: firstQueryFake
+    });
+    const secondSetFake = fake.returns({
+      query: secondQueryFake
+    });
+    const eventStoreFake = stub()
+      .onFirstCall()
+      .returns({
+        set: firstSetFake
+      })
+      .onSecondCall()
+      .returns({
+        set: secondSetFake
+      });
+    replace(deps, "eventStore", eventStoreFake);
+    replace(deps, "compare", fake.returns(true));
+
+    try {
+      await main({
+        payload,
+        context,
+        claims
+      });
+      //shouldn't get called
+      expect(2).to.equal(3);
+    } catch (e) {
+      expect(e.message).to.equal(
+        "The session is already saved to a different identity."
+      );
+    }
   });
   it("should throw correctly", async () => {
     const errorMessage = "some-error";
@@ -433,7 +492,7 @@ describe("Command handler unit tests", () => {
       await main({
         payload,
         context,
-        session
+        claims
       });
       //shouldn't get called
       expect(2).to.equal(3);
@@ -477,7 +536,7 @@ describe("Command handler unit tests", () => {
       await main({
         payload,
         context,
-        session,
+        claims,
         aggregateFn: aggregateFake
       });
 

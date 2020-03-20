@@ -8,7 +8,10 @@ const deps = require("../../deps");
 
 let clock;
 const now = new Date();
-const challengePrinciple = "some-challenge-principle";
+const challengePrincipleRoot = "some-challenge-principle-root";
+const challengePrinciple = {
+  root: challengePrincipleRoot
+};
 const code = "some-code";
 const exp = "some-exp";
 const iss = "some-iss";
@@ -16,7 +19,7 @@ const aud = "some-aud";
 const challenge = {
   code,
   principle: challengePrinciple,
-  session: {
+  claims: {
     exp,
     iss,
     aud
@@ -28,8 +31,10 @@ const payload = {
 const contextChallenge = "some-challenge-context";
 const sessionRoot = "some-session-root";
 const context = {
-  challenge: contextChallenge,
-  session: sessionRoot
+  challenge: {
+    root: contextChallenge
+  },
+  session: { root: sessionRoot }
 };
 const service = "some-service";
 const network = "some-network";
@@ -91,7 +96,7 @@ describe("Command handler unit tests", () => {
     });
     expect(setFake).to.have.been.calledWith({
       context,
-      session: {
+      claims: {
         iss,
         exp,
         aud
@@ -100,16 +105,16 @@ describe("Command handler unit tests", () => {
     });
     expect(issueFake).to.have.been.calledWith(
       {
-        principle: challengePrinciple
+        principle: challengePrincipleRoot
       },
       { root: sessionRoot }
     );
   });
-  it("should return successfully if context.sub is provided.", async () => {
+  it("should return successfully if claims.sub is provided.", async () => {
     const aggregateFake = fake.returns({
       aggregate: {
         ...challenge,
-        session: {
+        claims: {
           sub: "some-sub"
         },
         expires: deps.stringDate()

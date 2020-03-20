@@ -3,11 +3,14 @@ service: core
 
 schema:
   code: String
-  principle: String
+  principle:
+    root: String
+    service: String
+    network: String
   issued: Date
   answered: String
   expires: Date
-  session:
+  claims:
     exp: Date
     iss: String
     sub: String
@@ -19,7 +22,7 @@ actions:
 
 devDependencies:
   "localenv": "^0.2.2"
-  "mocha": "^6.1.4"
+  "mocha": "^7.1.0"
   "chai": "^4.2.0"
   "@blossm/request": "*"
   "@blossm/uuid": "*"
@@ -30,9 +33,12 @@ testing:
       action: issue
       payload:
         issued: 2020-01-03T00:02:12.000Z
-        principle: some-root
+        principle:
+          root: some-root
+          service: some-principle-service
+          network: some-principle-network
         expires: 2020-01-03T00:02:15.000Z
-        session:
+        claims:
           exp: 2020-01-03T00:02:15.000Z
           aud: some-audience
           sub: some-subject
@@ -47,9 +53,12 @@ testing:
       examples:
         - payload:
             issued: 2020-01-03T00:02:12.000Z
-            principle: some-root
+            principle:
+              root: some-root
+              service: some-principle-service
+              network: some-principle-network
             expires: 2020-01-03T00:02:15.000Z
-            session:
+            claims:
               exp: 2020-01-03T00:02:15.000Z
               aud: some-audience
               sub: some-subject
@@ -60,4 +69,4 @@ testing:
             code: "123456"
 
 #don't change
-context: event-store
+procedure: event-store

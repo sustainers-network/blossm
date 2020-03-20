@@ -19,7 +19,7 @@ dependencies:
   "@blossm/datetime": "*"
 
 devDependencies:
-  "mocha": "^6.1.4"
+  "mocha": "^7.1.0"
   "chai": "^4.2.0"
   "sinon": "^7.3.2"
   "sinon-chai": "^3.3.0"
@@ -48,19 +48,19 @@ testing:
             a: 1
 
   normalize:
-      - payload:
-          device:
-            os: "iOS"
-            version: "10"
-            hardware: "iPhone"
-            manufacturer: "apple"
-        normalized:
-          device:
-            os: "iOS"
-            version: "10"
-            hardware: "iPhone"
-            manufacturer: "apple"
-  
+    - payload:
+        device:
+          os: "iOS"
+          version: "10"
+          hardware: "iPhone"
+          manufacturer: "apple"
+      normalized:
+        device:
+          os: "iOS"
+          version: "10"
+          hardware: "iPhone"
+          manufacturer: "apple"
+
   steps:
     - payload:
         device:
@@ -70,7 +70,9 @@ testing:
           manufacturer: "apple"
       response:
         tokens:
-          session:
+          - network:
+            type: access
+            value:
 
 #don't change
-context: command-handler
+procedure: command-handler

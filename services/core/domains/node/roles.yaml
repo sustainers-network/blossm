@@ -1,0 +1,8 @@
+NodeAdmin:
+  title: Node Admin
+  permissions:
+    - core:node:create
+    - core:node:update
+    - core:node:delete
+    - core:key:create
+    - core:connection:create

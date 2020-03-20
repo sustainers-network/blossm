@@ -57,11 +57,11 @@ describe("Command handler unit tests", () => {
           correctNumber: 0
         }
       ],
-      response: { tokens: { session: token } }
+      response: { tokens: [{ network, type: "access", value: token }] }
     });
     expect(signFake).to.have.been.calledWith({
       ring: "jwt",
-      key: "session",
+      key: "access",
       location: "global",
       version: "1",
       project
@@ -69,14 +69,16 @@ describe("Command handler unit tests", () => {
     expect(createJwtFake).to.have.been.calledWith({
       options: {
         issuer: `session.${service}.${network}/start`,
-        audience: `${service}.${network}`,
+        audience: network,
         expiresIn: 7776000000
       },
       payload: {
         context: {
-          session: root,
-          service,
-          network
+          session: {
+            root,
+            service,
+            network
+          }
         }
       },
       signFn: signature
@@ -84,7 +86,7 @@ describe("Command handler unit tests", () => {
   });
   it("should throw correctly", async () => {
     const errorMessage = "some-error";
-    const uuidFake = fake.rejects(errorMessage);
+    const uuidFake = fake.throws(errorMessage);
     replace(deps, "uuid", uuidFake);
     try {
       await main({ payload });
