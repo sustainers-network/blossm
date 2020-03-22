@@ -6,7 +6,7 @@ payload:
   root: string
   domain: string
   service: string
-  network: string
+  network: domain
 
 dependencies:
   "@blossm/command-rpc": "*"
@@ -25,7 +25,7 @@ testing:
       - root: some-root
         domain: some-domain
         service: some-service
-        network: some-network
+        network: some.network
     bad:
       - root: 3
       - domain: 3
@@ -37,12 +37,12 @@ testing:
         root: some-root
         domain: some-domain
         service: some-service
-        network: some-network
+        network: some.network
       normalized:
         root: some-root
         domain: some-domain
         service: some-service
-        network: some-network
+        network: some.network
 
   dependencies:
     - name: upgrade
@@ -65,7 +65,7 @@ testing:
         root: some-root
         domain: some-domain
         service: some-service
-        network: some-network
+        network: some.network
       context:
         session:
           root: some-session-root
@@ -90,7 +90,7 @@ testing:
         root: some-root
         domain: some-domain
         service: some-service
-        network: some-network
+        network: some.network
       context:
         session:
           root: some-other-session-root
