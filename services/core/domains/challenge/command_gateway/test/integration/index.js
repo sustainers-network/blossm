@@ -7,7 +7,7 @@ const { get: secret } = require("@blossm/gcp-secret");
 const getToken = require("@blossm/get-token");
 const request = require("@blossm/request");
 
-const phone = "+12513332037";
+const phone = process.env.TWILIO_TEST_RECEIVING_TEST_PHONE_NUMBER;;
 const id = "some-id";
 
 const url = `http://${process.env.MAIN_CONTAINER_NAME}`;

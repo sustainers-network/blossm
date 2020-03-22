@@ -45,9 +45,12 @@ const claims = {
   iss: "some-iss"
 };
 
+const sendingPhoneNumber = "some-sending-phone-number";
+
 process.env.SERVICE = service;
 process.env.NETWORK = network;
 process.env.GCP_PROJECT = project;
+process.env.TWILIO_SENDING_PHONE_NUMBER = sendingPhoneNumber;
 
 describe("Command handler unit tests", () => {
   beforeEach(() => {
@@ -168,7 +171,7 @@ describe("Command handler unit tests", () => {
     ).to.equal(180000);
     expect(smsSendFake).to.have.been.calledWith({
       to: payloadPhone,
-      from: "+14157700262",
+      from: sendingPhoneNumber,
       body: `${code} is your verification code. Enter it in the app to let us know it's really you.`
     });
   });
