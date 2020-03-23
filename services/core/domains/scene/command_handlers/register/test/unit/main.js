@@ -33,7 +33,7 @@ describe("Command handler unit tests", () => {
   });
   it("should return successfully", async () => {
     const uuid = "some-uuid";
-    const uuidFake = fake.returns(uuid);
+    const uuidFake = stub().onFirstCall().returns(root).onSecondCall().returns(uuid);
     replace(deps, "uuid", uuidFake);
 
     const tokens = "some-tokens";
@@ -48,7 +48,6 @@ describe("Command handler unit tests", () => {
 
     const result = await main({
       payload,
-      root,
       context,
       claims
     });
@@ -103,7 +102,7 @@ describe("Command handler unit tests", () => {
   });
   it("should return successfully if there's a context principle", async () => {
     const uuid = "some-uuid";
-    const uuidFake = fake.returns(uuid);
+    const uuidFake = stub().onFirstCall().returns(root).onSecondCall().returns(uuid);
     replace(deps, "uuid", uuidFake);
 
     const token = "some-token";
@@ -126,7 +125,6 @@ describe("Command handler unit tests", () => {
     };
     const result = await main({
       payload,
-      root,
       context: principleContext,
       claims
     });

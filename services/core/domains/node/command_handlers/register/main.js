@@ -3,10 +3,9 @@ const deps = require("./deps");
 module.exports = async ({ payload, context, claims }) => {
   // Create new roots for the scene and the node.
   const nodeRoot = deps.uuid();
-  const sceneRoot = deps.uuid();
 
   // Register the scene.
-  const { tokens, principle } = await deps
+  const { tokens, principle, roots: { scene: sceneRoot } } = await deps
     .command({
       name: "register",
       domain: "scene"
@@ -18,8 +17,7 @@ module.exports = async ({ payload, context, claims }) => {
         domain: process.env.DOMAIN,
         service: process.env.SERVICE,
         network: process.env.NETWORK
-      },
-      { root: sceneRoot }
+      }
     );
 
   return {

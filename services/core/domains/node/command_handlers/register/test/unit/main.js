@@ -47,6 +47,9 @@ describe("Command handler unit tests", () => {
         root: principleRoot,
         service: principleService,
         network: principleNetwork
+      },
+      roots: {
+        scene: sceneRoot
       }
     });
     const setFake = fake.returns({
@@ -96,8 +99,7 @@ describe("Command handler unit tests", () => {
         domain,
         service,
         network
-      },
-      { root: sceneRoot }
+      }
     );
   });
   it("should throw correctly", async () => {
