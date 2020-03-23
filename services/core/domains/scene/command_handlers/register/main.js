@@ -1,6 +1,8 @@
 const deps = require("./deps");
 
-module.exports = async ({ payload, root, context, claims }) => {
+module.exports = async ({ payload, context, claims }) => {
+  const root = deps.uuid();
+
   // Determine what root should be used for the principle.
   const principle = context.principle || {
     root: deps.uuid(),
@@ -64,5 +66,5 @@ module.exports = async ({ payload, root, context, claims }) => {
     .set({ context, claims, tokenFn: deps.gcpToken })
     .issue({ principle: principle.root }, { root: context.session.root });
 
-  return { events, response: { ...response, tokens } };
+  return { events, response: { ...response, tokens, roots: { scene: root } } };
 };
