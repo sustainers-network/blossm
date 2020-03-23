@@ -52,7 +52,7 @@ module.exports = async ({ payload, context, claims }) => {
     }
   ];
 
-  const response = { principle, roots: { scene: root} };
+  const response = { principle, roots: { scene: root } };
 
   // If the session already has a principle, no need to upgrade it.
   if (context.principle) return { events, response };
