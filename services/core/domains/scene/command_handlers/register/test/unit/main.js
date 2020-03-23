@@ -160,6 +160,9 @@ describe("Command handler unit tests", () => {
           root: principleRoot,
           service: principleService,
           network: principleNetwork
+        },
+        roots: {
+          scene: root
         }
       }
     });
