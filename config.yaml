@@ -55,7 +55,20 @@ vendors:
         staging:
         development:
       protocol:
+  texting:
+    twilio:
+      testReceivingPhoneNumber:
+        production:
+        sandbox:
+        staging:
+        development:
+      sendingPhoneNumber:
+        production:
+        sandbox:
+        staging:
+        development:
 defaults:
   viewStore: mongodb
   eventStore: mongodb
   cloud: gcp
+  texting: twilio

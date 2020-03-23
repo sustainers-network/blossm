@@ -1,5 +1,5 @@
 const { expect } = require("chai").use(require("sinon-chai"));
-const { replace, restore, fake } = require("sinon");
+const { replace, restore, fake, stub } = require("sinon");
 
 const main = require("../../main");
 const deps = require("../../deps");
@@ -81,7 +81,10 @@ describe("Command handler unit tests", () => {
           service,
           network
         },
-        tokens
+        tokens,
+        roots: {
+          scene: root
+        }
       }
     });
     expect(commandFake).to.have.been.calledWith({
