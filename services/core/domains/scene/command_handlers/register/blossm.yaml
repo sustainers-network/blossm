@@ -78,7 +78,9 @@ testing:
       response:
         principle:
         tokens:
-          session:
+          - network:
+            type: access
+            value:
         roots:
           scene:
     - pre:
