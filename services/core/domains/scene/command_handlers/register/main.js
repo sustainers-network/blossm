@@ -52,7 +52,7 @@ module.exports = async ({ payload, context, claims }) => {
     }
   ];
 
-  const response = { principle };
+  const response = { principle, roots: { scene: root} };
 
   // If the session already has a principle, no need to upgrade it.
   if (context.principle) return { events, response };
@@ -66,5 +66,5 @@ module.exports = async ({ payload, context, claims }) => {
     .set({ context, claims, tokenFn: deps.gcpToken })
     .issue({ principle: principle.root }, { root: context.session.root });
 
-  return { events, response: { ...response, tokens, roots: { scene: root } } };
+  return { events, response: { ...response, tokens } };
 };

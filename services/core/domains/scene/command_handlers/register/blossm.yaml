@@ -79,6 +79,8 @@ testing:
         principle:
         tokens:
           session:
+        roots:
+          scene:
     - pre:
         - domain: session
           root: some-other-session-root
@@ -109,6 +111,8 @@ testing:
           root: some-principle-root
           service: some-service
           network: some-network
+        roots:
+          scene:
 
 #don't change
 procedure: command-handler
