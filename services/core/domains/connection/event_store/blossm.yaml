@@ -25,11 +25,11 @@ testing:
         key:
           root: some-key-root
           service: some-key-service
-          network: some-key-network
+          network: some.key-network
         node:
           root: some-node-root
           service: some-node-service
-          network: some-node-network
+          network: some.node-network
     second:
       action: open
       payload:
@@ -37,11 +37,11 @@ testing:
         key:
           root: some-other-key-root
           service: some-other-key-service
-          network: some-other-key-network
+          network: some.other-key-network
         node:
           root: some-other-node-root
           service: some-other-node-service
-          network: some-other-node-network
+          network: some.other-node-network
     more: []
 
   handlers:
@@ -52,11 +52,11 @@ testing:
             key:
               root: some-other-key-root
               service: some-other-key-service
-              network: some-other-key-network
+              network: some.other-key-network
             node:
               root: some-other-node-root
               service: some-other-node-service
-              network: some-other-node-network
+              network: some.other-node-network
 
 #don't change
 procedure: event-store

@@ -36,7 +36,7 @@ testing:
         principle:
           root: some-root
           service: some-principle-service
-          network: some-principle-network
+          network: some.principle-network
         expires: 2020-01-03T00:02:15.000Z
         claims:
           exp: 2020-01-03T00:02:15.000Z
@@ -56,7 +56,7 @@ testing:
             principle:
               root: some-root
               service: some-principle-service
-              network: some-principle-network
+              network: some.principle-network
             expires: 2020-01-03T00:02:15.000Z
             claims:
               exp: 2020-01-03T00:02:15.000Z

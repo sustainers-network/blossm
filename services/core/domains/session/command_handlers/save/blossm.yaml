@@ -68,7 +68,7 @@ testing:
             principle:
               root: some-sub
               service: some-service
-              network: some-network
+              network: some.network
       payload:
         id: some-identity-id
         phone: "+19195551133"
@@ -83,7 +83,7 @@ testing:
             principle:
               root: some-principle-root
               service: some-service
-              network: some-network
+              network: some.network
       payload:
         id: some-other-identity-id
         phone: "+19195551155"
@@ -109,7 +109,7 @@ testing:
             roles:
               - id: some-role
                 service: some-service
-                network: some-network
+                network: some.network
         - domain: principle
           root: some-other-principle-root
           action: add-roles
@@ -117,7 +117,7 @@ testing:
             roles:
               - id: some-other-role
                 service: some-service
-                network: some-network
+                network: some.network
         - domain: identity
           root: yet-another-identity-root
           action: register
@@ -127,7 +127,7 @@ testing:
             principle:
               root: some-principle-root
               service: some-service
-              network: some-network
+              network: some.network
       payload:
         id: yet-another-identity-id
         phone: "+19195551177"
@@ -146,7 +146,7 @@ testing:
             roles:
               - id: some-role
                 service: some-service
-                network: some-network
+                network: some.network
         - domain: principle
           root: some-other-principle-root_1
           action: add-roles
@@ -154,7 +154,7 @@ testing:
             roles:
               - id: some-other-role
                 service: some-service
-                network: some-network
+                network: some.network
         - domain: identity
           root: yet-another-identity-root_1
           action: register
@@ -164,7 +164,7 @@ testing:
             principle:
               root: some-principle-root_1
               service: some-service
-              network: some-network
+              network: some.network
         - domain: identity
           root: any-identity-root_1
           action: register
@@ -174,7 +174,7 @@ testing:
             principle:
               root: some-other-principle-root_1
               service: some-service
-              network: some-network
+              network: some.network
       payload:
         id: yet-another-identity-id_1
         phone: "+19195551177"

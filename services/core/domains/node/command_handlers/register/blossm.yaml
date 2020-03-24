@@ -21,7 +21,7 @@ testing:
     ok:
       - network: some.network
     bad:
-      - network: some-bad-network
+      - network: some.bad-network
       - network: 3
 
   normalize:
@@ -53,7 +53,7 @@ testing:
         session:
           root: some-session-root
           service: some-session-service
-          network: some-session-network
+          network: some.session-network
       claims:
         iss: some-iss
         aud: some-aud
@@ -79,11 +79,11 @@ testing:
         session:
           root: some-other-session-root
           service: some-other-session-service
-          network: some-other-session-network
+          network: some.other-session-network
         principle:
           root: some-principle-root
           service: some-service
-          network: some-network
+          network: some.network
       claims:
         iss: some-iss
         aud: some-aud

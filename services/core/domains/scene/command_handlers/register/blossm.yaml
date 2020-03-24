@@ -70,7 +70,7 @@ testing:
         session:
           root: some-session-root
           service: some-session-service
-          network: some-session-network
+          network: some.session-network
       claims:
         iss: some-iss
         aud: some-aud
@@ -99,11 +99,11 @@ testing:
         session:
           root: some-other-session-root
           service: some-session-service
-          network: some-session-network
+          network: some.session-network
         principle:
           root: some-principle-root
           service: some-service
-          network: some-network
+          network: some.network
       claims:
         iss: some-iss
         aud: some-aud
@@ -112,7 +112,7 @@ testing:
         principle:
           root: some-principle-root
           service: some-service
-          network: some-network
+          network: some.network
         roots:
           scene:
 

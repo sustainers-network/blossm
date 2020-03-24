@@ -117,7 +117,7 @@ testing:
             principle:
               root: some-principle-root
               service: some-principle-service
-              network: some-principle-network
+              network: some.principle-network
             upgraded: 2021-01-03T00:02:15.000Z
     - action: terminate
       examples:

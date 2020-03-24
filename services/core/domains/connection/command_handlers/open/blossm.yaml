@@ -35,15 +35,15 @@ testing:
         principle:
           root: some-principle-root
           service: some-principle-service
-          network: some-principle-network
+          network: some.principle-network
         node:
           root: some-node-root
           service: some-node-service
-          network: some-node-network
+          network: some.node-network
         key:
           root: some-key-root
           service: some-key-service
-          network: some-key-network
+          network: some.key-network
       response:
         tokens:
           - network:

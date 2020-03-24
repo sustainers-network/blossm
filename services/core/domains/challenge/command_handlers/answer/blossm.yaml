@@ -68,7 +68,7 @@ testing:
             principle:
               root: some-challenge-principle-root
               service: some-service
-              network: some-network
+              network: some.network
             claims:
               iss: some-iss
               aud: some-aud
@@ -85,11 +85,11 @@ testing:
         challenge:
           root: some-root
           service: some-service
-          network: some-network
+          network: some.network
         session:
           root: some-session-root
           service: some-service
-          network: some-network
+          network: some.network
       response:
         tokens:
           - network:
@@ -105,7 +105,7 @@ testing:
             principle:
               root: some-challenge-principle-root
               service: some-service
-              network: some-network
+              network: some.network
             claims:
               iss: some-iss
               aud: some-aud
@@ -123,11 +123,11 @@ testing:
         challenge:
           root: some-other-root
           service: some-service
-          network: some-network
+          network: some.network
         session:
           root: some-other-session-root
           service: some-service
-          network: some-network
+          network: some.network
     - pre:
         - domain: challenge
           root: another-root
@@ -141,7 +141,7 @@ testing:
         challenge:
           root: another-root
           service: some-service
-          network: some-network
+          network: some.network
       code: 409
     - pre:
         - domain: challenge
@@ -154,7 +154,7 @@ testing:
         challenge:
           root: yet-another-root
           service: some-service
-          network: some-network
+          network: some.network
       payload:
         code: "11111"
       code: 409
