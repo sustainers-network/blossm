@@ -58,7 +58,7 @@ testing:
         node:
           root: some-node-root
           service: some-node-service
-          network: some-node-network
+          network: some.node-network
       response:
         id:
         secret:

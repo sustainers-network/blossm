@@ -59,7 +59,7 @@ testing:
             scenes:
               - root: some-scene-root
                 service: some-service
-                network: some-network
+                network: some.network
       payload:
         scene: some-scene-root
       claims:
@@ -83,7 +83,7 @@ testing:
             scenes:
               - root: bogus
                 service: some-service
-                network: some-network
+                network: some.network
       payload:
         scene: some-scene-root
       claims:

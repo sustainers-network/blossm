@@ -28,11 +28,11 @@ testing:
         node:
           root: some-node-root
           service: some-node-service
-          network: some-node-network
+          network: some.node-network
         principle:
           root: some-principle-root
           service: some-principle-service
-          network: some-principle-network
+          network: some.principle-network
         id: some-id
         secret: some-secret
     second:
@@ -42,11 +42,11 @@ testing:
         node:
           root: some-other-node-root
           service: some-other-node-service
-          network: some-other-node-network
+          network: some.other-node-network
         principle:
           root: some-other-principle-root
           service: some-other-principle-service
-          network: some-other-principle-network
+          network: some.other-principle-network
         id: some-other-id
         secret: some-other-secret
 
@@ -58,11 +58,11 @@ testing:
             node:
               root: some-node-root
               service: some-node-service
-              network: some-node-network
+              network: some.node-network
             principle:
               root: some-principle-root
               service: some-principle-service
-              network: some-principle-network
+              network: some.principle-network
             id: some-id
             secret: some-secret
           payload:
@@ -70,11 +70,11 @@ testing:
             node:
               root: some-other-node-root
               service: some-other-node-service
-              network: some-other-node-network
+              network: some.other-node-network
             principle:
               root: some-other-principle-root
               service: some-other-principle-service
-              network: some-other-principle-network
+              network: some.other-principle-network
             id: some-other-id
             secret: some-other-secret
           result:
@@ -82,11 +82,11 @@ testing:
             node:
               root: some-other-node-root
               service: some-other-node-service
-              network: some-other-node-network
+              network: some.other-node-network
             principle:
               root: some-other-principle-root
               service: some-other-principle-service
-              network: some-other-principle-network
+              network: some.other-principle-network
             id: some-other-id
             secret: some-other-secret
 

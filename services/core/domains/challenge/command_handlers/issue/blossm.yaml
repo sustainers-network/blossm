@@ -71,7 +71,7 @@ testing:
         principle:
           root: some-principle-root
           service: some-principle-service
-          network: some-principle-network
+          network: some.principle-network
       payload:
         phone: "(919) 555 1133"
       claims:
@@ -85,7 +85,7 @@ testing:
         principle:
           root: some-principle-root
           service: some-principle-service
-          network: some-principle-network
+          network: some.principle-network
       payload:
         phone: "(919) 555 1133"
       claims:
@@ -101,7 +101,7 @@ testing:
             principle:
               root: some-principle
               service: some-service
-              network: some-network
+              network: some.network
       payload:
         id: some-id
         phone: "+19195551144"
@@ -118,7 +118,7 @@ testing:
             principle:
               root: some-other-principle
               service: some-service
-              network: some-network
+              network: some.network
       payload:
         id: some-other-id
         phone: "+19195551144"
@@ -138,7 +138,7 @@ testing:
             principle:
               root: yet-another-principle
               service: some-service
-              network: some-network
+              network: some.network
       payload:
         id: some-id
         phone: "+19195551133"

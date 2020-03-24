@@ -16,41 +16,41 @@ testing:
     first:
       action: register
       payload:
-        network: some-network
+        network: some.network
         scene:
           root: some-scene
           service: some-scene-service
-          network: some-scene-network
+          network: some.scene-network
     second:
       action: register
       payload:
-        network: some-network
+        network: some.network
         scene:
           root: some-scene-root
           service: some-other-scene-service
-          network: some-other-scene-network
+          network: some.other-scene-network
 
   handlers:
     - action: register
       examples:
         - state:
-            network: some-network
+            network: some.network
             scene:
               root: some-scene
               service: some-scene-service
-              network: some-scene-network
+              network: some.scene-network
           payload:
-            network: some-other-network
+            network: some.other-network
             scene:
               root: some-other-scene
               service: some-other-scene-service
-              network: some-other-scene-network
+              network: some.other-scene-network
           result:
-            network: some-other-network
+            network: some.other-network
             scene:
               root: some-other-scene
               service: some-other-scene-service
-              network: some-other-scene-network
+              network: some.other-scene-network
 
 #don't change
 procedure: event-store

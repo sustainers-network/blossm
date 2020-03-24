@@ -18,14 +18,14 @@ testing:
         root: some-scene-root
         domain: some-domain
         service: some-service
-        network: some-network
+        network: some.network
     second:
       action: register
       payload:
         root: some-other-scene-root
         domain: some-other-domain
         service: some-other-service
-        network: some-other-network
+        network: some.other-network
 
   handlers:
     - action: register
@@ -34,7 +34,7 @@ testing:
             root: some-scene-root
             domain: some-domain
             service: some-service
-            network: some-network
+            network: some.network
 
 #don't change
 procedure: event-store
