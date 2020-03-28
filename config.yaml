@@ -1,4 +1,5 @@
-network: sustainers.network
+network:
+core:
 vendors:
   cloud:
     gcp:
