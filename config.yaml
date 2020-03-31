@@ -1,5 +1,10 @@
 network:
-core:
+routers:
+  - network:
+    antenna:
+    key:
+      id:
+      secretName:
 vendors:
   cloud:
     gcp:
