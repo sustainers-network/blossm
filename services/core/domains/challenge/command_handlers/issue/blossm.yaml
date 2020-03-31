@@ -93,6 +93,7 @@ testing:
       code: 400
     - pre:
         - domain: identity
+          service: core
           root: some-identity-root
           action: register
           payload:
@@ -110,6 +111,7 @@ testing:
       code: 400
     - pre:
         - domain: identity
+          service: core
           root: some-other-identity-root
           action: register
           payload:
@@ -130,6 +132,7 @@ testing:
             value:
     - pre:
         - domain: identity
+          service: core
           root: yet-another-identity-root
           action: register
           payload:

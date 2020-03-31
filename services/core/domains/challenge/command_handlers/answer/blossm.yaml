@@ -60,6 +60,7 @@ testing:
   steps:
     - pre:
         - domain: challenge
+          service: core
           root: some-root
           action: issue
           payload:
@@ -97,6 +98,7 @@ testing:
             value:
     - pre:
         - domain: challenge
+          service: core
           root: some-other-root
           action: issue
           payload:
@@ -130,6 +132,7 @@ testing:
           network: some.network
     - pre:
         - domain: challenge
+          service: core
           root: another-root
           action: issue
           payload:
@@ -145,6 +148,7 @@ testing:
       code: 409
     - pre:
         - domain: challenge
+          service: core
           root: yet-another-root
           action: issue
           payload:
