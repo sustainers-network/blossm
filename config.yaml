@@ -1,7 +1,6 @@
 network: sustainers.network
 routers:
   - network:
-    antenna:
     key:
       id:
       secretName:
