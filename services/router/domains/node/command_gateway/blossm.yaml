@@ -1,10 +1,9 @@
-domain: key
-service: core
+domain: node
+service: router
 
 commands:
-  - name: create
-    priviledges:
-      - create
+  - name: register
+    priviledges: none
 
 whitelist:
   - "127.0.0.1"

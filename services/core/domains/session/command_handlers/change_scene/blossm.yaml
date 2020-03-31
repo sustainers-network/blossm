@@ -43,6 +43,7 @@ testing:
   steps:
     - pre:
         - domain: session
+          service: core
           root: some-root
           action: start
           payload: {}
@@ -77,6 +78,7 @@ testing:
             value:
     - pre:
         - domain: principle
+          service: core
           root: some-other-principle-root
           action: add-scenes
           payload:
@@ -97,6 +99,7 @@ testing:
       code: 401
     - pre:
         - domain: session
+          service: core
           root: some-root
           action: terminate
           payload:

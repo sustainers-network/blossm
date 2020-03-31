@@ -1,6 +1,6 @@
 name: register
 domain: node
-service: core
+service: router
 
 payload:
   network: domain
@@ -42,6 +42,7 @@ testing:
   steps:
     - pre:
         - domain: session
+          service: core
           root: some-session-root
           action: start
           payload:
@@ -68,6 +69,7 @@ testing:
           scene:
     - pre:
         - domain: session
+          service: core
           root: some-other-session-root
           action: start
           payload:

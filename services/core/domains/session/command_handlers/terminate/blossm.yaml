@@ -27,6 +27,7 @@ testing:
   steps:
     - pre:
         - domain: session
+          service: core
           root: some-root
           action: start
           payload: {}
@@ -34,6 +35,7 @@ testing:
       code: 204
     - pre:
         - domain: session
+          service: core
           root: some-root
           action: terminate
           payload:

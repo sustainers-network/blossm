@@ -40,6 +40,7 @@ testing:
   steps:
     - pre:
         - domain: session
+          service: core
           root: some-root
           action: start
           payload: {}
@@ -57,6 +58,7 @@ testing:
             value:
     - pre:
         - domain: session
+          service: core
           root: some-other-root
           action: upgrade
           payload:
@@ -67,6 +69,7 @@ testing:
       code: 400
     - pre:
         - domain: session
+          service: core
           root: yet-another-root
           action: terminate
           payload:

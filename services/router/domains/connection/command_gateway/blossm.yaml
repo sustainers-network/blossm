@@ -1,5 +1,5 @@
 domain: connection
-service: core
+service: router
 
 commands:
   - name: open

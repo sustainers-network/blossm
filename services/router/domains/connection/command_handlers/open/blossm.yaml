@@ -1,6 +1,6 @@
 name: open
 domain: connection
-service: core
+service: router
 
 payload: {}
 

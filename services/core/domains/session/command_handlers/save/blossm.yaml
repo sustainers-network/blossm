@@ -60,6 +60,7 @@ testing:
   steps:
     - pre:
         - domain: identity
+          service: core
           root: some-identity-root
           action: register
           payload:
@@ -75,6 +76,7 @@ testing:
       code: 409
     - pre:
         - domain: identity
+          service: core
           root: some-other-identity-root
           action: register
           payload:
@@ -90,8 +92,7 @@ testing:
       claims:
         sub: some-principle-root
       response:
-    - pre:
-      payload:
+    - payload:
         id: new-identity-id
         phone: "+19195551144"
       claims:
@@ -103,6 +104,7 @@ testing:
             value:
     - pre:
         - domain: principle
+          service: core
           root: some-principle-root
           action: add-roles
           payload:
@@ -140,6 +142,7 @@ testing:
             value:
     - pre:
         - domain: principle
+          service: core
           root: some-principle-root_1
           action: add-roles
           payload:
