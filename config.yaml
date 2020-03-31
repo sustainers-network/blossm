@@ -1,4 +1,4 @@
-network: sustainers.network
+network:
 routers:
   - network:
     key:
@@ -8,26 +8,26 @@ vendors:
   cloud:
     gcp:
       projects:
-        production: production-271815
-        sandbox: sandbox-271815
-        staging: staging-271815
-        development: development-271815
+        production:
+        sandbox:
+        staging:
+        development:
       computeUrlIds:
         production:
         sandbox:
         staging:
-        development: 75tpixyafq
+        development:
       dnsZone: network
       secretsBuckets:
         production:
         sandbox:
         staging:
-        development: development-secrets-271815
+        development:
       rolesBuckets:
         production:
         sandbox:
         staging:
-        development: development-roles-271815
+        development:
       defaults:
         region: us-central1
         memory: 128Mi
@@ -40,12 +40,12 @@ vendors:
         production:
         sandbox:
         staging:
-        development: blossm
+        development:
       hosts:
         production:
         sandbox:
         staging:
-        development: view-store-sebjf.gcp.mongodb.net
+        development:
       protocol: mongodb+srv
   eventStore:
     mongodb:
@@ -53,12 +53,12 @@ vendors:
         production:
         sandbox:
         staging:
-        development: blossm
+        development:
       hosts:
         production:
         sandbox:
         staging:
-        development: event-store-7kjnk.gcp.mongodb.net
+        development:
       protocol: mongodb+srv
   texting:
     twilio:
@@ -66,12 +66,12 @@ vendors:
         production:
         sandbox:
         staging:
-        development: "+12018018796"
+        development:
       sendingPhoneNumber:
         production:
         sandbox:
         staging:
-        development: "+16122237366"
+        development:
 defaults:
   viewStore: mongodb
   eventStore: mongodb
