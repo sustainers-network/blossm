@@ -17,6 +17,7 @@ module.exports = async ({ payload, context }) => {
     events: [
       {
         domain: "principle",
+        service: "core",
         action: "add-roles",
         payload: {
           roles: payload.roles.map(role => {
@@ -36,7 +37,7 @@ module.exports = async ({ payload, context }) => {
           node,
           principle: {
             root: principleRoot,
-            service: process.env.SERVICE,
+            service: "core",
             network: process.env.NETWORK
           },
           id,

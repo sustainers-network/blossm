@@ -81,6 +81,7 @@ describe("Command handler unit tests", () => {
       events: [
         {
           domain: "principle",
+          service: "core",
           action: "add-roles",
           payload: {
             roles: [
@@ -105,7 +106,7 @@ describe("Command handler unit tests", () => {
             node,
             principle: {
               root: principleRoot,
-              service,
+              service: "core",
               network
             },
             id,

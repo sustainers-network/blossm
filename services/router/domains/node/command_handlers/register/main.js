@@ -8,7 +8,8 @@ module.exports = async ({ payload, context, claims }) => {
   const { tokens, principle, roots: { scene: sceneRoot } } = await deps
     .command({
       name: "register",
-      domain: "scene"
+      domain: "scene",
+      service: "core"
     })
     .set({ context, claims, tokenFn: deps.gcpToken })
     .issue(
@@ -45,7 +46,7 @@ module.exports = async ({ payload, context, claims }) => {
           network: payload.network,
           scene: {
             root: sceneRoot,
-            service: process.env.SERVICE,
+            service: "core",
             network: process.env.NETWORK
           }
         }

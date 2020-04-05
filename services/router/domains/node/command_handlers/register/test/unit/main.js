@@ -70,7 +70,7 @@ describe("Command handler unit tests", () => {
           action: "add-roles",
           root: principleRoot,
           payload: {
-            roles: [{ id: "NodeAdmin", service, network }]
+              roles: [{ id: "NodeAdmin", service, network }]
           }
         },
         {
@@ -78,7 +78,7 @@ describe("Command handler unit tests", () => {
           root: nodeRoot,
           payload: {
             network: payloadNetwork,
-            scene: { root: sceneRoot, service, network }
+            scene: { root: sceneRoot, service: "core", network }
           }
         }
       ],
@@ -86,7 +86,8 @@ describe("Command handler unit tests", () => {
     });
     expect(commandFake).to.have.been.calledWith({
       name: "register",
-      domain: "scene"
+      domain: "scene",
+      service: "core"
     });
     expect(setFake).to.have.been.calledWith({
       context,

@@ -21,7 +21,7 @@ testing:
     ok:
       - network: some.network
     bad:
-      - network: some.bad-network
+      - network: somebadnetwork
       - network: 3
 
   normalize:
@@ -84,8 +84,8 @@ testing:
           network: some.other-session-network
         principle:
           root: some-principle-root
-          service: some-service
-          network: some.network
+          service: core
+          network: local.network
       claims:
         iss: some-iss
         aud: some-aud
