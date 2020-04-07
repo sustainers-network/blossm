@@ -1,0 +1,60 @@
+name: add-roles
+domain: principle
+service: core
+
+payload:
+  roles:
+    - id: string
+      root: string
+      service: string
+
+devDependencies:
+  "mocha": "^7.1.0"
+  "chai": "^4.2.0"
+  "sinon": "^7.3.2"
+  "sinon-chai": "^3.3.0"
+  "chai-datetime": "^1.5.0"
+
+testing:
+  validate:
+    ok:
+      - roles:
+          - id: some-id
+            root: some-root
+            service: some-service
+    bad:
+      - roles:
+          a: 1
+      - roles:
+          - id: 3
+      - roles:
+          - root: 3
+      - roles:
+          - service: 3
+
+  normalize:
+    - payload:
+        roles:
+          - id: some-id
+            root: some-root
+            service: some-service
+      normalized:
+        roles:
+          - id: some-id
+            root: some-root
+            service: some-service
+
+  dependencies:
+
+  steps:
+    - payload:
+        roles:
+          - id: some-role-id
+            root: some-role-root
+            service: some-role-service
+      context:
+        network: some-network
+      root: some-root
+
+#don't change
+procedure: command-handler

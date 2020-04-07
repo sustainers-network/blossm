@@ -1,7 +1,7 @@
 const deps = require("./deps");
 
 module.exports = async ({ payload, context, claims }) => {
-  const root = deps.uuid();
+  const sceneRoot = deps.uuid();
 
   // Determine what root should be used for the principle.
   const principle = context.principle || {
@@ -22,6 +22,7 @@ module.exports = async ({ payload, context, claims }) => {
         roles: [
           {
             id: "SceneAdmin",
+            root: sceneRoot,
             service: process.env.SERVICE,
             network: process.env.NETWORK
           }
@@ -37,7 +38,7 @@ module.exports = async ({ payload, context, claims }) => {
       payload: {
         scenes: [
           {
-            root,
+            root: sceneRoot,
             service: process.env.SERVICE,
             network: process.env.NETWORK
           }
@@ -46,13 +47,13 @@ module.exports = async ({ payload, context, claims }) => {
     },
     {
       action: "register",
-      root,
+      root: sceneRoot,
       payload,
       correctNumber: 0
     }
   ];
 
-  const response = { principle, roots: { scene: root } };
+  const response = { principle, roots: { scene: sceneRoot } };
 
   // If the session already has a principle, no need to upgrade it.
   if (context.principle) return { events, response };
@@ -63,7 +64,7 @@ module.exports = async ({ payload, context, claims }) => {
       domain: "session",
       name: "upgrade"
     })
-    .set({ context, claims, tokenFn: deps.gcpToken })
+    .set({ context, claims, tokenFns: { internal: deps.gcpToken } })
     .issue({ principle: principle.root }, { root: context.session.root });
 
   return { events, response: { ...response, tokens } };

@@ -34,7 +34,7 @@ module.exports = async ({
     ? [{ state: { principle } }]
     : await deps
         .eventStore({ domain: "identity" })
-        .set({ context, tokenFn: deps.gcpToken })
+        .set({ context, tokenFns: { internal: deps.gcpToken } })
         .query({ key: "id", value: payload.id });
 
   if (!identity)

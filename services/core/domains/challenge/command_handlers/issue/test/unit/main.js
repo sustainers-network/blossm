@@ -134,7 +134,7 @@ describe("Command handler unit tests", () => {
     expect(smsFake).to.have.been.calledWith(secret, secret);
     expect(setFake).to.have.been.calledWith({
       context,
-      tokenFn: deps.gcpToken
+      tokenFns: { internal: deps.gcpToken }
     });
     expect(eventStoreFake).to.have.been.calledWith({
       domain: "identity"

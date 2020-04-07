@@ -4,6 +4,7 @@ service: core
 schema:
   roles:
     - id: String
+      root: String
       service: String
       network: String
   scenes:
@@ -27,9 +28,11 @@ testing:
       payload:
         roles:
           - id: some-role
+            root: some-role-root
             service: some-role-service
             network: some.role-network
           - id: some-other-role
+            root: some-other-role-root
             service: some-other-role-service
             network: some.other-role-network
     second:
@@ -37,6 +40,7 @@ testing:
       payload:
         roles:
           - id: some-role
+            root: some-role-root
             service: some-role-service
             network: some.role-network
     more:
@@ -59,51 +63,62 @@ testing:
         - state:
             roles:
               - id: some-role
+                root: some-role-root
                 service: some-role-service
                 network: some.role-network
           payload:
             roles:
               - id: some-role
+                root: some-role-root
                 service: some-role-service
                 network: some.role-network
               - id: some-other-role
+                root: some-other-role-root
                 service: some-other-role-service
                 network: some.other-role-network
           result:
             roles:
               - id: some-role
+                root: some-role-root
                 service: some-role-service
                 network: some.role-network
               - id: some-other-role
+                root: some-other-role-root
                 service: some-other-role-service
                 network: some.other-role-network
         - state:
             roles:
               - id: some-role
+                root: some-role-root
                 service: some-role-service
                 network: some.role-network
           payload:
             roles:
               - id: some-other-role
+                root: some-other-role-root
                 service: some-other-role-service
                 network: some.other-role-network
           result:
             roles:
               - id: some-role
+                root: some-role-root
                 service: some-role-service
                 network: some.role-network
               - id: some-other-role
+                root: some-other-role-root
                 service: some-other-role-service
                 network: some.other-role-network
         - state: {}
           payload:
             roles:
               - id: some-role
+                root: some-role-root
                 service: some-role-service
                 network: some.role-network
           result:
             roles:
               - id: some-role
+                root: some-role-root
                 service: some-role-service
                 network: some.role-network
     - action: remove-roles
@@ -111,19 +126,23 @@ testing:
         - state:
             roles:
               - id: some-role
+                root: some-role-root
                 service: some-role-service
                 network: some.role-network
               - id: some-other-role
+                root: some-other-role-root
                 service: some-other-role-service
                 network: some.other-role-network
           payload:
             roles:
               - id: some-role
+                root: some-role-root
                 service: some-role-service
                 network: some.role-network
           result:
             roles:
               - id: some-other-role
+                root: some-other-role-root
                 service: some-other-role-service
                 network: some.other-role-network
     - action: add-scenes

@@ -81,7 +81,7 @@ describe("Command handler unit tests", () => {
           root: principleRoot,
           domain: "principle",
           action: "add-roles",
-          payload: { roles: [{ id: "SessionAdmin", service, network }] }
+          payload: { roles: [{ id: "SessionAdmin", root, service, network }] }
         }
       ],
       response: { tokens: [{ network, type: "access", value: token }] }

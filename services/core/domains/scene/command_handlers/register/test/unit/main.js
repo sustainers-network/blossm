@@ -60,7 +60,7 @@ describe("Command handler unit tests", () => {
           action: "add-roles",
           root: uuid,
           payload: {
-            roles: [{ id: "SceneAdmin", service, network }]
+            roles: [{ id: "SceneAdmin", root, service, network }]
           }
         },
         {
@@ -94,7 +94,7 @@ describe("Command handler unit tests", () => {
     expect(setFake).to.have.been.calledWith({
       context,
       claims,
-      tokenFn: deps.gcpToken
+      tokenFns: { internal: deps.gcpToken }
     });
     expect(issueFake).to.have.been.calledWith(
       {
@@ -140,7 +140,7 @@ describe("Command handler unit tests", () => {
           action: "add-roles",
           root: principleRoot,
           payload: {
-            roles: [{ id: "SceneAdmin", service, network }]
+            roles: [{ id: "SceneAdmin", root, service, network }]
           }
         },
         {

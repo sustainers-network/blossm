@@ -61,6 +61,7 @@ module.exports = async ({ root, payload, context, claims, aggregateFn }) => {
           roles: [
             {
               id: "SessionAdmin",
+              root,
               service: process.env.SERVICE,
               network: process.env.NETWORK
             }

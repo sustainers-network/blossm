@@ -4,7 +4,8 @@ const NINETY_DAYS = 90 * MILLISECONDS_IN_DAY;
 
 const deps = require("./deps");
 
-module.exports = async ({ payload }) => {
+module.exports = async ({ payload, context = {} }) => {
+
   // Create the root for this session.
   const root = deps.uuid();
 
@@ -12,17 +13,19 @@ module.exports = async ({ payload }) => {
   const token = await deps.createJwt({
     options: {
       issuer: `session.${process.env.SERVICE}.${process.env.NETWORK}/start`,
-      audience: process.env.NETWORK,
+      audience: [process.env.NETWORK, ...(context.node ? [context.node.network] : [])],
       expiresIn: NINETY_DAYS
     },
     payload: {
       context: {
+        network: context.node ? context.node.network : process.env.NETWORK,
         session: {
           root,
           service: process.env.SERVICE,
           network: process.env.NETWORK
         }
-      }
+      },
+      roles: []
     },
     signFn: deps.sign({
       ring: "jwt",
@@ -46,7 +49,7 @@ module.exports = async ({ payload }) => {
       }
     ],
     response: {
-      tokens: [{ network: process.env.NETWORK, type: "access", value: token }]
+      tokens: [{ network: context.node ? context.node.network : process.env.NETWORK, type: "access", value: token }]
     }
   };
 };

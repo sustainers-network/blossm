@@ -71,6 +71,7 @@ const getEventsForIdentityRegistering = async ({ subject, payload }) => {
           roles: [
             {
               id: "IdentityAdmin",
+              root: identityRoot,
               service: process.env.SERVICE,
               network: process.env.NETWORK
             }
@@ -88,7 +89,7 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
     .eventStore({
       domain: "identity"
     })
-    .set({ context, claims, tokenFn: deps.gcpToken })
+    .set({ context, claims, tokenFns: { internal: deps.gcpToken } })
     .query({ key: "id", value: payload.id });
 
   if (identity) {
@@ -104,7 +105,7 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
         .eventStore({
           domain: "identity"
         })
-        .set({ context, claims, tokenFn: deps.gcpToken })
+        .set({ context, claims, tokenFns:{ internal:  deps.gcpToken }})
         .query({ key: "principle.root", value: claims.sub });
 
       if (subjectIdentity)
@@ -139,7 +140,7 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
         ...claims,
         sub: principle.root
       },
-      tokenFn: deps.gcpToken
+      tokenFns: { internal: deps.gcpToken }
     })
     .issue(
       {

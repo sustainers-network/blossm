@@ -73,6 +73,20 @@ testing:
           - network:
             type: access
             value:
+    - payload:
+        device:
+          os: "iOS"
+          version: "11"
+          hardware: "iPhone"
+          manufacturer: "apple"
+      context:
+        node:
+          network: some.network
+      response:
+        tokens:
+          - network: some.network
+            type: access
+            value:
 
 #don't change
 procedure: command-handler

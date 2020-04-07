@@ -35,9 +35,9 @@ const identity = {
     }
   }
 };
-const principleAggregate = { roles: [{ id: "some-role", service, network }] };
+const principleAggregate = { roles: [{ id: "some-role-id", root: "some-role-root", service, network }] };
 const sessionPrincipleAggregate = {
-  roles: [{ id: "some-other-role", service, network }]
+  roles: [{ id: "some-other-role-id", root: "some-other-role-root", service, network }]
 };
 
 process.env.SERVICE = service;
@@ -105,7 +105,7 @@ describe("Command handler unit tests", () => {
     expect(setFake).to.have.been.calledWith({
       context,
       claims,
-      tokenFn: deps.gcpToken
+      tokenFns: { internal: deps.gcpToken }
     });
     expect(queryFake).to.have.been.calledWith({ key: "id", value: id });
     expect(aggregateFake).to.have.been.calledWith(principleRoot, {
@@ -125,7 +125,7 @@ describe("Command handler unit tests", () => {
         ...claims,
         sub: principleRoot
       },
-      tokenFn: deps.gcpToken
+      tokenFns: { internal: deps.gcpToken }
     });
     expect(issueFake).to.have.been.calledWith(
       { id, phone },
@@ -142,7 +142,7 @@ describe("Command handler unit tests", () => {
               domain: "principle",
               root: principleRoot,
               payload: {
-                roles: [{ id: "some-other-role", service, network }]
+                roles: [{ id: "some-other-role-id", root: "some-other-role-root", service, network }]
               }
             }
           ]
@@ -204,7 +204,7 @@ describe("Command handler unit tests", () => {
     expect(setFake).to.have.been.calledWith({
       context,
       claims,
-      tokenFn: deps.gcpToken
+      tokenFns: { internal: deps.gcpToken }
     });
     expect(queryFake).to.have.been.calledWith({ key: "id", value: id });
     expect(aggregateFake).to.have.been.calledWith(principleRoot, {
@@ -224,7 +224,7 @@ describe("Command handler unit tests", () => {
         ...claims,
         sub: principleRoot
       },
-      tokenFn: deps.gcpToken
+      tokenFns: { internal: deps.gcpToken }
     });
     expect(issueFake).to.have.been.calledWith(
       { phone, id },
@@ -289,7 +289,7 @@ describe("Command handler unit tests", () => {
     expect(setFake).to.have.been.calledWith({
       context,
       claims: {},
-      tokenFn: deps.gcpToken
+      tokenFns: { internal: deps.gcpToken }
     });
     expect(queryFake).to.have.been.calledWith({ key: "id", value: id });
     expect(hashFake).to.have.been.calledWith(phone);
@@ -302,7 +302,7 @@ describe("Command handler unit tests", () => {
       claims: {
         sub: principleRoot
       },
-      tokenFn: deps.gcpToken
+      tokenFns: { internal: deps.gcpToken }
     });
     expect(issueFake).to.have.been.calledWith(
       { id, phone },
@@ -325,7 +325,7 @@ describe("Command handler unit tests", () => {
               domain: "principle",
               root: principleRoot,
               payload: {
-                roles: [{ id: `IdentityAdmin`, service, network }]
+                roles: [{ id: `IdentityAdmin`, root: identityRoot, service, network }]
               }
             }
           ]
@@ -376,7 +376,7 @@ describe("Command handler unit tests", () => {
     expect(setFake).to.have.been.calledWith({
       context,
       claims,
-      tokenFn: deps.gcpToken
+      tokenFns: { internal: deps.gcpToken }
     });
     expect(queryFake).to.have.been.calledWith({ key: "id", value: id });
     expect(hashFake).to.have.been.calledWith(phone);
@@ -387,7 +387,7 @@ describe("Command handler unit tests", () => {
     expect(anotherSetFake).to.have.been.calledWith({
       context,
       claims,
-      tokenFn: deps.gcpToken
+      tokenFns: { internal: deps.gcpToken }
     });
     expect(issueFake).to.have.been.calledWith(
       { id, phone },
@@ -410,7 +410,7 @@ describe("Command handler unit tests", () => {
               domain: "principle",
               root: sub,
               payload: {
-                roles: [{ id: "IdentityAdmin", service, network }]
+                roles: [{ id: "IdentityAdmin", root: identityRoot, service, network }]
               }
             }
           ]

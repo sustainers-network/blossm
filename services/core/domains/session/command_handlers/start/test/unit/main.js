@@ -69,17 +69,83 @@ describe("Command handler unit tests", () => {
     expect(createJwtFake).to.have.been.calledWith({
       options: {
         issuer: `session.${service}.${network}/start`,
-        audience: network,
+        audience: [network],
         expiresIn: 7776000000
       },
       payload: {
         context: {
+          network,
           session: {
             root,
             service,
             network
           }
+        },
+        roles: []
+      },
+      signFn: signature
+    });
+  });
+  it("should return successfully with context", async () => {
+    const signature = "some-signature";
+    const signFake = fake.returns(signature);
+    replace(deps, "sign", signFake);
+
+    const createJwtFake = fake.returns(token);
+    replace(deps, "createJwt", createJwtFake);
+
+    const root = "some-root";
+    const uuidFake = fake.returns(root);
+    replace(deps, "uuid", uuidFake);
+
+    const nodeNetwork = "some-node-network";
+    const context = {
+      node: {
+        network: nodeNetwork
+      }
+    }
+    const result = await main({
+      payload,
+      context
+    });
+
+    expect(result).to.deep.equal({
+      events: [
+        {
+          payload: {
+            ...payload,
+            started: deps.stringDate()
+          },
+          action: "start",
+          root,
+          correctNumber: 0
         }
+      ],
+      response: { tokens: [{ network: nodeNetwork, type: "access", value: token }] }
+    });
+    expect(signFake).to.have.been.calledWith({
+      ring: "jwt",
+      key: "access",
+      location: "global",
+      version: "1",
+      project
+    });
+    expect(createJwtFake).to.have.been.calledWith({
+      options: {
+        issuer: `session.${service}.${network}/start`,
+        audience: [network, nodeNetwork],
+        expiresIn: 7776000000
+      },
+      payload: {
+        context: {
+          network: nodeNetwork,
+          session: {
+            root,
+            service,
+            network
+          }
+        },
+        roles: []
       },
       signFn: signature
     });

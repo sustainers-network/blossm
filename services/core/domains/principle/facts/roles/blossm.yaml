@@ -1,0 +1,54 @@
+name: roles
+domain: principle
+service: core
+
+dependencies:
+  "@blossm/event-store-rpc": "*"
+  "@blossm/gcp-token": "*"
+
+devDependencies:
+  "mocha": "^7.1.0"
+  "chai": "^4.2.0"
+  "sinon": "^7.3.2"
+  "sinon-chai": "^3.3.0"
+  "@blossm/request": "*"
+
+testing:
+  dependencies:
+    - domain: principle
+      procedure: event-store
+      service: core
+
+  steps:
+    - pre:
+        - domain: principle
+          service: core
+          root: some-root
+          action: add-roles
+          payload:
+            roles:
+              - id: some-role-id
+                root: some-role-root
+                service: some-role-service
+                network: some.network
+              - id: some-other-role-id
+                root: some-other-role-root
+                service: some-other-role-service
+                network: some.other-network
+      query:
+        root: some-root
+      context:
+        network: some.network
+      response:
+        - id: some-role-id
+          root: some-role-root
+          service: some-role-service
+          network: some.network
+    - query:
+        root: some-missing-root
+      context:
+        network: some.network
+      code: 404
+
+#don't change
+procedure: fact
