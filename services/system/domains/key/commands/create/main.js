@@ -14,7 +14,8 @@ module.exports = async ({ payload, context, aggregateFn }) => {
       domain: "node",
       service: node.service,
       network: node.network
-  })]);
+    })
+  ]);
 
   const keyRoot = deps.uuid();
   const principleRoot = deps.uuid();
@@ -54,6 +55,16 @@ module.exports = async ({ payload, context, aggregateFn }) => {
         correctNumber: 0
       }
     ],
-    response: { root: keyRoot, secret }
+    response: {
+      root: keyRoot,
+      secret,
+      references: {
+        key: {
+          root: keyRoot,
+          service: process.env.SERVICE,
+          network: process.env.NETWORK
+        }
+      }
+    }
   };
 };

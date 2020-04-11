@@ -123,7 +123,14 @@ describe("Command handler unit tests", () => {
         }
       ],
       response: {
-        tokens: [{ network, type: "challenge", value: token }]
+        tokens: [{ network, type: "challenge", value: token }],
+        references: {
+          challenge: {
+            root,
+            service,
+            network
+          }
+        }
       }
     });
     expect(compareFake).to.have.been.calledWith(payloadPhone, phone);
@@ -238,7 +245,16 @@ describe("Command handler unit tests", () => {
           }
         }
       ],
-      response: { tokens: [{ network, type: "challenge", value: token }] }
+      response: {
+        tokens: [{ network, type: "challenge", value: token }],
+        references: {
+          challenge: {
+            root,
+            service,
+            network
+          }
+        }
+      }
     });
     expect(signFake).to.have.been.calledWith({
       ring: "jwt",
@@ -302,8 +318,9 @@ describe("Command handler unit tests", () => {
     replace(deps, "eventStore", eventStoreFake);
 
     const error = "some-error";
+    const messageFake = fake.returns(error);
     replace(deps, "invalidArgumentError", {
-      phoneNotRecognized: fake.returns(error)
+      message: messageFake
     });
 
     try {
@@ -316,6 +333,7 @@ describe("Command handler unit tests", () => {
       //shouldn't get called
       expect(2).to.equal(3);
     } catch (e) {
+      expect(messageFake).to.have.been.calledWith("This id isn't recognized.");
       expect(e).to.equal(error);
     }
   });
@@ -455,7 +473,16 @@ describe("Command handler unit tests", () => {
     });
 
     expect(result).to.deep.equal({
-      response: { tokens: [{ network, type: "challenge", value: token }] },
+      response: {
+        tokens: [{ network, type: "challenge", value: token }],
+        references: {
+          challenge: {
+            root,
+            service,
+            network
+          }
+        }
+      },
       events: [
         {
           action: "issue",

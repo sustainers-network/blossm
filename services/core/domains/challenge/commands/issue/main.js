@@ -38,7 +38,7 @@ module.exports = async ({
         .query({ key: "id", value: payload.id });
 
   if (!identity)
-    throw deps.invalidArgumentError.phoneNotRecognized({
+    throw deps.invalidArgumentError.message("This id isn't recognized.", {
       info: { id: payload.id }
     });
 
@@ -85,7 +85,7 @@ module.exports = async ({
   const code = deps.randomIntOfLength(CODE_LENGTH);
 
   // Send the code.
-  sms.send({
+  await sms.send({
     to: payload.phone,
     from: process.env.TWILIO_SENDING_PHONE_NUMBER,
     body: `${code} is your verification code. Enter it in the app to let us know it's really you.`
@@ -115,7 +115,14 @@ module.exports = async ({
     response: {
       tokens: [
         { network: process.env.NETWORK, type: "challenge", value: token }
-      ]
+      ],
+      references: {
+        challenge: {
+          root,
+          service: process.env.SERVICE,
+          network: process.env.NETWORK
+        }
+      }
     }
   };
 };

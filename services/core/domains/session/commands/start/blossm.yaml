@@ -87,6 +87,11 @@ testing:
           - network: some.network
             type: access
             value:
+        references:
+          session:
+            root:
+            service:
+            network:
 
 #don't change
 procedure: command

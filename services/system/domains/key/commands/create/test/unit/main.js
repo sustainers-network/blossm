@@ -71,8 +71,12 @@ describe("Command handler unit tests", () => {
     const nodeStateNetwork = "some-node-network";
     const aggregateFnFake = fake.returns({
       aggregate: { network: nodeStateNetwork }
-    })
-    const result = await main({ payload, context, aggregateFn: aggregateFnFake });
+    });
+    const result = await main({
+      payload,
+      context,
+      aggregateFn: aggregateFnFake
+    });
 
     expect(aggregateFnFake).to.have.been.calledWith(nodeRoot, {
       domain: "node",
@@ -126,7 +130,11 @@ describe("Command handler unit tests", () => {
           correctNumber: 0
         }
       ],
-      response: { root: keyRoot, secret }
+      response: {
+        root: keyRoot,
+        secret,
+        references: { key: { root: keyRoot, service, network } }
+      }
     });
   });
   it("should throw correctly if not in node", async () => {

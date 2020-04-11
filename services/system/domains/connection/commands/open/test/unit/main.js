@@ -70,7 +70,10 @@ describe("Command handler unit tests", () => {
           correctNumber: 0
         }
       ],
-      response: { tokens: [{ network: contextNetwork, type: "access", value: token }] }
+      response: {
+        tokens: [{ network: contextNetwork, type: "access", value: token }],
+        references: { connection: { root, service, network } }
+      }
     });
     expect(signFake).to.have.been.calledWith({
       ring: "jwt",

@@ -33,7 +33,11 @@ describe("Command handler unit tests", () => {
   });
   it("should return successfully", async () => {
     const uuid = "some-uuid";
-    const uuidFake = stub().onFirstCall().returns(root).onSecondCall().returns(uuid);
+    const uuidFake = stub()
+      .onFirstCall()
+      .returns(root)
+      .onSecondCall()
+      .returns(uuid);
     replace(deps, "uuid", uuidFake);
 
     const tokens = "some-tokens";
@@ -76,14 +80,18 @@ describe("Command handler unit tests", () => {
         { action: "register", payload, root, correctNumber: 0 }
       ],
       response: {
-        principle: {
-          root: uuid,
-          service,
-          network
-        },
         tokens,
-        roots: {
-          scene: root
+        references: {
+          principle: {
+            root: uuid,
+            service,
+            network
+          },
+          scene: {
+            root,
+            service,
+            network
+          }
         }
       }
     });
@@ -98,14 +106,22 @@ describe("Command handler unit tests", () => {
     });
     expect(issueFake).to.have.been.calledWith(
       {
-        principle: uuid
+        principle: {
+          root: uuid,
+          service,
+          network
+        }
       },
       { root: contextSessionRoot }
     );
   });
   it("should return successfully if there's a context principle", async () => {
     const uuid = "some-uuid";
-    const uuidFake = stub().onFirstCall().returns(root).onSecondCall().returns(uuid);
+    const uuidFake = stub()
+      .onFirstCall()
+      .returns(root)
+      .onSecondCall()
+      .returns(uuid);
     replace(deps, "uuid", uuidFake);
 
     const token = "some-token";
@@ -156,13 +172,17 @@ describe("Command handler unit tests", () => {
         { action: "register", payload, root, correctNumber: 0 }
       ],
       response: {
-        principle: {
-          root: principleRoot,
-          service: principleService,
-          network: principleNetwork
-        },
-        roots: {
-          scene: root
+        references: {
+          principle: {
+            root: principleRoot,
+            service: principleService,
+            network: principleNetwork
+          },
+          scene: {
+            root,
+            service,
+            network
+          }
         }
       }
     });

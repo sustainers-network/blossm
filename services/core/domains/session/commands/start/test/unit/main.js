@@ -59,7 +59,16 @@ describe("Command handler unit tests", () => {
           correctNumber: 0
         }
       ],
-      response: { tokens: [{ network, type: "access", value: token }] }
+      response: {
+        tokens: [{ network, type: "access", value: token }],
+        references: {
+          session: {
+            root,
+            service,
+            network
+          }
+        }
+      }
     });
     expect(signFake).to.have.been.calledWith({
       ring: "jwt",
@@ -102,7 +111,7 @@ describe("Command handler unit tests", () => {
     const nodeNetwork = "some-node-network";
     const context = {
       network: nodeNetwork
-    }
+    };
     const result = await main({
       payload,
       context
@@ -120,7 +129,16 @@ describe("Command handler unit tests", () => {
           correctNumber: 0
         }
       ],
-      response: { tokens: [{ network: nodeNetwork, type: "access", value: token }] }
+      response: {
+        tokens: [{ network: nodeNetwork, type: "access", value: token }],
+        references: {
+          session: {
+            root,
+            service,
+            network
+          }
+        }
+      }
     });
     expect(signFake).to.have.been.calledWith({
       ring: "jwt",

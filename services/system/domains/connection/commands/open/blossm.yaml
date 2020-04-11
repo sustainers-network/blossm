@@ -50,6 +50,11 @@ testing:
           - network: some-context-network
             type: access
             value:
+        references:
+          connection:
+            root:
+            service:
+            network:
 
 #don't change
 procedure: command

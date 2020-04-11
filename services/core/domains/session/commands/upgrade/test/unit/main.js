@@ -10,9 +10,17 @@ let clock;
 const now = new Date();
 
 const principleRoot = "some-principle-root";
+const principleService = "some-principle-service";
+const principleNetwork = "some-principle-network";
+
 const payload = {
-  principle: principleRoot
+  principle: {
+    root: principleRoot,
+    service: principleService,
+    network: principleNetwork
+  }
 };
+
 const token = "some-token";
 const project = "some-projectl";
 const root = "some-root";
@@ -70,8 +78,8 @@ describe("Command handler unit tests", () => {
           payload: {
             principle: {
               root: principleRoot,
-              service,
-              network
+              service: principleService,
+              network: principleNetwork
             },
             upgraded: deps.stringDate()
           },

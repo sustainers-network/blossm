@@ -43,13 +43,15 @@ describe("Command handler unit tests", () => {
 
     const issueFake = fake.returns({
       tokens,
-      principle: {
-        root: principleRoot,
-        service: principleService,
-        network: principleNetwork
-      },
-      roots: {
-        scene: sceneRoot
+      references: {
+        principle: {
+          root: principleRoot,
+          service: principleService,
+          network: principleNetwork
+        },
+        scene: {
+          root: sceneRoot
+        }
       }
     });
     const setFake = fake.returns({
@@ -70,7 +72,7 @@ describe("Command handler unit tests", () => {
           action: "add-roles",
           root: principleRoot,
           payload: {
-              roles: [{ id: "NodeAdmin", root: nodeRoot, service, network }]
+            roles: [{ id: "NodeAdmin", root: nodeRoot, service, network }]
           }
         },
         {
@@ -82,7 +84,13 @@ describe("Command handler unit tests", () => {
           }
         }
       ],
-      response: { tokens, roots: { node: nodeRoot, scene: sceneRoot } }
+      response: {
+        tokens,
+        references: {
+          node: { root: nodeRoot, service, network },
+          scene: { root: sceneRoot, service: "core", network }
+        }
+      }
     });
     expect(commandFake).to.have.been.calledWith({
       name: "register",
@@ -94,14 +102,12 @@ describe("Command handler unit tests", () => {
       claims,
       tokenFns: { internal: deps.gcpToken }
     });
-    expect(issueFake).to.have.been.calledWith(
-      {
-        root: nodeRoot,
-        domain,
-        service,
-        network
-      }
-    );
+    expect(issueFake).to.have.been.calledWith({
+      root: nodeRoot,
+      domain,
+      service,
+      network
+    });
   });
   it("should throw correctly", async () => {
     const errorMessage = "some-error";

@@ -81,6 +81,11 @@ testing:
           - network:
             type: challenge
             value:
+        references:
+          challenge:
+            root:
+            service:
+            network:
     - options:
         principle:
           root: some-principle-root
@@ -130,6 +135,11 @@ testing:
           - network:
             type: challenge
             value:
+        references:
+          challenge:
+            root:
+            service:
+            network:
     - pre:
         - domain: identity
           service: core

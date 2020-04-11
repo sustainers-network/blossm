@@ -47,7 +47,14 @@ module.exports = async ({ context }) => {
       }
     ],
     response: {
-      tokens: [{ network: context.network, type: "access", value: token }]
+      tokens: [{ network: context.network, type: "access", value: token }],
+      references: {
+        connection: {
+          root,
+          service: process.env.SERVICE,
+          network: process.env.NETWORK
+        }
+      }
     }
   };
 };

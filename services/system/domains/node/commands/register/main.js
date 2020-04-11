@@ -5,21 +5,25 @@ module.exports = async ({ payload, context, claims }) => {
   const nodeRoot = deps.uuid();
 
   // Register the scene.
-  const { tokens, principle, roots: { scene: sceneRoot } } = await deps
+  const {
+    tokens,
+    references: {
+      principle,
+      scene: { root: sceneRoot }
+    }
+  } = await deps
     .command({
       name: "register",
       domain: "scene",
       service: "core"
     })
     .set({ context, claims, tokenFns: { internal: deps.gcpToken } })
-    .issue(
-      {
-        root: nodeRoot,
-        domain: process.env.DOMAIN,
-        service: process.env.SERVICE,
-        network: process.env.NETWORK
-      }
-    );
+    .issue({
+      root: nodeRoot,
+      domain: process.env.DOMAIN,
+      service: process.env.SERVICE,
+      network: process.env.NETWORK
+    });
 
   return {
     events: [
@@ -55,7 +59,18 @@ module.exports = async ({ payload, context, claims }) => {
     ],
     response: {
       ...(tokens && { tokens }),
-      roots: { node: nodeRoot, scene: sceneRoot }
+      references: {
+        node: {
+          root: nodeRoot,
+          service: process.env.SERVICE,
+          network: process.env.NETWORK
+        },
+        scene: {
+          root: sceneRoot,
+          service: "core",
+          network: process.env.NETWORK
+        }
+      }
     }
   };
 };

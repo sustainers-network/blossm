@@ -8,10 +8,7 @@ const deps = require("../../deps");
 
 let clock;
 const now = new Date();
-const challengePrincipleRoot = "some-challenge-principle-root";
-const challengePrinciple = {
-  root: challengePrincipleRoot
-};
+const challengePrinciple = "some-challenge-principle";
 const code = "some-code";
 const exp = "some-exp";
 const iss = "some-iss";
@@ -105,7 +102,7 @@ describe("Command handler unit tests", () => {
     });
     expect(issueFake).to.have.been.calledWith(
       {
-        principle: challengePrincipleRoot
+        principle: challengePrinciple
       },
       { root: sessionRoot }
     );

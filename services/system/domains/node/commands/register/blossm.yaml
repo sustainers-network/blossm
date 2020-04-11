@@ -64,9 +64,15 @@ testing:
           - network:
             type: access
             value:
-        roots:
+        references:
           node:
+            root:
+            service:
+            network:
           scene:
+            root:
+            service: "core"
+            network:
     - pre:
         - domain: session
           service: core
@@ -91,9 +97,15 @@ testing:
         aud: some-aud
         exp: 9999-12-31T00:00:00.000
       response:
-        roots:
+        references:
           node:
+            root:
+            service:
+            network:
           scene:
+            root:
+            service: "core"
+            network:
 
 #don't change
 procedure: command

@@ -77,13 +77,19 @@ testing:
         aud: some-aud
         exp: 9999-12-31T00:00:00.000
       response:
-        principle:
         tokens:
           - network:
             type: access
             value:
-        roots:
+        references:
+          principle:
+            root:
+            service:
+            network:
           scene:
+            root:
+            service:
+            network:
     - pre:
         - domain: session
           service: core
@@ -111,12 +117,15 @@ testing:
         aud: some-aud
         exp: 9999-12-31T00:00:00.000
       response:
-        principle:
-          root: some-principle-root
-          service: core
-          network: some.network
-        roots:
+        references:
+          principle:
+            root: some-principle-root
+            service: core
+            network: some.network
           scene:
+            root:
+            service:
+            network:
 
 #don't change
 procedure: command

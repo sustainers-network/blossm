@@ -3,7 +3,10 @@ domain: session
 service: core
 
 payload:
-  principle: string
+  principle:
+    root: string
+    service: string
+    network: domain
 
 dependencies:
   "@blossm/jwt": "*"
@@ -21,16 +24,30 @@ devDependencies:
 testing:
   validate:
     ok:
-      - principle: some-principle-root
-    bad:
       - principle:
-          a: 1
+          root: some-principle-root
+          service: some-principle-root
+          network: some.principle-network
+    bad:
+      - principle: 1
+      - principle:
+          root: 1
+      - principle:
+          service: 1
+      - principle:
+          network: 1
 
   normalize:
     - payload:
-        principle: some-principle-root
+        principle:
+          root: some-principle-root
+          service: some-principle-service
+          network: some.principle-network
       normalized:
-        principle: some-principle-root
+        principle:
+          root: some-principle-root
+          service: some-principle-service
+          network: some.principle-network
 
   dependencies:
     - domain: principle
@@ -45,7 +62,10 @@ testing:
           action: start
           payload: {}
       payload:
-        principle: some-principle-root
+        principle:
+          root: some-principle-root
+          service: some-principle-service
+          network: some.principle-network
       root: some-root
       claims:
         iss: some-iss
@@ -64,7 +84,10 @@ testing:
           payload:
             upgraded: 2019-12-31T00:00:00.000Z
       payload:
-        principle: some-principle-root
+        principle:
+          root: some-principle-root
+          service: some-principle-service
+          network: some.principle-network
       root: some-other-root
       code: 400
     - pre:
@@ -75,7 +98,10 @@ testing:
           payload:
             terminated: 2019-12-31T00:00:00.000Z
       payload:
-        principle: some-principle-root
+        principle:
+          root: some-principle-root
+          service: some-principle-service
+          network: some.principle-network
       root: yet-another-root
       code: 400
 

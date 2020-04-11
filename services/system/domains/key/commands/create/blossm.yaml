@@ -71,6 +71,11 @@ testing:
       response:
         root:
         secret:
+        references:
+          key:
+            root:
+            service:
+            network:
     - payload:
         name: some name
         roles:
