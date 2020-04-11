@@ -151,7 +151,7 @@ describe("Command handler unit tests", () => {
     expect(createJwtFake).to.have.been.calledWith({
       options: {
         issuer: `${domain}.${service}.${network}/issue`,
-        audience: `${domain}.${service}.${network}/answer`,
+        audience: network,
         expiresIn: 3600000
       },
       payload: {
@@ -250,7 +250,7 @@ describe("Command handler unit tests", () => {
     expect(createJwtFake).to.have.been.calledWith({
       options: {
         issuer: `${domain}.${service}.${network}/issue`,
-        audience: `${domain}.${service}.${network}/answer`,
+        audience: network,
         expiresIn: 3600000
       },
       payload: {
@@ -490,7 +490,7 @@ describe("Command handler unit tests", () => {
     expect(createJwtFake).to.have.been.calledWith({
       options: {
         issuer: `${domain}.${service}.${network}/issue`,
-        audience: `${domain}.${service}.${network}/answer`,
+        audience: network,
         expiresIn: 3600000
       },
       payload: {

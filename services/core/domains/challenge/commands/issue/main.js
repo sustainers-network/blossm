@@ -59,7 +59,7 @@ module.exports = async ({
   const token = await deps.createJwt({
     options: {
       issuer: `${process.env.DOMAIN}.${process.env.SERVICE}.${process.env.NETWORK}/issue`,
-      audience: `${process.env.DOMAIN}.${process.env.SERVICE}.${process.env.NETWORK}/answer`,
+      audience: process.env.NETWORK,
       expiresIn: ONE_HOUR
     },
     payload: {
