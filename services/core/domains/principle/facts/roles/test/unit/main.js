@@ -40,11 +40,7 @@ describe("Fact unit tests", () => {
       network
     };
 
-    const query = {
-      root
-    };
-
-    const result = await main({ context, query });
+    const result = await main({ context, root });
 
     expect(eventStoreFake).to.have.been.calledWith({
       domain: "principle",
@@ -72,17 +68,13 @@ describe("Fact unit tests", () => {
       network
     };
 
-    const query = {
-      root
-    };
-
     const error = "some-error";
     const messageFake = fake.returns(error);
     replace(deps, "badRequestError", {
       message: messageFake
     });
     try {
-      await main({ context, query });
+      await main({ context, root });
 
       //shouldn't get called
       expect(1).to.equal(2);

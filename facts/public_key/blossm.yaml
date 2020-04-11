@@ -10,5 +10,9 @@ devDependencies:
   "sinon-chai": "^3.3.0"
   "@blossm/request": "*"
 
+testing:
+  steps:
+    - code: 200
+
 #don't change
 procedure: fact

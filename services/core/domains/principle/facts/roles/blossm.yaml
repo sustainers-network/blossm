@@ -35,8 +35,7 @@ testing:
                 root: some-other-role-root
                 service: some-other-role-service
                 network: some.other-network
-      query:
-        root: some-root
+      root: some-root
       context:
         network: some.network
       response:
@@ -44,8 +43,7 @@ testing:
           root: some-role-root
           service: some-role-service
           network: some.network
-    - query:
-        root: some-missing-root
+    - root: some-missing-root
       context:
         network: some.network
       code: 404

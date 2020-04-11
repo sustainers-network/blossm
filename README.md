@@ -1,1 +1,1 @@
-# blossm project template 
+# The Sustainer's Network blossm codebase 

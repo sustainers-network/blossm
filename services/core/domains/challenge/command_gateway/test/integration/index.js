@@ -49,6 +49,7 @@ describe("Command gateway integration tests", () => {
 
     const code = message.body.substr(0, 6);
 
+    console.log({ ASDFASDFWEFF: token });
     const response1 = await request.post(`${url}/answer`, {
       body: {
         headers: {
@@ -63,6 +64,7 @@ describe("Command gateway integration tests", () => {
       }
     });
 
+    console.log({ response1 });
     expect(response1.statusCode).to.equal(204);
   });
 });

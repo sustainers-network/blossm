@@ -1,12 +1,11 @@
-domain: connection
+domain: key
 service: system
 
-commands:
-  - name: open
-    basic: true
+jobs:
+  - name: state
     context: node
     priviledges:
-      - create
+      - read
 
 whitelist:
   - "127.0.0.1"
@@ -16,4 +15,4 @@ devDependencies:
   "chai": "^4.2.0"
 
 #don't change
-procedure: command-gateway
+procedure: fact-gateway
