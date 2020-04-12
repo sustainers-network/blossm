@@ -2,6 +2,8 @@ name: issue
 domain: challenge
 service: core
 
+memory: 256Mi
+
 payload:
   phone:
     type: phoneNumber

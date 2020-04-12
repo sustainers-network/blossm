@@ -35,9 +35,13 @@ const identity = {
     }
   }
 };
-const principleAggregate = { roles: [{ id: "some-role-id", root: "some-role-root", service, network }] };
+const principleAggregate = {
+  roles: [{ id: "some-role-id", root: "some-role-root", service, network }]
+};
 const sessionPrincipleAggregate = {
-  roles: [{ id: "some-other-role-id", root: "some-other-role-root", service, network }]
+  roles: [
+    { id: "some-other-role-id", root: "some-other-role-root", service, network }
+  ]
 };
 
 process.env.SERVICE = service;
@@ -140,9 +144,17 @@ describe("Command handler unit tests", () => {
             {
               action: "add-roles",
               domain: "principle",
+              service,
               root: principleRoot,
               payload: {
-                roles: [{ id: "some-other-role-id", root: "some-other-role-root", service, network }]
+                roles: [
+                  {
+                    id: "some-other-role-id",
+                    root: "some-other-role-root",
+                    service,
+                    network
+                  }
+                ]
               }
             }
           ]
@@ -313,6 +325,7 @@ describe("Command handler unit tests", () => {
             {
               action: "register",
               domain: "identity",
+              service,
               root: identityRoot,
               payload: {
                 phone: phoneHash,
@@ -323,9 +336,12 @@ describe("Command handler unit tests", () => {
             {
               action: "add-roles",
               domain: "principle",
+              service,
               root: principleRoot,
               payload: {
-                roles: [{ id: `IdentityAdmin`, root: identityRoot, service, network }]
+                roles: [
+                  { id: `IdentityAdmin`, root: identityRoot, service, network }
+                ]
               }
             }
           ]
@@ -398,6 +414,7 @@ describe("Command handler unit tests", () => {
             {
               action: "register",
               domain: "identity",
+              service,
               root: identityRoot,
               payload: {
                 phone: phoneHash,
@@ -408,9 +425,12 @@ describe("Command handler unit tests", () => {
             {
               action: "add-roles",
               domain: "principle",
+              service,
               root: sub,
               payload: {
-                roles: [{ id: "IdentityAdmin", root: identityRoot, service, network }]
+                roles: [
+                  { id: "IdentityAdmin", root: identityRoot, service, network }
+                ]
               }
             }
           ]

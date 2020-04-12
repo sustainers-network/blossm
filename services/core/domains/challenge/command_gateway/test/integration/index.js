@@ -1,7 +1,7 @@
 require("localenv");
 const { expect } = require("chai");
 const { string: stringDate } = require("@blossm/datetime");
-const { create, delete: del } = require("@blossm/gcp-pubsub");
+const { create, delete: del, exists } = require("@blossm/gcp-pubsub");
 const sms = require("@blossm/twilio-sms");
 const { get: secret } = require("@blossm/gcp-secret");
 const getToken = require("@blossm/get-token");
@@ -14,9 +14,22 @@ const url = `http://${process.env.MAIN_CONTAINER_NAME}`;
 
 const { testing } = require("../../config.json");
 
+const existingTopics = [];
 describe("Command gateway integration tests", () => {
-  before(async () => await Promise.all(testing.topics.map(t => create(t))));
-  after(async () => await Promise.all(testing.topics.map(t => del(t))));
+  before(async () => {
+    existingTopics.push(
+      ...testing.topics.filter(async t => {
+        return await exists(t);
+      })
+    );
+    await Promise.all(testing.topics.map(t => create(t)));
+  });
+  after(
+    async () =>
+      await Promise.all(
+        [...testing.topics].map(t => !existingTopics.includes(t) && del(t))
+      )
+  );
   it("should return successfully", async () => {
     const { token: anonymousToken } = await getToken({ phone, id });
     expect(anonymousToken).to.exist;
@@ -49,7 +62,6 @@ describe("Command gateway integration tests", () => {
 
     const code = message.body.substr(0, 6);
 
-    console.log({ ASDFASDFWEFF: token });
     const response1 = await request.post(`${url}/answer`, {
       body: {
         headers: {
@@ -64,7 +76,6 @@ describe("Command gateway integration tests", () => {
       }
     });
 
-    console.log({ response1 });
     expect(response1.statusCode).to.equal(204);
   });
 });

@@ -29,6 +29,7 @@ const getEventsForPermissionsMerge = async ({
     events: [
       {
         domain: "principle",
+        service: process.env.SERVICE,
         action: "add-roles",
         root: principle.root,
         payload: {
@@ -56,6 +57,7 @@ const getEventsForIdentityRegistering = async ({ subject, payload }) => {
       {
         action: "register",
         domain: "identity",
+        service: process.env.SERVICE,
         root: identityRoot,
         payload: {
           phone: hashedPhone,
@@ -66,6 +68,7 @@ const getEventsForIdentityRegistering = async ({ subject, payload }) => {
       {
         action: "add-roles",
         domain: "principle",
+        service: process.env.SERVICE,
         root: principleRoot,
         payload: {
           roles: [
@@ -84,7 +87,6 @@ const getEventsForIdentityRegistering = async ({ subject, payload }) => {
 };
 
 module.exports = async ({ payload, context, claims, aggregateFn }) => {
-  console.log({ service: process.env.SERVICE });
   // Check to see if there is an identity with the provided id.
   const [identity] = await deps
     .eventStore({
@@ -106,7 +108,7 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
         .eventStore({
           domain: "identity"
         })
-        .set({ context, claims, tokenFns:{ internal:  deps.gcpToken }})
+        .set({ context, claims, tokenFns: { internal: deps.gcpToken } })
         .query({ key: "principle.root", value: claims.sub });
 
       if (subjectIdentity)
