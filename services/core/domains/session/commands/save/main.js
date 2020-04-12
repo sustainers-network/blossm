@@ -132,6 +132,10 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
         payload
       });
 
+  //TODO
+  //eslint-disable-next-line no-console
+  console.log({ events, claims, principle, payload });
+
   const { tokens } = await deps
     .command({
       name: "issue",
@@ -139,10 +143,12 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
     })
     .set({
       context,
-      claims: {
-        ...claims,
-        sub: principle.root
-      },
+      claims,
+      // TODO safely remove
+      // claims: {
+      //   ...claims,
+      //   sub: principle.root
+      // },
       tokenFns: { internal: deps.gcpToken }
     })
     .issue(

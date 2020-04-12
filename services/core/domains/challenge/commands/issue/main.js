@@ -20,6 +20,9 @@ module.exports = async ({
   // `principle` is the principle to set as the subject of the session token.
   options: { events, principle } = {}
 }) => {
+  //TODO
+  //eslint-disable-next-line no-console
+  console.log({ events, payload, context, claims, principle });
   // Lazily load up the sms connection.
   if (!sms) {
     sms = deps.sms(

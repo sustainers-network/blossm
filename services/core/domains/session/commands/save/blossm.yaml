@@ -137,11 +137,13 @@ testing:
         phone: "+19195551177"
       claims:
         sub: some-other-principle-root
-      response:
-        tokens:
-          - network:
-            type: challenge
-            value:
+      code: 400
+      ## TODO remove
+      # response:
+      #   tokens:
+      #     - network:
+      #       type: challenge
+      #       value:
     - pre:
         - domain: principle
           service: core

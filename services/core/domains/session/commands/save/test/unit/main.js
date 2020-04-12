@@ -125,10 +125,12 @@ describe("Command handler unit tests", () => {
     });
     expect(anotherSetFake).to.have.been.calledWith({
       context,
-      claims: {
-        ...claims,
-        sub: principleRoot
-      },
+      claims,
+      // TODO safely remove
+      // claims: {
+      //   ...claims,
+      //   sub: principleRoot
+      // },
       tokenFns: { internal: deps.gcpToken }
     });
     expect(issueFake).to.have.been.calledWith(
@@ -232,10 +234,12 @@ describe("Command handler unit tests", () => {
     });
     expect(anotherSetFake).to.have.been.calledWith({
       context,
-      claims: {
-        ...claims,
-        sub: principleRoot
-      },
+      claims,
+      // TODO safely remove
+      // claims: {
+      //   ...claims,
+      //   sub: principleRoot
+      // },
       tokenFns: { internal: deps.gcpToken }
     });
     expect(issueFake).to.have.been.calledWith(
@@ -311,9 +315,11 @@ describe("Command handler unit tests", () => {
     });
     expect(anotherSetFake).to.have.been.calledWith({
       context,
-      claims: {
-        sub: principleRoot
-      },
+      claims: {},
+      //TODO safely remove
+      // claims: {
+      //   sub: principleRoot
+      // },
       tokenFns: { internal: deps.gcpToken }
     });
     expect(issueFake).to.have.been.calledWith(
