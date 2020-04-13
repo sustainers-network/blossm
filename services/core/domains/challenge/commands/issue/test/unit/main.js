@@ -35,7 +35,8 @@ const payload = {
   id
 };
 const domain = "some-domain";
-const context = { a: 1 };
+const contextIdentity = "some-context-identity";
+const context = { a: 1, identity: contextIdentity };
 const service = "some-service";
 const network = "some-network";
 const token = "some-token";
@@ -164,7 +165,8 @@ describe("Command handler unit tests", () => {
       payload: {
         context: {
           ...context,
-          challenge: { root, service, network }
+          challenge: { root, service, network },
+          identity: { root: identityRoot, service, network }
         }
       },
       signFn: signature
@@ -272,7 +274,8 @@ describe("Command handler unit tests", () => {
       payload: {
         context: {
           ...context,
-          challenge: { root, service, network }
+          challenge: { root, service, network },
+          identity: contextIdentity
         }
       },
       signFn: signature
@@ -523,7 +526,8 @@ describe("Command handler unit tests", () => {
       payload: {
         context: {
           c: 3,
-          challenge: { root, service, network }
+          challenge: { root, service, network },
+          identity: { root: identityRoot, service, network }
         }
       },
       signFn: signature

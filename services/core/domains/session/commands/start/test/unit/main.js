@@ -166,6 +166,73 @@ describe("Command handler unit tests", () => {
       signFn: signature
     });
   });
+  it("should return successfully with context on same network", async () => {
+    const signature = "some-signature";
+    const signFake = fake.returns(signature);
+    replace(deps, "sign", signFake);
+
+    const createJwtFake = fake.returns(token);
+    replace(deps, "createJwt", createJwtFake);
+
+    const root = "some-root";
+    const uuidFake = fake.returns(root);
+    replace(deps, "uuid", uuidFake);
+
+    const context = { network };
+    const result = await main({
+      payload,
+      context
+    });
+
+    expect(result).to.deep.equal({
+      events: [
+        {
+          payload: {
+            ...payload,
+            started: deps.stringDate()
+          },
+          action: "start",
+          root,
+          correctNumber: 0
+        }
+      ],
+      response: {
+        tokens: [{ network, type: "access", value: token }],
+        references: {
+          session: {
+            root,
+            service,
+            network
+          }
+        }
+      }
+    });
+    expect(signFake).to.have.been.calledWith({
+      ring: "jwt",
+      key: "access",
+      location: "global",
+      version: "1",
+      project
+    });
+    expect(createJwtFake).to.have.been.calledWith({
+      options: {
+        issuer: `${domain}.${service}.${network}/start`,
+        audience: [network],
+        expiresIn: 7776000000
+      },
+      payload: {
+        context: {
+          network,
+          session: {
+            root,
+            service,
+            network
+          }
+        }
+      },
+      signFn: signature
+    });
+  });
   it("should throw correctly", async () => {
     const errorMessage = "some-error";
     const uuidFake = fake.throws(errorMessage);

@@ -33,6 +33,7 @@ const context = {
   },
   session: { root: sessionRoot }
 };
+const newContext = "some-new-context";
 const service = "some-service";
 const network = "some-network";
 const tokens = "some-tokens";
@@ -58,7 +59,7 @@ describe("Command handler unit tests", () => {
       }
     });
 
-    const issueFake = fake.returns({ tokens });
+    const issueFake = fake.returns({ tokens, context: newContext });
     const setFake = fake.returns({
       issue: issueFake
     });
@@ -84,7 +85,7 @@ describe("Command handler unit tests", () => {
           correctNumber: 1
         }
       ],
-      response: { tokens }
+      response: { tokens, context: newContext }
     });
     expect(aggregateFake).to.have.been.calledWith(contextChallenge);
     expect(commandFake).to.have.been.calledWith({
@@ -117,15 +118,6 @@ describe("Command handler unit tests", () => {
         expires: deps.stringDate()
       }
     });
-
-    const issueFake = fake.returns({ tokens });
-    const setFake = fake.returns({
-      issue: issueFake
-    });
-    const commandFake = fake.returns({
-      set: setFake
-    });
-    replace(deps, "command", commandFake);
 
     const result = await main({
       payload,

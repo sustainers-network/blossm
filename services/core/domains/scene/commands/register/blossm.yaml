@@ -90,6 +90,7 @@ testing:
             root:
             service:
             network:
+        context:
     - pre:
         - domain: session
           service: core

@@ -71,11 +71,19 @@ testing:
         iss: some-iss
         aud: some-aud
         exp: 9999-12-31T00:00:00.000
+      context:
+        some: context
       response:
         tokens:
           - network:
             type: access
             value:
+        context:
+          some: context
+          principle:
+            root: some-principle-root
+            service: some-principle-service
+            network: some.principle-network
     - pre:
         - domain: session
           service: core

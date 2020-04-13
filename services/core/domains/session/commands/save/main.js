@@ -53,6 +53,11 @@ const getEventsForIdentityRegistering = async ({ subject, payload }) => {
   };
 
   return {
+    identityContext: {
+      root: identityRoot,
+      service: process.env.SERVICE,
+      network: process.env.NETWORK
+    },
     events: [
       {
         action: "register",
@@ -121,7 +126,7 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
   // If an identity is found, merge the roles given to the claims's subject
   // to the identity's principle.
   // If not found, register a new identity and set the principle to be the claims's subject.
-  const { events, principle } = identity
+  const { events, principle, identityContext } = identity
     ? await getEventsForPermissionsMerge({
         principle: identity.state.principle,
         claims,
@@ -142,13 +147,15 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
       domain: "challenge"
     })
     .set({
-      context,
+      context: {
+        ...context,
+        identity: identityContext || {
+          root: identity.headers.root,
+          service: process.env.SERVICE,
+          network: process.env.NETWORK
+        }
+      },
       claims,
-      // TODO safely remove
-      // claims: {
-      //   ...claims,
-      //   sub: principle.root
-      // },
       tokenFns: { internal: deps.gcpToken }
     })
     .issue(

@@ -12,6 +12,11 @@ module.exports = async ({ root, payload, context, claims, aggregateFn }) => {
   if (sessionAggregate.upgraded)
     throw deps.badRequestError.sessionAlreadyUpgraded();
 
+  const newContext = {
+    ...context,
+    principle: payload.principle
+  };
+
   // Create a new token inheriting from the current claims.
   const token = await deps.createJwt({
     options: {
@@ -21,14 +26,7 @@ module.exports = async ({ root, payload, context, claims, aggregateFn }) => {
       expiresIn: Date.parse(claims.exp) - deps.fineTimestamp()
     },
     payload: {
-      context: {
-        ...context,
-        principle: {
-          root: payload.principle.root,
-          service: process.env.SERVICE,
-          network: process.env.NETWORK
-        }
-      }
+      context: newContext
     },
     signFn: deps.sign({
       ring: "jwt",
@@ -66,7 +64,8 @@ module.exports = async ({ root, payload, context, claims, aggregateFn }) => {
       }
     ],
     response: {
-      tokens: [{ network: process.env.NETWORK, type: "access", value: token }]
+      tokens: [{ network: process.env.NETWORK, type: "access", value: token }],
+      context: newContext
     }
   };
 };

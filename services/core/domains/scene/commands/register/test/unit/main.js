@@ -41,7 +41,8 @@ describe("Command handler unit tests", () => {
     replace(deps, "uuid", uuidFake);
 
     const tokens = "some-tokens";
-    const issueFake = fake.returns({ tokens });
+    const newContext = "some-new-context";
+    const issueFake = fake.returns({ tokens, context: newContext });
     const setFake = fake.returns({
       issue: issueFake
     });
@@ -81,6 +82,7 @@ describe("Command handler unit tests", () => {
       ],
       response: {
         tokens,
+        context: newContext,
         references: {
           principle: {
             root: uuid,

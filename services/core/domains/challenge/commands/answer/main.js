@@ -33,7 +33,7 @@ module.exports = async ({ payload, context, aggregateFn }) => {
   if (challengeAggregate.claims.sub) return { events };
 
   // Upgrade the session with the principle specified in the challenge.
-  const { tokens } = await deps
+  const { tokens, context: newContext } = await deps
     .command({
       domain: "session",
       name: "upgrade"
@@ -50,5 +50,5 @@ module.exports = async ({ payload, context, aggregateFn }) => {
       { root: context.session.root }
     );
 
-  return { events, response: { tokens } };
+  return { events, response: { tokens, context: newContext } };
 };

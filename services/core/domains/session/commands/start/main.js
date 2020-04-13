@@ -14,7 +14,9 @@ module.exports = async ({ payload, context = {} }) => {
       issuer: `${process.env.DOMAIN}.${process.env.SERVICE}.${process.env.NETWORK}/start`,
       audience: [
         process.env.NETWORK,
-        ...(context.network ? [context.network] : [])
+        ...(context.network && context.network != process.env.NETWORK
+          ? [context.network]
+          : [])
       ],
       expiresIn: NINETY_DAYS
     },

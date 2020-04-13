@@ -7,10 +7,8 @@ module.exports = async ({ payload, context, claims }) => {
   // Register the scene.
   const {
     tokens,
-    references: {
-      principle,
-      scene: { root: sceneRoot }
-    }
+    context: newContext,
+    references: { principle, scene }
   } = await deps
     .command({
       name: "register",
@@ -33,6 +31,7 @@ module.exports = async ({ payload, context, claims }) => {
         network: principle.network,
         action: "add-roles",
         root: principle.root,
+        context: newContext,
         payload: {
           roles: [
             {
@@ -47,29 +46,23 @@ module.exports = async ({ payload, context, claims }) => {
       {
         action: "register",
         root: nodeRoot,
+        context: newContext,
         payload: {
           network: payload.network,
-          scene: {
-            root: sceneRoot,
-            service: "core",
-            network: process.env.NETWORK
-          }
+          scene
         }
       }
     ],
     response: {
       ...(tokens && { tokens }),
+      ...(newContext && { context: newContext }),
       references: {
         node: {
           root: nodeRoot,
           service: process.env.SERVICE,
           network: process.env.NETWORK
         },
-        scene: {
-          root: sceneRoot,
-          service: "core",
-          network: process.env.NETWORK
-        }
+        scene
       }
     }
   };

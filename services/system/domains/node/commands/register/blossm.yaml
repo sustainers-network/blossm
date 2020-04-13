@@ -64,6 +64,7 @@ testing:
           - network:
             type: access
             value:
+        context:
         references:
           node:
             root:

@@ -68,7 +68,7 @@ module.exports = async ({ payload, context, claims }) => {
   if (context.principle) return { events, response };
 
   // Upgrade the session for the principle.
-  const { tokens } = await deps
+  const { tokens, context: newContext } = await deps
     .command({
       domain: "session",
       name: "upgrade"
@@ -76,5 +76,5 @@ module.exports = async ({ payload, context, claims }) => {
     .set({ context, claims, tokenFns: { internal: deps.gcpToken } })
     .issue({ principle }, { root: context.session.root });
 
-  return { events, response: { ...response, tokens } };
+  return { events, response: { ...response, tokens, context: newContext } };
 };

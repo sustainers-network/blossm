@@ -34,7 +34,7 @@ module.exports = async ({
   // Check to see if the phone is recognized.
   // If identity and principle roots are passed in, use theme as the identity instead.
   const [identity] = principle
-    ? [{ state: { principle } }]
+    ? [{ headers: {}, state: { principle } }]
     : await deps
         .eventStore({ domain: "identity" })
         .set({ context, tokenFns: { internal: deps.gcpToken } })
@@ -68,6 +68,13 @@ module.exports = async ({
     payload: {
       context: {
         ...context,
+        identity: identity.headers.root
+          ? {
+              root: identity.headers.root,
+              service: process.env.SERVICE,
+              network: process.env.NETWORK
+            }
+          : context.identity,
         challenge: {
           root,
           service: process.env.SERVICE,

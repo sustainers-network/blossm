@@ -78,6 +78,11 @@ testing:
         phone: "(919) 555 1133"
       claims:
         sub: some-principle-root
+      context:
+        identity:
+          root: some-context-identity-root
+          service: some-context-identity-service
+          network: some-context-identity-network
       response:
         tokens:
           - network:
@@ -95,6 +100,11 @@ testing:
           network: some.principle-network
       payload:
         phone: "(919) 555 1133"
+      context:
+        identity:
+          root: some-context-identity-root
+          service: some-context-identity-service
+          network: some-context-identity-network
       claims:
         sub: some-whack-principle-root
       code: 400

@@ -97,6 +97,7 @@ testing:
           - network:
             type: access
             value:
+        context:
     - pre:
         - domain: challenge
           service: core

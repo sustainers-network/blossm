@@ -92,7 +92,17 @@ describe("Command handler unit tests", () => {
           payload: { roles: [{ id: "SessionAdmin", root, service, network }] }
         }
       ],
-      response: { tokens: [{ network, type: "access", value: token }] }
+      response: {
+        tokens: [{ network, type: "access", value: token }],
+        context: {
+          ...context,
+          principle: {
+            root: principleRoot,
+            service: principleService,
+            network: principleNetwork
+          }
+        }
+      }
     });
     expect(aggregateFake).to.have.been.calledWith(root);
     expect(signFake).to.have.been.calledWith({
@@ -114,8 +124,8 @@ describe("Command handler unit tests", () => {
           ...context,
           principle: {
             root: principleRoot,
-            service,
-            network
+            service: principleService,
+            network: principleNetwork
           }
         }
       },

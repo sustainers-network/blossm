@@ -25,8 +25,12 @@ const claims = {
 const principleRoot = "some-principle-root";
 const principleService = "some--principle-service";
 const principleNetwork = "some--principle-network";
+const identityRoot = "some-root";
 
 const identity = {
+  headers: {
+    root: identityRoot
+  },
   state: {
     principle: {
       root: principleRoot,
@@ -124,13 +128,15 @@ describe("Command handler unit tests", () => {
       domain: "challenge"
     });
     expect(anotherSetFake).to.have.been.calledWith({
-      context,
+      context: {
+        ...context,
+        identity: {
+          root: identityRoot,
+          service,
+          network
+        }
+      },
       claims,
-      // TODO safely remove
-      // claims: {
-      //   ...claims,
-      //   sub: principleRoot
-      // },
       tokenFns: { internal: deps.gcpToken }
     });
     expect(issueFake).to.have.been.calledWith(
@@ -233,13 +239,15 @@ describe("Command handler unit tests", () => {
       domain: "challenge"
     });
     expect(anotherSetFake).to.have.been.calledWith({
-      context,
+      context: {
+        ...context,
+        identity: {
+          root: identityRoot,
+          service,
+          network
+        }
+      },
       claims,
-      // TODO safely remove
-      // claims: {
-      //   ...claims,
-      //   sub: principleRoot
-      // },
       tokenFns: { internal: deps.gcpToken }
     });
     expect(issueFake).to.have.been.calledWith(
@@ -314,12 +322,15 @@ describe("Command handler unit tests", () => {
       domain: "challenge"
     });
     expect(anotherSetFake).to.have.been.calledWith({
-      context,
+      context: {
+        ...context,
+        identity: {
+          root: identityRoot,
+          service,
+          network
+        }
+      },
       claims: {},
-      //TODO safely remove
-      // claims: {
-      //   sub: principleRoot
-      // },
       tokenFns: { internal: deps.gcpToken }
     });
     expect(issueFake).to.have.been.calledWith(
@@ -407,7 +418,14 @@ describe("Command handler unit tests", () => {
       domain: "challenge"
     });
     expect(anotherSetFake).to.have.been.calledWith({
-      context,
+      context: {
+        ...context,
+        identity: {
+          root: identityRoot,
+          service,
+          network
+        }
+      },
       claims,
       tokenFns: { internal: deps.gcpToken }
     });

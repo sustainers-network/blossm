@@ -27,6 +27,8 @@ describe("Command handler unit tests", () => {
   it("should return successfully", async () => {
     const nodeRoot = "some-node-root";
     const sceneRoot = "some-scene-root";
+    const sceneService = "some-scene-service";
+    const sceneNetwork = "some-scene-network";
 
     const uuidFake = stub()
       .onFirstCall()
@@ -41,8 +43,10 @@ describe("Command handler unit tests", () => {
     const principleService = "some-principle-service";
     const principleNetwork = "some-principle-network";
 
+    const newContext = "some-new-context";
     const issueFake = fake.returns({
       tokens,
+      context: newContext,
       references: {
         principle: {
           root: principleRoot,
@@ -50,7 +54,9 @@ describe("Command handler unit tests", () => {
           network: principleNetwork
         },
         scene: {
-          root: sceneRoot
+          root: sceneRoot,
+          service: sceneService,
+          network: sceneNetwork
         }
       }
     });
@@ -70,6 +76,7 @@ describe("Command handler unit tests", () => {
           service: principleService,
           network: principleNetwork,
           action: "add-roles",
+          context: newContext,
           root: principleRoot,
           payload: {
             roles: [{ id: "NodeAdmin", root: nodeRoot, service, network }]
@@ -78,17 +85,27 @@ describe("Command handler unit tests", () => {
         {
           action: "register",
           root: nodeRoot,
+          context: newContext,
           payload: {
             network: payloadNetwork,
-            scene: { root: sceneRoot, service: "core", network }
+            scene: {
+              root: sceneRoot,
+              service: sceneService,
+              network: sceneNetwork
+            }
           }
         }
       ],
       response: {
         tokens,
+        context: newContext,
         references: {
           node: { root: nodeRoot, service, network },
-          scene: { root: sceneRoot, service: "core", network }
+          scene: {
+            root: sceneRoot,
+            service: sceneService,
+            network: sceneNetwork
+          }
         }
       }
     });
