@@ -4,7 +4,7 @@ service: system
 commands:
   - name: create
     subcontextKey: node
-    priviledges:
+    privileges:
       - create
 
 whitelist:

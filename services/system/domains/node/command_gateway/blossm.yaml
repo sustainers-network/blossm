@@ -3,7 +3,7 @@ service: system
 
 commands:
   - name: register
-    priviledges: none
+    privileges: none
 
 whitelist:
   - "127.0.0.1"

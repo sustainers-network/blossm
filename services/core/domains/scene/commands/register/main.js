@@ -10,7 +10,7 @@ module.exports = async ({ payload, context, claims }) => {
     network: process.env.NETWORK
   };
 
-  // Give the principle admin priviledges to this context.
+  // Give the principle admin privileges to this context.
   const events = [
     {
       domain: "principle",

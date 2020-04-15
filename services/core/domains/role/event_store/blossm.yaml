@@ -8,7 +8,7 @@ schema:
     type: String
     unique: true
   permissions:
-    - priviledge: String
+    - privilege: String
       domain: String
       service: String
 
@@ -31,7 +31,7 @@ testing:
         name: Some name
         id: some-id
         permissions:
-          - priviledge: some-priviledge
+          - privilege: some-privilege
             domain: some-permission-domain
             service: some-permission-service
     second:
@@ -39,14 +39,14 @@ testing:
       payload:
         description: "Some description"
         permissions:
-          - priviledge: some-other-priviledge
+          - privilege: some-other-privilege
             domain: some-other-permission-domain
             service: some-other-permission-service
     more:
       - action: remove-permissions
         payload:
           permissions:
-            - priviledge: some-other-priviledge
+            - privilege: some-other-privilege
               domain: some-permission-domain
               service: some-permission-service
 
@@ -57,7 +57,7 @@ testing:
             name: Some name
             id: some-id
             permissions:
-              - priviledge: some-priviledge
+              - privilege: some-privilege
                 domain: some-permission-domain
                 service: some-permission-service
     - action: add-permissions
@@ -66,43 +66,43 @@ testing:
             name: Some name
             id: some-id
             permissions:
-              - priviledge: some-priviledge
+              - privilege: some-privilege
                 domain: some-permission-domain
                 service: some-permission-service
           payload:
             description: Some description
             permissions:
-              - priviledge: some-priviledge
+              - privilege: some-privilege
                 domain: some-permission-domain
                 service: some-permission-service
-              - priviledge: some-other-priviledge
+              - privilege: some-other-privilege
                 domain: some-other-permission-domain
                 service: some-other-permission-service
           result:
             name: Some name
             id: some-id
             permissions:
-              - priviledge: some-priviledge
+              - privilege: some-privilege
                 domain: some-permission-domain
                 service: some-permission-service
-              - priviledge: some-other-priviledge
+              - privilege: some-other-privilege
                 domain: some-other-permission-domain
                 service: some-other-permission-service
         - state: {}
           payload:
             permissions:
-              - priviledge: some-priviledge
+              - privilege: some-privilege
                 domain: some-permission-domain
                 service: some-permission-service
-              - priviledge: some-other-priviledge
+              - privilege: some-other-privilege
                 domain: some-other-permission-domain
                 service: some-other-permission-service
           result:
             permissions:
-              - priviledge: some-priviledge
+              - privilege: some-privilege
                 domain: some-permission-domain
                 service: some-permission-service
-              - priviledge: some-other-priviledge
+              - privilege: some-other-privilege
                 domain: some-other-permission-domain
                 service: some-other-permission-service
     - action: remove-permissions
@@ -111,12 +111,12 @@ testing:
             name: Some name
             id: some-id
             permissions:
-              - priviledge: some-priviledge
+              - privilege: some-privilege
                 domain: some-permission-domain
                 service: some-permission-service
           payload:
             permissions:
-              - priviledge: some-priviledge
+              - privilege: some-privilege
                 domain: some-permission-domain
                 service: some-permission-service
           result:

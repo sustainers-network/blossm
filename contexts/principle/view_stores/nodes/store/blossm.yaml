@@ -1,6 +1,5 @@
 name: nodes
-domain: principle
-service: core
+context: principle
 
 schema:
   scene: String

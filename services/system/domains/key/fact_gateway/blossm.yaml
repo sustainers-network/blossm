@@ -4,7 +4,7 @@ service: system
 jobs:
   - name: state
     context: node
-    priviledges:
+    privileges:
       - read
 
 whitelist:

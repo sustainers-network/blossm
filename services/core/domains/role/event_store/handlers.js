@@ -15,18 +15,18 @@ module.exports = {
         difference(
           payload.permissions.map(
             permission =>
-              `${permission.service}:${permission.domain}:${permission.priviledge}`
+              `${permission.service}:${permission.domain}:${permission.privilege}`
           ),
           state.permissions.map(
             permission =>
-              `${permission.service}:${permission.domain}:${permission.priviledge}`
+              `${permission.service}:${permission.domain}:${permission.privilege}`
           )
         ).map(stringPermission => {
-          const [service, domain, priviledge] = stringPermission.split(":");
+          const [service, domain, privilege] = stringPermission.split(":");
           return {
             service,
             domain,
-            priviledge
+            privilege
           };
         })
       )
@@ -38,16 +38,16 @@ module.exports = {
       permissions: difference(
         state.permissions.map(
           permission =>
-            `${permission.service}:${permission.domain}:${permission.priviledge}`
+            `${permission.service}:${permission.domain}:${permission.privilege}`
         ),
         payload.permissions.map(
           permission =>
-            `${permission.service}:${permission.domain}:${permission.priviledge}`
+            `${permission.service}:${permission.domain}:${permission.privilege}`
         )
       ).map(stringPermission => {
-        const [service, domain, priviledge] = stringPermission.split(":");
+        const [service, domain, privilege] = stringPermission.split(":");
         return {
-          priviledge,
+          privilege,
           domain,
           service
         };

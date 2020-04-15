@@ -5,7 +5,7 @@ commands:
   - name: open
     basic: true
     context: node
-    priviledges:
+    privileges:
       - create
 
 whitelist:

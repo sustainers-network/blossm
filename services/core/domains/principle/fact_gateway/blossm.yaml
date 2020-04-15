@@ -3,7 +3,7 @@ service: core
 
 jobs:
   - name: roles
-    priviledges: none
+    privileges: none
 
 whitelist:
   - "127.0.0.1"
