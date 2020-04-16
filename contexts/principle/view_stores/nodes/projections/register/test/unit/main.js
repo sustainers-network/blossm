@@ -20,16 +20,17 @@ describe("Event handler unit tests", () => {
       }
     };
 
-    const headers = {
-      created: "some-created"
-    };
+    const root = "some-root";
+    const headers = { root };
 
     const response = await main({ payload, headers });
 
     expect(response).to.deep.equal({
-      scene: "some-scene-root",
-      network: "some.network",
-      created: "some-created"
+      body: {
+        scene: "some-scene-root",
+        network: "some.network"
+      },
+      root
     });
   });
 });

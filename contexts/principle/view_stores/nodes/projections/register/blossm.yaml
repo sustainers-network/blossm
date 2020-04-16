@@ -21,6 +21,8 @@ testing:
       context:
         principle:
           root: some-principle-root
+          service: some-principle-service
+          network: some-principle-network
       payload:
         network: some.network
         scene:
@@ -28,12 +30,11 @@ testing:
           service: some-scene-service
           network: some-scene.network
       result:
-        root: some-principle-root
+        query: {}
         value:
-          root: some-principle-root
+          root: some-node-root
           scene: some-scene-root
           network: some.network
-          created:
 
 #don't change
 procedure: projection

@@ -1,4 +1,4 @@
-jobs:
+facts:
   - name: public-key
     protection: none
 

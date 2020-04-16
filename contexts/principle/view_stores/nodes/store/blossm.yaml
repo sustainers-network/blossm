@@ -15,33 +15,30 @@ devDependencies:
 
 testing:
   examples:
-    id:
+    query:
       root: some-principle
       first:
-        - put:
-            scene: some-scene
-            network: some.network
-          get:
-            scene: some-scene
-            root: some-principle
-            network: some.network
+        put:
+          scene: some-scene
+          network: some.network
+        get:
+          scene: some-scene
+          root: some-principle
+          network: some.network
       second:
-        - put:
-            scene: some-other-scene
-            network: some.other-network
-          get:
-            scene: some-other-scene
-            root: some-principle
-            network: some.other-network
+        put:
+          scene: some-other-scene
+          network: some.other-network
+        get:
+          scene: some-other-scene
+          root: some-principle
+          network: some.other-network
     index:
       put:
         network: some.domain
         scene: some-scene
-      context:
-        principle: some-principle
       query: {}
       get:
-        root: some-principle
         network: some.domain
         scene: some-scene
     stream:
@@ -59,9 +56,6 @@ testing:
         get:
           network: some.other-domain
           scene: some-other-scene
-          root: some-principle
-      context:
-        principle: some-principle
 
 #don't change
 procedure: view-store
