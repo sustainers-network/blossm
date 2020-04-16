@@ -1,0 +1,91 @@
+name: permissions
+domain: role
+service: core
+
+dependencies:
+  "@blossm/event-store-rpc": "*"
+  "@blossm/gcp-token": "*"
+  "@blossm/errors": "*"
+
+devDependencies:
+  "mocha": "^7.1.1"
+  "chai": "^4.2.0"
+  "sinon": "^7.3.2"
+  "sinon-chai": "^3.5.0"
+  "chai-datetime": "^1.5.0"
+
+testing:
+  dependencies:
+    - domain: role
+      procedure: event-store
+      service: core
+
+  steps:
+    - pre:
+        - domain: role
+          service: core
+          root: some-root
+          action: create
+          payload:
+            name: Some role name
+            description: Some description
+            network: some.network
+            id: some-id
+            unique: some.network_some-id
+            permissions:
+              - privilege: some-priviledge
+                domain: some-domain
+                service: some-service
+      context:
+        network: some.network
+      query:
+        id: some-id
+      response:
+        - privilege: some-priviledge
+          domain: some-domain
+          service: some-service
+    # Should return empty if network not found
+    - pre:
+        - domain: role
+          service: core
+          root: some-root
+          action: create
+          payload:
+            name: Some role name
+            description: Some description
+            network: some.other-network
+            id: some-id
+            unique: some.other-network_some-id
+            permissions:
+              - privilege: some-priviledge
+                domain: some-domain
+                service: some-service
+      context:
+        network: some.wrong-network
+      query:
+        id: some-id
+      code: 400
+    # Should return empty if id not found
+    - pre:
+        - domain: role
+          service: core
+          root: some-root
+          action: create
+          payload:
+            name: Some role name
+            description: Some description
+            network: yet.another-network
+            id: some-id
+            unique: yet.another-network_some-id
+            permissions:
+              - privilege: some-priviledge
+                domain: some-domain
+                service: some-service
+      context:
+        network: yet.another-network
+      query:
+        id: some-other-id
+      code: 400
+
+#don't change
+procedure: fact

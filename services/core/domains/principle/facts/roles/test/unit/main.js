@@ -52,37 +52,4 @@ describe("Fact unit tests", () => {
     expect(aggregateFake).to.have.been.calledWith(root);
     expect(result).to.deep.equal([role]);
   });
-  it("should throw correctly if aggregate not found", async () => {
-    const network = "some-network";
-    const root = "some-root";
-
-    const aggregateFake = fake();
-    const setFake = fake.returns({
-      aggregate: aggregateFake,
-    });
-    const eventStoreFake = fake.returns({
-      set: setFake,
-    });
-    replace(deps, "eventStore", eventStoreFake);
-    const context = {
-      network,
-    };
-
-    const error = "some-error";
-    const messageFake = fake.returns(error);
-    replace(deps, "badRequestError", {
-      message: messageFake,
-    });
-    try {
-      await main({ context, root });
-
-      //shouldn't get called
-      expect(1).to.equal(2);
-    } catch (err) {
-      expect(messageFake).to.have.been.calledWith(
-        "This principle doesn't exist."
-      );
-      expect(err).to.equal(error);
-    }
-  });
 });

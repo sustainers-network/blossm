@@ -4,7 +4,10 @@ service: core
 schema:
   name: String
   description: String
-  id:
+  network: String
+  id: String
+  # unique is network + id
+  unique:
     type: String
     unique: true
   permissions:
@@ -13,7 +16,7 @@ schema:
       service: String
 
 indexes:
-  - id
+  - network
 
 actions:
   - create
@@ -29,7 +32,9 @@ testing:
       action: create
       payload:
         name: Some name
+        network: some.network
         id: some-id
+        unique: some.network_some-id
         permissions:
           - privilege: some-privilege
             domain: some-permission-domain
@@ -55,7 +60,9 @@ testing:
       examples:
         - payload:
             name: Some name
+            network: some.network
             id: some-id
+            unique: some.network_some-id
             permissions:
               - privilege: some-privilege
                 domain: some-permission-domain
@@ -64,7 +71,9 @@ testing:
       examples:
         - state:
             name: Some name
+            network: some.network
             id: some-id
+            unique: some.network_some-id
             permissions:
               - privilege: some-privilege
                 domain: some-permission-domain
@@ -80,7 +89,9 @@ testing:
                 service: some-other-permission-service
           result:
             name: Some name
+            network: some.network
             id: some-id
+            unique: some.network_some-id
             permissions:
               - privilege: some-privilege
                 domain: some-permission-domain
@@ -109,7 +120,9 @@ testing:
       examples:
         - state:
             name: Some name
+            network: some.network
             id: some-id
+            unique: some.network_some-id
             permissions:
               - privilege: some-privilege
                 domain: some-permission-domain
@@ -121,7 +134,9 @@ testing:
                 service: some-permission-service
           result:
             name: Some name
+            network: some.network
             id: some-id
+            unique: some.network_some-id
             permissions: []
 
 #don't change

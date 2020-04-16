@@ -1,0 +1,51 @@
+name: terminated
+domain: session
+service: core
+
+dependencies:
+  "@blossm/event-store-rpc": "*"
+  "@blossm/gcp-token": "*"
+
+devDependencies:
+  "mocha": "^7.1.1"
+  "chai": "^4.2.0"
+  "sinon": "^7.3.2"
+  "sinon-chai": "^3.5.0"
+  "chai-datetime": "^1.5.0"
+  "@blossm/request": "*"
+
+testing:
+  dependencies:
+    - domain: session
+      procedure: event-store
+      service: core
+
+  steps:
+    - pre:
+        - domain: session
+          service: core
+          root: some-session-root
+          action: terminate
+          payload:
+            terminated: 2020-01-03T00:02:12.000Z
+      context:
+        session:
+          root: some-session-root
+      response: true
+    - pre:
+        - domain: session
+          service: core
+          root: some-other-session-root
+          action: start
+          payload: {}
+      context:
+        session:
+          root: some-other-session-root
+      response: false
+    - context:
+        session:
+          root: some-missing-session-root
+      code: 404
+
+#don't change
+procedure: fact
