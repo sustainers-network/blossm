@@ -16,8 +16,8 @@ describe("Event handler unit tests", () => {
       scene: {
         root: "some-scene-root",
         service: "some-scene-service",
-        network: "some-scene.network"
-      }
+        network: "some-scene.network",
+      },
     };
 
     const root = "some-root";
@@ -28,9 +28,9 @@ describe("Event handler unit tests", () => {
     expect(response).to.deep.equal({
       body: {
         scene: "some-scene-root",
-        network: "some.network"
+        network: "some.network",
       },
-      root
+      root,
     });
   });
 });

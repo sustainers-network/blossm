@@ -8,19 +8,19 @@ module.exports = async ({ payload, context, claims }) => {
   const {
     tokens,
     context: newContext,
-    references: { principle, scene }
+    references: { principle, scene },
   } = await deps
     .command({
       name: "register",
       domain: "scene",
-      service: "core"
+      service: "core",
     })
     .set({ context, claims, tokenFns: { internal: deps.gcpToken } })
     .issue({
       root: nodeRoot,
       domain: process.env.DOMAIN,
       service: process.env.SERVICE,
-      network: process.env.NETWORK
+      network: process.env.NETWORK,
     });
 
   return {
@@ -38,10 +38,10 @@ module.exports = async ({ payload, context, claims }) => {
               id: "NodeAdmin",
               root: nodeRoot,
               service: process.env.SERVICE,
-              network: process.env.NETWORK
-            }
-          ]
-        }
+              network: process.env.NETWORK,
+            },
+          ],
+        },
       },
       {
         action: "register",
@@ -49,9 +49,9 @@ module.exports = async ({ payload, context, claims }) => {
         context: newContext,
         payload: {
           network: payload.network,
-          scene
-        }
-      }
+          scene,
+        },
+      },
     ],
     response: {
       ...(tokens && { tokens }),
@@ -60,10 +60,10 @@ module.exports = async ({ payload, context, claims }) => {
         node: {
           root: nodeRoot,
           service: process.env.SERVICE,
-          network: process.env.NETWORK
+          network: process.env.NETWORK,
         },
-        scene
-      }
-    }
+        scene,
+      },
+    },
   };
 };

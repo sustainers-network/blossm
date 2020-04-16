@@ -5,18 +5,18 @@ module.exports = async ({ payload, root, context }) => {
         action: "add-roles",
         payload: {
           roles: [
-            ...payload.roles.map(role => {
+            ...payload.roles.map((role) => {
               return {
                 id: role.id,
                 root: role.root,
                 service: role.service,
-                network: context.network
+                network: context.network,
               };
-            })
-          ]
+            }),
+          ],
         },
-        root
-      }
-    ]
+        root,
+      },
+    ],
   };
 };

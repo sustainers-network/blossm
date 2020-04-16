@@ -3,7 +3,7 @@ const { sign } = require("@blossm/gcp-kms");
 const {
   fineTimestamp,
   stringFromDate,
-  string: stringDate
+  string: stringDate,
 } = require("@blossm/datetime");
 const { badRequest, unauthorized } = require("@blossm/errors");
 

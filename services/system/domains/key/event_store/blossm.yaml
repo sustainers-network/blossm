@@ -4,7 +4,7 @@ service: system
 schema:
   name: String
   network: String
-  node:
+  scene:
     root: String
     service: String
     network: String
@@ -24,10 +24,10 @@ testing:
       payload:
         name: some-name
         network: some.network
-        node:
-          root: some-node-root
-          service: some-node-service
-          network: some.node-network
+        scene:
+          root: some-scene-root
+          service: some-scene-service
+          network: some.scene-network
         principle:
           root: some-principle-root
           service: some-principle-service
@@ -38,10 +38,10 @@ testing:
       payload:
         name: some-other-name
         network: some.other-network
-        node:
-          root: some-other-node-root
-          service: some-other-node-service
-          network: some.other-node-network
+        scene:
+          root: some-other-scene-root
+          service: some-other-scene-service
+          network: some.other-scene-network
         principle:
           root: some-other-principle-root
           service: some-other-principle-service
@@ -54,10 +54,10 @@ testing:
         - state:
             name: some-name
             network: some.network
-            node:
-              root: some-node-root
-              service: some-node-service
-              network: some.node-network
+            scene:
+              root: some-scene-root
+              service: some-scene-service
+              network: some.scene-network
             principle:
               root: some-principle-root
               service: some-principle-service
@@ -66,10 +66,10 @@ testing:
           payload:
             name: some-other-name
             network: some.other-network
-            node:
-              root: some-other-node-root
-              service: some-other-node-service
-              network: some.other-node-network
+            scene:
+              root: some-other-scene-root
+              service: some-other-scene-service
+              network: some.other-scene-network
             principle:
               root: some-other-principle-root
               service: some-other-principle-service
@@ -78,10 +78,10 @@ testing:
           result:
             name: some-other-name
             network: some.other-network
-            node:
-              root: some-other-node-root
-              service: some-other-node-service
-              network: some.other-node-network
+            scene:
+              root: some-other-scene-root
+              service: some-other-scene-service
+              network: some.other-scene-network
             principle:
               root: some-other-principle-root
               service: some-other-principle-service

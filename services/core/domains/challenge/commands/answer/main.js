@@ -22,11 +22,11 @@ module.exports = async ({ payload, context, aggregateFn }) => {
       root,
       action: "answer",
       payload: {
-        answered: deps.stringDate()
+        answered: deps.stringDate(),
       },
-      correctNumber: 1
+      correctNumber: 1,
     },
-    ...(challengeAggregate.events || [])
+    ...(challengeAggregate.events || []),
   ];
 
   // If there's already a subject associated with this session, no need to upgrade the session.
@@ -36,16 +36,16 @@ module.exports = async ({ payload, context, aggregateFn }) => {
   const { tokens, context: newContext } = await deps
     .command({
       domain: "session",
-      name: "upgrade"
+      name: "upgrade",
     })
     .set({
       context,
       claims: challengeAggregate.claims,
-      tokenFns: { internal: deps.gcpToken }
+      tokenFns: { internal: deps.gcpToken },
     })
     .issue(
       {
-        principle: challengeAggregate.principle
+        principle: challengeAggregate.principle,
       },
       { root: context.session.root }
     );

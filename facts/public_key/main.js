@@ -2,7 +2,7 @@ const kms = require("@google-cloud/kms");
 
 let cache;
 
-const standardizedAlgorithm = algorithm => {
+const standardizedAlgorithm = (algorithm) => {
   switch (algorithm) {
     case "RSA_SIGN_PSS_2048_SHA256":
     case "RSA_SIGN_PSS_3072_SHA256":
@@ -18,9 +18,10 @@ const standardizedAlgorithm = algorithm => {
       return "ES256";
     case "EC_SIGN_P384_SHA384":
       return "ES384";
-    default: return false
+    default:
+      return false;
   }
-}
+};
 module.exports = async () => {
   if (cache) return cache;
   //eslint-disable-next-line
@@ -36,20 +37,20 @@ module.exports = async () => {
     "global",
     "jwt",
     "access",
-    "1",
+    "1"
   );
 
   //eslint-disable-next-line
   console.log({ versionPath });
 
   const [{ pem: newKey, algorithm: newAlgorithm }] = await client.getPublicKey({
-    name: versionPath
+    name: versionPath,
   });
 
   cache = {
     key: newKey,
-    algorithm: standardizedAlgorithm(newAlgorithm)
-  }
+    algorithm: standardizedAlgorithm(newAlgorithm),
+  };
   //eslint-disable-next-line
   console.log({ cache });
   return cache;

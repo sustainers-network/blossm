@@ -1,5 +1,4 @@
-const { expect } = require("chai")
-  .use(require("sinon-chai"));
+const { expect } = require("chai").use(require("sinon-chai"));
 const { restore, replace, fake } = require("sinon");
 
 const main = require("../../main");
@@ -21,30 +20,32 @@ describe("Fact unit tests", () => {
         secret,
         node,
         principle,
-        network
-      }
+        network,
+      },
     };
     const aggregateFake = fake.returns(aggregate);
     const setFake = fake.returns({
-      aggregate: aggregateFake
-    })
+      aggregate: aggregateFake,
+    });
     const eventStoreFake = fake.returns({
-      set: setFake
-    })
+      set: setFake,
+    });
     replace(deps, "eventStore", eventStoreFake);
     const result = await main({ root });
     expect(eventStoreFake).to.have.been.calledWith({
       domain: "key",
-      service: "system"
+      service: "system",
     });
-    expect(setFake).to.have.been.calledWith({ tokenFns: { internal: deps.gcpToken }});
+    expect(setFake).to.have.been.calledWith({
+      tokenFns: { internal: deps.gcpToken },
+    });
     expect(aggregateFake).to.have.been.calledWith(root);
     expect(result).to.deep.equal({
       root,
       secret,
       node,
       principle,
-      network
+      network,
     });
   });
   it("should return an empty object if not found", async () => {
@@ -55,11 +56,11 @@ describe("Fact unit tests", () => {
     const error = new Error(errorMessage);
     const aggregateFake = fake.rejects(error);
     const setFake = fake.returns({
-      aggregate: aggregateFake
-    })
+      aggregate: aggregateFake,
+    });
     const eventStoreFake = fake.returns({
-      set: setFake
-    })
+      set: setFake,
+    });
     replace(deps, "eventStore", eventStoreFake);
 
     try {

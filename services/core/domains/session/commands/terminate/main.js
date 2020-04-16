@@ -10,7 +10,7 @@ module.exports = async ({ root, aggregateFn }) => {
 
   return {
     events: [
-      { root, action: "terminate", payload: { terminated: deps.stringDate() } }
-    ]
+      { root, action: "terminate", payload: { terminated: deps.stringDate() } },
+    ],
   };
 };

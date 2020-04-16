@@ -19,19 +19,19 @@ const challenge = {
   claims: {
     exp,
     iss,
-    aud
-  }
+    aud,
+  },
 };
 const payload = {
-  code
+  code,
 };
 const contextChallenge = "some-challenge-context";
 const sessionRoot = "some-session-root";
 const context = {
   challenge: {
-    root: contextChallenge
+    root: contextChallenge,
   },
-  session: { root: sessionRoot }
+  session: { root: sessionRoot },
 };
 const newContext = "some-new-context";
 const service = "some-service";
@@ -55,23 +55,23 @@ describe("Command handler unit tests", () => {
     const aggregateFake = fake.returns({
       aggregate: {
         ...challenge,
-        expires: deps.stringDate()
-      }
+        expires: deps.stringDate(),
+      },
     });
 
     const issueFake = fake.returns({ tokens, context: newContext });
     const setFake = fake.returns({
-      issue: issueFake
+      issue: issueFake,
     });
     const commandFake = fake.returns({
-      set: setFake
+      set: setFake,
     });
     replace(deps, "command", commandFake);
 
     const result = await main({
       payload,
       context,
-      aggregateFn: aggregateFake
+      aggregateFn: aggregateFake,
     });
 
     expect(result).to.deep.equal({
@@ -79,31 +79,31 @@ describe("Command handler unit tests", () => {
         {
           action: "answer",
           payload: {
-            answered: deps.stringDate()
+            answered: deps.stringDate(),
           },
           root: contextChallenge,
-          correctNumber: 1
-        }
+          correctNumber: 1,
+        },
       ],
-      response: { tokens, context: newContext }
+      response: { tokens, context: newContext },
     });
     expect(aggregateFake).to.have.been.calledWith(contextChallenge);
     expect(commandFake).to.have.been.calledWith({
       domain: "session",
-      name: "upgrade"
+      name: "upgrade",
     });
     expect(setFake).to.have.been.calledWith({
       context,
       claims: {
         iss,
         exp,
-        aud
+        aud,
       },
-      tokenFns: { internal: deps.gcpToken }
+      tokenFns: { internal: deps.gcpToken },
     });
     expect(issueFake).to.have.been.calledWith(
       {
-        principle: challengePrinciple
+        principle: challengePrinciple,
       },
       { root: sessionRoot }
     );
@@ -113,16 +113,16 @@ describe("Command handler unit tests", () => {
       aggregate: {
         ...challenge,
         claims: {
-          sub: "some-sub"
+          sub: "some-sub",
         },
-        expires: deps.stringDate()
-      }
+        expires: deps.stringDate(),
+      },
     });
 
     const result = await main({
       payload,
       context,
-      aggregateFn: aggregateFake
+      aggregateFn: aggregateFake,
     });
 
     expect(result).to.deep.equal({
@@ -130,12 +130,12 @@ describe("Command handler unit tests", () => {
         {
           action: "answer",
           payload: {
-            answered: deps.stringDate()
+            answered: deps.stringDate(),
           },
           root: contextChallenge,
-          correctNumber: 1
-        }
-      ]
+          correctNumber: 1,
+        },
+      ],
     });
   });
   it("should throw correctly", async () => {
@@ -154,14 +154,14 @@ describe("Command handler unit tests", () => {
       aggregate: {
         ...challenge,
         code: "bogus",
-        expires: deps.stringDate()
-      }
+        expires: deps.stringDate(),
+      },
     });
 
     const error = "some-error";
     const wrongCodeFake = fake.returns(error);
     replace(deps, "invalidArgumentError", {
-      wrongCode: wrongCodeFake
+      wrongCode: wrongCodeFake,
     });
 
     try {
@@ -176,25 +176,21 @@ describe("Command handler unit tests", () => {
     const aggregateFake = fake.returns({
       aggregate: {
         ...challenge,
-        expires: deps
-          .moment()
-          .subtract(1, "s")
-          .toDate()
-          .toISOString()
-      }
+        expires: deps.moment().subtract(1, "s").toDate().toISOString(),
+      },
     });
 
     const error = "some-error";
     const codeExpiredFake = fake.returns(error);
     replace(deps, "invalidArgumentError", {
-      codeExpired: codeExpiredFake
+      codeExpired: codeExpiredFake,
     });
 
     try {
       await main({
         payload,
         context,
-        aggregateFn: aggregateFake
+        aggregateFn: aggregateFake,
       });
       //shouldn't get called
       expect(2).to.equal(3);

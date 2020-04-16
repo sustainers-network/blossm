@@ -19,7 +19,7 @@ const network = "some-network";
 
 const sub = "some-sub";
 const claims = {
-  sub
+  sub,
 };
 
 const principleRoot = "some-principle-root";
@@ -29,23 +29,28 @@ const identityRoot = "some-root";
 
 const identity = {
   headers: {
-    root: identityRoot
+    root: identityRoot,
   },
   state: {
     principle: {
       root: principleRoot,
       service: principleService,
-      network: principleNetwork
-    }
-  }
+      network: principleNetwork,
+    },
+  },
 };
 const principleAggregate = {
-  roles: [{ id: "some-role-id", root: "some-role-root", service, network }]
+  roles: [{ id: "some-role-id", root: "some-role-root", service, network }],
 };
 const sessionPrincipleAggregate = {
   roles: [
-    { id: "some-other-role-id", root: "some-other-role-root", service, network }
-  ]
+    {
+      id: "some-other-role-id",
+      root: "some-other-role-root",
+      service,
+      network,
+    },
+  ],
 };
 
 process.env.SERVICE = service;
@@ -63,15 +68,15 @@ describe("Command handler unit tests", () => {
     const queryFake = fake.returns([identity]);
     const otherQueryFake = fake.returns([]);
     const setFake = fake.returns({
-      query: queryFake
+      query: queryFake,
     });
     const otherSetFake = fake.returns({
-      query: otherQueryFake
+      query: otherQueryFake,
     });
     const eventStoreFake = stub()
       .onFirstCall()
       .returns({
-        set: setFake
+        set: setFake,
       })
       .onSecondCall()
       .returns({ set: otherSetFake });
@@ -80,19 +85,19 @@ describe("Command handler unit tests", () => {
     const aggregateFake = stub()
       .onFirstCall()
       .returns({
-        aggregate: principleAggregate
+        aggregate: principleAggregate,
       })
       .onSecondCall()
       .returns({
-        aggregate: sessionPrincipleAggregate
+        aggregate: sessionPrincipleAggregate,
       });
 
     const issueFake = fake.returns({ tokens });
     const anotherSetFake = fake.returns({
-      issue: issueFake
+      issue: issueFake,
     });
     const commandFake = fake.returns({
-      set: anotherSetFake
+      set: anotherSetFake,
     });
 
     replace(deps, "command", commandFake);
@@ -103,29 +108,29 @@ describe("Command handler unit tests", () => {
       payload,
       context,
       claims,
-      aggregateFn: aggregateFake
+      aggregateFn: aggregateFake,
     });
 
     expect(result).to.deep.equal({
-      response: { tokens }
+      response: { tokens },
     });
     expect(eventStoreFake).to.have.been.calledWith({ domain: "identity" });
     expect(setFake).to.have.been.calledWith({
       context,
       claims,
-      tokenFns: { internal: deps.gcpToken }
+      tokenFns: { internal: deps.gcpToken },
     });
     expect(queryFake).to.have.been.calledWith({ key: "id", value: id });
     expect(aggregateFake).to.have.been.calledWith(principleRoot, {
-      domain: "principle"
+      domain: "principle",
     });
     expect(aggregateFake).to.have.been.calledWith(sub, {
-      domain: "principle"
+      domain: "principle",
     });
     expect(aggregateFake).to.have.been.calledTwice;
     expect(commandFake).to.have.been.calledWith({
       name: "issue",
-      domain: "challenge"
+      domain: "challenge",
     });
     expect(anotherSetFake).to.have.been.calledWith({
       context: {
@@ -133,11 +138,11 @@ describe("Command handler unit tests", () => {
         identity: {
           root: identityRoot,
           service,
-          network
-        }
+          network,
+        },
       },
       claims,
-      tokenFns: { internal: deps.gcpToken }
+      tokenFns: { internal: deps.gcpToken },
     });
     expect(issueFake).to.have.been.calledWith(
       { id, phone },
@@ -146,7 +151,7 @@ describe("Command handler unit tests", () => {
           principle: {
             root: principleRoot,
             service: principleService,
-            network: principleNetwork
+            network: principleNetwork,
           },
           events: [
             {
@@ -160,13 +165,13 @@ describe("Command handler unit tests", () => {
                     id: "some-other-role-id",
                     root: "some-other-role-root",
                     service,
-                    network
-                  }
-                ]
-              }
-            }
-          ]
-        }
+                    network,
+                  },
+                ],
+              },
+            },
+          ],
+        },
       }
     );
   });
@@ -174,15 +179,15 @@ describe("Command handler unit tests", () => {
     const queryFake = fake.returns([identity]);
     const otherQueryFake = fake.returns([]);
     const setFake = fake.returns({
-      query: queryFake
+      query: queryFake,
     });
     const otherSetFake = fake.returns({
-      query: otherQueryFake
+      query: otherQueryFake,
     });
     const eventStoreFake = stub()
       .onFirstCall()
       .returns({
-        set: setFake
+        set: setFake,
       })
       .onSecondCall()
       .returns({ set: otherSetFake });
@@ -191,19 +196,19 @@ describe("Command handler unit tests", () => {
     const aggregateFake = stub()
       .onFirstCall()
       .returns({
-        aggregate: principleAggregate
+        aggregate: principleAggregate,
       })
       .onSecondCall()
       .returns({
-        aggregate: principleAggregate
+        aggregate: principleAggregate,
       });
 
     const issueFake = fake.returns({ tokens });
     const anotherSetFake = fake.returns({
-      issue: issueFake
+      issue: issueFake,
     });
     const commandFake = fake.returns({
-      set: anotherSetFake
+      set: anotherSetFake,
     });
 
     replace(deps, "command", commandFake);
@@ -214,29 +219,29 @@ describe("Command handler unit tests", () => {
       payload,
       context,
       claims,
-      aggregateFn: aggregateFake
+      aggregateFn: aggregateFake,
     });
 
     expect(result).to.deep.equal({
-      response: { tokens }
+      response: { tokens },
     });
     expect(eventStoreFake).to.have.been.calledWith({ domain: "identity" });
     expect(setFake).to.have.been.calledWith({
       context,
       claims,
-      tokenFns: { internal: deps.gcpToken }
+      tokenFns: { internal: deps.gcpToken },
     });
     expect(queryFake).to.have.been.calledWith({ key: "id", value: id });
     expect(aggregateFake).to.have.been.calledWith(principleRoot, {
-      domain: "principle"
+      domain: "principle",
     });
     expect(aggregateFake).to.have.been.calledWith(sub, {
-      domain: "principle"
+      domain: "principle",
     });
     expect(aggregateFake).to.have.been.calledTwice;
     expect(commandFake).to.have.been.calledWith({
       name: "issue",
-      domain: "challenge"
+      domain: "challenge",
     });
     expect(anotherSetFake).to.have.been.calledWith({
       context: {
@@ -244,11 +249,11 @@ describe("Command handler unit tests", () => {
         identity: {
           root: identityRoot,
           service,
-          network
-        }
+          network,
+        },
       },
       claims,
-      tokenFns: { internal: deps.gcpToken }
+      tokenFns: { internal: deps.gcpToken },
     });
     expect(issueFake).to.have.been.calledWith(
       { phone, id },
@@ -257,20 +262,20 @@ describe("Command handler unit tests", () => {
           principle: {
             root: principleRoot,
             service: principleService,
-            network: principleNetwork
+            network: principleNetwork,
           },
-          events: []
-        }
+          events: [],
+        },
       }
     );
   });
   it("should return successfully if principle not found with no subject", async () => {
     const queryFake = fake.returns([]);
     const setFake = fake.returns({
-      query: queryFake
+      query: queryFake,
     });
     const eventStoreFake = fake.returns({
-      set: setFake
+      set: setFake,
     });
     replace(deps, "eventStore", eventStoreFake);
 
@@ -290,10 +295,10 @@ describe("Command handler unit tests", () => {
 
     const issueFake = fake.returns({ tokens });
     const anotherSetFake = fake.returns({
-      issue: issueFake
+      issue: issueFake,
     });
     const commandFake = fake.returns({
-      set: anotherSetFake
+      set: anotherSetFake,
     });
 
     replace(deps, "command", commandFake);
@@ -303,23 +308,23 @@ describe("Command handler unit tests", () => {
     const result = await main({
       payload,
       context,
-      claims: {}
+      claims: {},
     });
 
     expect(result).to.deep.equal({
-      response: { tokens }
+      response: { tokens },
     });
     expect(eventStoreFake).to.have.been.calledWith({ domain: "identity" });
     expect(setFake).to.have.been.calledWith({
       context,
       claims: {},
-      tokenFns: { internal: deps.gcpToken }
+      tokenFns: { internal: deps.gcpToken },
     });
     expect(queryFake).to.have.been.calledWith({ key: "id", value: id });
     expect(hashFake).to.have.been.calledWith(phone);
     expect(commandFake).to.have.been.calledWith({
       name: "issue",
-      domain: "challenge"
+      domain: "challenge",
     });
     expect(anotherSetFake).to.have.been.calledWith({
       context: {
@@ -327,11 +332,11 @@ describe("Command handler unit tests", () => {
         identity: {
           root: identityRoot,
           service,
-          network
-        }
+          network,
+        },
       },
       claims: {},
-      tokenFns: { internal: deps.gcpToken }
+      tokenFns: { internal: deps.gcpToken },
     });
     expect(issueFake).to.have.been.calledWith(
       { id, phone },
@@ -347,8 +352,8 @@ describe("Command handler unit tests", () => {
               payload: {
                 phone: phoneHash,
                 id,
-                principle: { root: principleRoot, service, network }
-              }
+                principle: { root: principleRoot, service, network },
+              },
             },
             {
               action: "add-roles",
@@ -357,22 +362,22 @@ describe("Command handler unit tests", () => {
               root: principleRoot,
               payload: {
                 roles: [
-                  { id: `IdentityAdmin`, root: identityRoot, service, network }
-                ]
-              }
-            }
-          ]
-        }
+                  { id: `IdentityAdmin`, root: identityRoot, service, network },
+                ],
+              },
+            },
+          ],
+        },
       }
     );
   });
   it("should return successfully if principle not found with subject", async () => {
     const queryFake = fake.returns([]);
     const setFake = fake.returns({
-      query: queryFake
+      query: queryFake,
     });
     const eventStoreFake = fake.returns({
-      set: setFake
+      set: setFake,
     });
     replace(deps, "eventStore", eventStoreFake);
 
@@ -387,10 +392,10 @@ describe("Command handler unit tests", () => {
 
     const issueFake = fake.returns({ tokens });
     const anotherSetFake = fake.returns({
-      issue: issueFake
+      issue: issueFake,
     });
     const commandFake = fake.returns({
-      set: anotherSetFake
+      set: anotherSetFake,
     });
 
     replace(deps, "command", commandFake);
@@ -399,23 +404,23 @@ describe("Command handler unit tests", () => {
     const result = await main({
       payload,
       context,
-      claims
+      claims,
     });
 
     expect(result).to.deep.equal({
-      response: { tokens }
+      response: { tokens },
     });
     expect(eventStoreFake).to.have.been.calledWith({ domain: "identity" });
     expect(setFake).to.have.been.calledWith({
       context,
       claims,
-      tokenFns: { internal: deps.gcpToken }
+      tokenFns: { internal: deps.gcpToken },
     });
     expect(queryFake).to.have.been.calledWith({ key: "id", value: id });
     expect(hashFake).to.have.been.calledWith(phone);
     expect(commandFake).to.have.been.calledWith({
       name: "issue",
-      domain: "challenge"
+      domain: "challenge",
     });
     expect(anotherSetFake).to.have.been.calledWith({
       context: {
@@ -423,11 +428,11 @@ describe("Command handler unit tests", () => {
         identity: {
           root: identityRoot,
           service,
-          network
-        }
+          network,
+        },
       },
       claims,
-      tokenFns: { internal: deps.gcpToken }
+      tokenFns: { internal: deps.gcpToken },
     });
     expect(issueFake).to.have.been.calledWith(
       { id, phone },
@@ -443,8 +448,8 @@ describe("Command handler unit tests", () => {
               payload: {
                 phone: phoneHash,
                 id,
-                principle: { root: sub, service, network }
-              }
+                principle: { root: sub, service, network },
+              },
             },
             {
               action: "add-roles",
@@ -453,12 +458,12 @@ describe("Command handler unit tests", () => {
               root: sub,
               payload: {
                 roles: [
-                  { id: "IdentityAdmin", root: identityRoot, service, network }
-                ]
-              }
-            }
-          ]
-        }
+                  { id: "IdentityAdmin", root: identityRoot, service, network },
+                ],
+              },
+            },
+          ],
+        },
       }
     );
   });
@@ -466,10 +471,10 @@ describe("Command handler unit tests", () => {
   it("should return nothing if sub is the identity's principle", async () => {
     const queryFake = fake.returns([{ state: { principle: { root: sub } } }]);
     const setFake = fake.returns({
-      query: queryFake
+      query: queryFake,
     });
     const eventStoreFake = fake.returns({
-      set: setFake
+      set: setFake,
     });
     replace(deps, "eventStore", eventStoreFake);
     replace(deps, "compare", fake.returns(true));
@@ -477,30 +482,30 @@ describe("Command handler unit tests", () => {
     const result = await main({
       payload,
       context,
-      claims
+      claims,
     });
 
     expect(result).to.deep.equal({});
   });
   it("should throw correctly if the session is saved to a different identity", async () => {
     const firstQueryFake = fake.returns([
-      { state: { principle: { root: "some-random-root" } } }
+      { state: { principle: { root: "some-random-root" } } },
     ]);
     const secondQueryFake = fake.returns(["something"]);
     const firstSetFake = fake.returns({
-      query: firstQueryFake
+      query: firstQueryFake,
     });
     const secondSetFake = fake.returns({
-      query: secondQueryFake
+      query: secondQueryFake,
     });
     const eventStoreFake = stub()
       .onFirstCall()
       .returns({
-        set: firstSetFake
+        set: firstSetFake,
       })
       .onSecondCall()
       .returns({
-        set: secondSetFake
+        set: secondSetFake,
       });
     replace(deps, "eventStore", eventStoreFake);
     replace(deps, "compare", fake.returns(true));
@@ -509,7 +514,7 @@ describe("Command handler unit tests", () => {
       await main({
         payload,
         context,
-        claims
+        claims,
       });
       //shouldn't get called
       expect(2).to.equal(3);
@@ -524,10 +529,10 @@ describe("Command handler unit tests", () => {
 
     const queryFake = fake.rejects(errorMessage);
     const setFake = fake.returns({
-      query: queryFake
+      query: queryFake,
     });
     const eventStoreFake = fake.returns({
-      set: setFake
+      set: setFake,
     });
     replace(deps, "eventStore", eventStoreFake);
 
@@ -536,7 +541,7 @@ describe("Command handler unit tests", () => {
       await main({
         payload,
         context,
-        claims
+        claims,
       });
       //shouldn't get called
       expect(2).to.equal(3);
@@ -547,29 +552,29 @@ describe("Command handler unit tests", () => {
   it("should throw if compare fails", async () => {
     const queryFake = fake.returns([identity]);
     const setFake = fake.returns({
-      query: queryFake
+      query: queryFake,
     });
     const eventStoreFake = fake.returns({
-      set: setFake
+      set: setFake,
     });
     replace(deps, "eventStore", eventStoreFake);
 
     const aggregateFake = stub()
       .onFirstCall()
       .returns({
-        aggregate: principleAggregate
+        aggregate: principleAggregate,
       })
       .onSecondCall()
       .returns({
-        aggregate: sessionPrincipleAggregate
+        aggregate: sessionPrincipleAggregate,
       });
 
     const issueFake = fake.returns({ tokens });
     const anotherSetFake = fake.returns({
-      issue: issueFake
+      issue: issueFake,
     });
     const commandFake = fake.returns({
-      set: anotherSetFake
+      set: anotherSetFake,
     });
 
     replace(deps, "command", commandFake);
@@ -581,7 +586,7 @@ describe("Command handler unit tests", () => {
         payload,
         context,
         claims,
-        aggregateFn: aggregateFake
+        aggregateFn: aggregateFake,
       });
 
       //shouldn't get called

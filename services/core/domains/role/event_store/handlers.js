@@ -4,7 +4,7 @@ module.exports = {
   create: (state, payload) => {
     return {
       ...state,
-      ...payload
+      ...payload,
     };
   },
   "add-permissions": (state, payload) => {
@@ -14,22 +14,22 @@ module.exports = {
       permissions: state.permissions.concat(
         difference(
           payload.permissions.map(
-            permission =>
+            (permission) =>
               `${permission.service}:${permission.domain}:${permission.privilege}`
           ),
           state.permissions.map(
-            permission =>
+            (permission) =>
               `${permission.service}:${permission.domain}:${permission.privilege}`
           )
-        ).map(stringPermission => {
+        ).map((stringPermission) => {
           const [service, domain, privilege] = stringPermission.split(":");
           return {
             service,
             domain,
-            privilege
+            privilege,
           };
         })
-      )
+      ),
     };
   },
   "remove-permissions": (state, payload) => {
@@ -37,21 +37,21 @@ module.exports = {
       ...state,
       permissions: difference(
         state.permissions.map(
-          permission =>
+          (permission) =>
             `${permission.service}:${permission.domain}:${permission.privilege}`
         ),
         payload.permissions.map(
-          permission =>
+          (permission) =>
             `${permission.service}:${permission.domain}:${permission.privilege}`
         )
-      ).map(stringPermission => {
+      ).map((stringPermission) => {
         const [service, domain, privilege] = stringPermission.split(":");
         return {
           privilege,
           domain,
-          service
+          service,
         };
-      })
+      }),
     };
-  }
+  },
 };

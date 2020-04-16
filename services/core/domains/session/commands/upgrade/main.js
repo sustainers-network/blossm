@@ -14,7 +14,7 @@ module.exports = async ({ root, payload, context, claims, aggregateFn }) => {
 
   const newContext = {
     ...context,
-    principle: payload.principle
+    principle: payload.principle,
   };
 
   // Create a new token inheriting from the current claims.
@@ -23,18 +23,18 @@ module.exports = async ({ root, payload, context, claims, aggregateFn }) => {
       issuer: claims.iss,
       subject: payload.principle.root,
       audience: claims.aud,
-      expiresIn: Date.parse(claims.exp) - deps.fineTimestamp()
+      expiresIn: Date.parse(claims.exp) - deps.fineTimestamp(),
     },
     payload: {
-      context: newContext
+      context: newContext,
     },
     signFn: deps.sign({
       ring: "jwt",
       key: "access",
       location: "global",
       version: "1",
-      project: process.env.GCP_PROJECT
-    })
+      project: process.env.GCP_PROJECT,
+    }),
   });
 
   return {
@@ -44,8 +44,8 @@ module.exports = async ({ root, payload, context, claims, aggregateFn }) => {
         action: "upgrade",
         payload: {
           upgraded: deps.stringDate(),
-          principle: payload.principle
-        }
+          principle: payload.principle,
+        },
       },
       {
         root: payload.principle.root,
@@ -57,15 +57,15 @@ module.exports = async ({ root, payload, context, claims, aggregateFn }) => {
               id: "SessionAdmin",
               root,
               service: process.env.SERVICE,
-              network: process.env.NETWORK
-            }
-          ]
-        }
-      }
+              network: process.env.NETWORK,
+            },
+          ],
+        },
+      },
     ],
     response: {
       tokens: [{ network: process.env.NETWORK, type: "access", value: token }],
-      context: newContext
-    }
+      context: newContext,
+    },
   };
 };

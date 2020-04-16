@@ -1,6 +1,6 @@
 const {
   MILLISECONDS_IN_HOUR,
-  SECONDS_IN_MINUTE
+  SECONDS_IN_MINUTE,
 } = require("@blossm/duration-consts");
 
 const deps = require("./deps");
@@ -18,7 +18,7 @@ module.exports = async ({
   claims,
   // `events` are any events to submit once the challenge is answered.
   // `principle` is the principle to set as the subject of the session token.
-  options: { events, principle } = {}
+  options: { events, principle } = {},
 }) => {
   //TODO
   //eslint-disable-next-line no-console
@@ -42,7 +42,7 @@ module.exports = async ({
 
   if (!identity)
     throw deps.invalidArgumentError.message("This id isn't recognized.", {
-      info: { id: payload.id }
+      info: { id: payload.id },
     });
 
   if (!principle && !(await deps.compare(payload.phone, identity.state.phone)))
@@ -63,7 +63,7 @@ module.exports = async ({
     options: {
       issuer: `${process.env.DOMAIN}.${process.env.SERVICE}.${process.env.NETWORK}/issue`,
       audience: process.env.NETWORK,
-      expiresIn: ONE_HOUR
+      expiresIn: ONE_HOUR,
     },
     payload: {
       context: {
@@ -72,23 +72,23 @@ module.exports = async ({
           ? {
               root: identity.headers.root,
               service: process.env.SERVICE,
-              network: process.env.NETWORK
+              network: process.env.NETWORK,
             }
           : context.identity,
         challenge: {
           root,
           service: process.env.SERVICE,
-          network: process.env.NETWORK
-        }
-      }
+          network: process.env.NETWORK,
+        },
+      },
     },
     signFn: deps.sign({
       ring: "jwt",
       key: "challenge",
       location: "global",
       version: "1",
-      project: process.env.GCP_PROJECT
-    })
+      project: process.env.GCP_PROJECT,
+    }),
   });
 
   // Create a challenge code.
@@ -98,7 +98,7 @@ module.exports = async ({
   await sms.send({
     to: payload.phone,
     from: process.env.TWILIO_SENDING_PHONE_NUMBER,
-    body: `${code} is your verification code. Enter it in the app to let us know it's really you.`
+    body: `${code} is your verification code. Enter it in the app to let us know it's really you.`,
   });
 
   // Send the token to the requester so they can access the answer command.
@@ -111,28 +111,24 @@ module.exports = async ({
           principle: identity.state.principle,
           claims,
           issued: deps.stringDate(),
-          expires: deps
-            .moment()
-            .add(THREE_MINUTES, "s")
-            .toDate()
-            .toISOString(),
-          ...(events && { events })
+          expires: deps.moment().add(THREE_MINUTES, "s").toDate().toISOString(),
+          ...(events && { events }),
         },
         correctNumber: 0,
-        root
-      }
+        root,
+      },
     ],
     response: {
       tokens: [
-        { network: process.env.NETWORK, type: "challenge", value: token }
+        { network: process.env.NETWORK, type: "challenge", value: token },
       ],
       references: {
         challenge: {
           root,
           service: process.env.SERVICE,
-          network: process.env.NETWORK
-        }
-      }
-    }
+          network: process.env.NETWORK,
+        },
+      },
+    },
   };
 };

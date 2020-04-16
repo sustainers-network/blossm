@@ -1,5 +1,4 @@
-const { expect } = require("chai")
-  .use(require("sinon-chai"));
+const { expect } = require("chai").use(require("sinon-chai"));
 const { restore } = require("sinon");
 
 const main = require("../../main");
@@ -16,27 +15,37 @@ describe("Command handler unit tests", () => {
     const network = "some-network";
 
     const context = {
-      network
-    }
+      network,
+    };
 
     const payload = {
-      roles: [{
-        id,
-        root,
-        service
-      }]
+      roles: [
+        {
+          id,
+          root,
+          service,
+        },
+      ],
     };
 
     const result = await main({ payload, root, context });
     expect(result).to.deep.equal({
-      events: [{ action: "add-roles", payload: {
-        roles: [{
-          id,
+      events: [
+        {
+          action: "add-roles",
+          payload: {
+            roles: [
+              {
+                id,
+                root,
+                service,
+                network,
+              },
+            ],
+          },
           root,
-          service,
-          network
-        }]
-      }, root }]
+        },
+      ],
     });
   });
 });

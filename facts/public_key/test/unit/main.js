@@ -1,5 +1,4 @@
-const { expect } = require("chai")
-  .use(require("sinon-chai"));
+const { expect } = require("chai").use(require("sinon-chai"));
 const { restore, fake, replace } = require("sinon");
 
 const kms = require("@google-cloud/kms");
@@ -17,7 +16,7 @@ describe("Command handler unit tests", () => {
     const path = "some-path";
     const pathFake = fake.returns(path);
 
-    const kmsClient = function() {};
+    const kmsClient = function () {};
     kmsClient.prototype.cryptoKeyVersionPath = pathFake;
     const getKeyFake = fake.returns([{ pem, algorithm }]);
     kmsClient.prototype.getPublicKey = getKeyFake;
@@ -30,14 +29,14 @@ describe("Command handler unit tests", () => {
     const result = await main();
 
     expect(getKeyFake).to.have.been.calledWith({
-      name: path
+      name: path,
     });
     expect(pathFake).to.have.been.calledWith(
       project,
       "global",
       "jwt",
       "access",
-      "1",
+      "1"
     );
     expect(result).to.deep.equal({ key: pem, algorithm: "ES256" });
     const otherResult = await main();

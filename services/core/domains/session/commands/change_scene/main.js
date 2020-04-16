@@ -5,21 +5,21 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
   const [
     { aggregate: principleAggregate },
     { aggregate },
-    { aggregate: sceneAggregate }
+    { aggregate: sceneAggregate },
   ] = await Promise.all([
     aggregateFn(claims.sub, {
-      domain: "principle"
+      domain: "principle",
     }),
     aggregateFn(context.session.root),
     aggregateFn(payload.scene, {
-      domain: "scene"
-    })
+      domain: "scene",
+    }),
   ]);
 
   // Check to see if the principle has access to the context being switched in to.
-  if (!principleAggregate.scenes.some(scene => scene.root == payload.scene))
+  if (!principleAggregate.scenes.some((scene) => scene.root == payload.scene))
     throw deps.unauthorizedError.message("This scene isn't accessible.", {
-      info: { scene: payload.scene }
+      info: { scene: payload.scene },
     });
 
   // Check to see if this session has already been terminated.
@@ -34,7 +34,7 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
       issuer: claims.iss,
       subject: claims.sub,
       audience: claims.aud,
-      expiresIn: Date.parse(claims.exp) - deps.fineTimestamp()
+      expiresIn: Date.parse(claims.exp) - deps.fineTimestamp(),
     },
     payload: {
       context: {
@@ -42,23 +42,23 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
         scene: {
           root: payload.scene,
           service: process.env.SERVICE,
-          network: process.env.NETWORK
+          network: process.env.NETWORK,
         },
         domain: sceneAggregate.domain,
         [sceneAggregate.domain]: {
           root: sceneAggregate.root,
           service: sceneAggregate.service,
-          network: sceneAggregate.network
-        }
-      }
+          network: sceneAggregate.network,
+        },
+      },
     },
     signFn: deps.sign({
       ring: "jwt",
       key: "access",
       location: "global",
       version: "1",
-      project: process.env.GCP_PROJECT
-    })
+      project: process.env.GCP_PROJECT,
+    }),
   });
 
   return {
@@ -70,13 +70,13 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
           scene: {
             root: payload.scene,
             service: process.env.SERVICE,
-            network: process.env.NETWORK
-          }
-        }
-      }
+            network: process.env.NETWORK,
+          },
+        },
+      },
     ],
     response: {
-      tokens: [{ network: process.env.NETWORK, type: "access", value: token }]
-    }
+      tokens: [{ network: process.env.NETWORK, type: "access", value: token }],
+    },
   };
 };

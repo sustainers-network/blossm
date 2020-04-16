@@ -14,40 +14,40 @@ describe("Fact unit tests", () => {
     const root = "some-root";
     const role = {
       id: "some-id",
-      network
+      network,
     };
     const roles = [
       role,
       {
         id: "some-other-id",
-        network: "some-other-network"
-      }
+        network: "some-other-network",
+      },
     ];
 
     const aggregateFake = fake.returns({
       state: {
-        roles
-      }
+        roles,
+      },
     });
     const setFake = fake.returns({
-      aggregate: aggregateFake
+      aggregate: aggregateFake,
     });
     const eventStoreFake = fake.returns({
-      set: setFake
+      set: setFake,
     });
     replace(deps, "eventStore", eventStoreFake);
     const context = {
-      network
+      network,
     };
 
     const result = await main({ context, root });
 
     expect(eventStoreFake).to.have.been.calledWith({
       domain: "principle",
-      service: "core"
+      service: "core",
     });
     expect(setFake).to.have.been.calledWith({
-      tokenFns: { internal: deps.gcpToken }
+      tokenFns: { internal: deps.gcpToken },
     });
     expect(aggregateFake).to.have.been.calledWith(root);
     expect(result).to.deep.equal([role]);
@@ -58,20 +58,20 @@ describe("Fact unit tests", () => {
 
     const aggregateFake = fake();
     const setFake = fake.returns({
-      aggregate: aggregateFake
+      aggregate: aggregateFake,
     });
     const eventStoreFake = fake.returns({
-      set: setFake
+      set: setFake,
     });
     replace(deps, "eventStore", eventStoreFake);
     const context = {
-      network
+      network,
     };
 
     const error = "some-error";
     const messageFake = fake.returns(error);
     replace(deps, "badRequestError", {
-      message: messageFake
+      message: messageFake,
     });
     try {
       await main({ context, root });

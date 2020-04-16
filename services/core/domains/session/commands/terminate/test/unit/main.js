@@ -22,7 +22,7 @@ describe("Command handler unit tests", () => {
     const aggregateFake = fake.returns({ aggregate: {} });
     const result = await main({
       root,
-      aggregateFn: aggregateFake
+      aggregateFn: aggregateFake,
     });
 
     expect(result).to.deep.equal({
@@ -31,20 +31,20 @@ describe("Command handler unit tests", () => {
           root,
           action: "terminate",
           payload: {
-            terminated: deps.stringDate()
-          }
-        }
-      ]
+            terminated: deps.stringDate(),
+          },
+        },
+      ],
     });
   });
   it("should throw correctly if aggregate has already been terminated", async () => {
     const aggregateFake = fake.returns({
-      aggregate: { terminated: deps.stringDate() }
+      aggregate: { terminated: deps.stringDate() },
     });
     const error = "some-error";
     const sessionAlreadyTerminatedFake = fake.returns(error);
     replace(deps, "badRequestError", {
-      sessionAlreadyTerminated: sessionAlreadyTerminatedFake
+      sessionAlreadyTerminated: sessionAlreadyTerminatedFake,
     });
     try {
       await main({ root, aggregateFn: aggregateFake });

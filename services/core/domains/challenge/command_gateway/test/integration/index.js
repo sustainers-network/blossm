@@ -18,16 +18,16 @@ const existingTopics = [];
 describe("Command gateway integration tests", () => {
   before(async () => {
     existingTopics.push(
-      ...testing.topics.filter(async t => {
+      ...testing.topics.filter(async (t) => {
         return await exists(t);
       })
     );
-    await Promise.all(testing.topics.map(t => create(t)));
+    await Promise.all(testing.topics.map((t) => create(t)));
   });
   after(
     async () =>
       await Promise.all(
-        [...testing.topics].map(t => !existingTopics.includes(t) && del(t))
+        [...testing.topics].map((t) => !existingTopics.includes(t) && del(t))
       )
   );
   it("should return successfully", async () => {
@@ -38,21 +38,21 @@ describe("Command gateway integration tests", () => {
     const response = await request.post(`${url}/issue`, {
       body: {
         headers: {
-          issued: stringDate()
+          issued: stringDate(),
         },
         payload: {
           phone,
-          id
-        }
+          id,
+        },
       },
       headers: {
-        Authorization: `Bearer ${anonymousToken}`
-      }
+        Authorization: `Bearer ${anonymousToken}`,
+      },
     });
 
     expect(response.statusCode).to.equal(200);
     const {
-      tokens: [{ value: token }]
+      tokens: [{ value: token }],
     } = JSON.parse(response.body);
 
     const [message] = await sms(
@@ -65,15 +65,15 @@ describe("Command gateway integration tests", () => {
     const response1 = await request.post(`${url}/answer`, {
       body: {
         headers: {
-          issued: stringDate()
+          issued: stringDate(),
         },
         payload: {
-          code
-        }
+          code,
+        },
       },
       headers: {
-        Authorization: `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
 
     expect(response1.statusCode).to.equal(204);

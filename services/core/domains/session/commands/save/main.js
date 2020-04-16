@@ -3,19 +3,19 @@ const deps = require("./deps");
 const getEventsForPermissionsMerge = async ({
   principle,
   claims,
-  aggregateFn
+  aggregateFn,
 }) => {
   // Get the aggregates of the principle of the identity and the current principle of the session.
   const [
     { aggregate: principleAggregate },
-    { aggregate: sessionPrincipleAggregate }
+    { aggregate: sessionPrincipleAggregate },
   ] = await Promise.all([
     aggregateFn(principle.root, {
-      domain: "principle"
+      domain: "principle",
     }),
     aggregateFn(claims.sub, {
-      domain: "principle"
-    })
+      domain: "principle",
+    }),
   ]);
 
   // Don't create an event if nothing is being saved.
@@ -33,11 +33,11 @@ const getEventsForPermissionsMerge = async ({
         action: "add-roles",
         root: principle.root,
         payload: {
-          roles: sessionPrincipleAggregate.roles
-        }
-      }
+          roles: sessionPrincipleAggregate.roles,
+        },
+      },
     ],
-    principle
+    principle,
   };
 };
 
@@ -49,14 +49,14 @@ const getEventsForIdentityRegistering = async ({ subject, payload }) => {
   const principle = {
     root: principleRoot,
     service: process.env.SERVICE,
-    network: process.env.NETWORK
+    network: process.env.NETWORK,
   };
 
   return {
     identityContext: {
       root: identityRoot,
       service: process.env.SERVICE,
-      network: process.env.NETWORK
+      network: process.env.NETWORK,
     },
     events: [
       {
@@ -67,8 +67,8 @@ const getEventsForIdentityRegistering = async ({ subject, payload }) => {
         payload: {
           phone: hashedPhone,
           id: payload.id,
-          principle
-        }
+          principle,
+        },
       },
       {
         action: "add-roles",
@@ -81,13 +81,13 @@ const getEventsForIdentityRegistering = async ({ subject, payload }) => {
               id: "IdentityAdmin",
               root: identityRoot,
               service: process.env.SERVICE,
-              network: process.env.NETWORK
-            }
-          ]
-        }
-      }
+              network: process.env.NETWORK,
+            },
+          ],
+        },
+      },
     ],
-    principle
+    principle,
   };
 };
 
@@ -95,7 +95,7 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
   // Check to see if there is an identity with the provided id.
   const [identity] = await deps
     .eventStore({
-      domain: "identity"
+      domain: "identity",
     })
     .set({ context, claims, tokenFns: { internal: deps.gcpToken } })
     .query({ key: "id", value: payload.id });
@@ -111,7 +111,7 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
 
       const [subjectIdentity] = await deps
         .eventStore({
-          domain: "identity"
+          domain: "identity",
         })
         .set({ context, claims, tokenFns: { internal: deps.gcpToken } })
         .query({ key: "principle.root", value: claims.sub });
@@ -130,11 +130,11 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
     ? await getEventsForPermissionsMerge({
         principle: identity.state.principle,
         claims,
-        aggregateFn
+        aggregateFn,
       })
     : await getEventsForIdentityRegistering({
         subject: claims.sub,
-        payload
+        payload,
       });
 
   //TODO
@@ -144,7 +144,7 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
   const { tokens } = await deps
     .command({
       name: "issue",
-      domain: "challenge"
+      domain: "challenge",
     })
     .set({
       context: {
@@ -152,19 +152,19 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
         identity: identityContext || {
           root: identity.headers.root,
           service: process.env.SERVICE,
-          network: process.env.NETWORK
-        }
+          network: process.env.NETWORK,
+        },
       },
       claims,
-      tokenFns: { internal: deps.gcpToken }
+      tokenFns: { internal: deps.gcpToken },
     })
     .issue(
       {
         id: payload.id,
-        phone: payload.phone
+        phone: payload.phone,
       },
       {
-        options: { principle, events }
+        options: { principle, events },
       }
     );
 

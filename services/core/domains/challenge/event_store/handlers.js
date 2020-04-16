@@ -2,13 +2,13 @@ module.exports = {
   issue: (state, payload) => {
     return {
       ...state,
-      ...payload
+      ...payload,
     };
   },
   answer: (state, payload) => {
     return {
       ...state,
-      ...payload
+      ...payload,
     };
-  }
+  },
 };

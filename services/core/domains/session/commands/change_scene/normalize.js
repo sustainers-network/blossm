@@ -1,5 +1,5 @@
-module.exports = payload => {
+module.exports = (payload) => {
   return {
-    scene: payload.scene
+    scene: payload.scene,
   };
 };

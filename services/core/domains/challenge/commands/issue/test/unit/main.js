@@ -16,23 +16,23 @@ const identityRoot = "some-identity-root";
 const phone = "some-identity-phone";
 const identity = {
   headers: {
-    root: identityRoot
+    root: identityRoot,
   },
   state: {
     principle: {
       root: principleRoot,
       service: principleService,
-      network: principleNetwork
+      network: principleNetwork,
     },
-    phone
-  }
+    phone,
+  },
 };
 
 const payloadPhone = "some-payload-phone";
 const id = "some-id";
 const payload = {
   phone: payloadPhone,
-  id
+  id,
 };
 const domain = "some-domain";
 const contextIdentity = "some-context-identity";
@@ -44,7 +44,7 @@ const code = "some-code";
 const secret = "some-secret";
 const project = "some-projectl";
 const claims = {
-  iss: "some-iss"
+  iss: "some-iss",
 };
 
 const sendingPhoneNumber = "some-sending-phone-number";
@@ -69,7 +69,7 @@ describe("Command handler unit tests", () => {
 
     const smsSendFake = fake();
     const smsFake = fake.returns({
-      send: smsSendFake
+      send: smsSendFake,
     });
     replace(deps, "sms", smsFake);
 
@@ -81,10 +81,10 @@ describe("Command handler unit tests", () => {
 
     const queryFake = fake.returns([identity]);
     const setFake = fake.returns({
-      query: queryFake
+      query: queryFake,
     });
     const eventStoreFake = fake.returns({
-      set: setFake
+      set: setFake,
     });
     replace(deps, "eventStore", eventStoreFake);
 
@@ -111,17 +111,13 @@ describe("Command handler unit tests", () => {
             principle: {
               root: principleRoot,
               service: principleService,
-              network: principleNetwork
+              network: principleNetwork,
             },
             claims,
             issued: new Date().toISOString(),
-            expires: deps
-              .moment()
-              .add(180, "s")
-              .toDate()
-              .toISOString()
-          }
-        }
+            expires: deps.moment().add(180, "s").toDate().toISOString(),
+          },
+        },
       ],
       response: {
         tokens: [{ network, type: "challenge", value: token }],
@@ -129,61 +125,56 @@ describe("Command handler unit tests", () => {
           challenge: {
             root,
             service,
-            network
-          }
-        }
-      }
+            network,
+          },
+        },
+      },
     });
     expect(compareFake).to.have.been.calledWith(payloadPhone, phone);
     expect(queryFake).to.have.been.calledWith({
       key: "id",
-      value: id
+      value: id,
     });
     expect(secretFake).to.have.been.calledWith("twilio-account-sid");
     expect(secretFake).to.have.been.calledWith("twilio-auth-token");
     expect(smsFake).to.have.been.calledWith(secret, secret);
     expect(setFake).to.have.been.calledWith({
       context,
-      tokenFns: { internal: deps.gcpToken }
+      tokenFns: { internal: deps.gcpToken },
     });
     expect(eventStoreFake).to.have.been.calledWith({
-      domain: "identity"
+      domain: "identity",
     });
     expect(signFake).to.have.been.calledWith({
       ring: "jwt",
       key: "challenge",
       location: "global",
       version: "1",
-      project
+      project,
     });
     expect(createJwtFake).to.have.been.calledWith({
       options: {
         issuer: `${domain}.${service}.${network}/issue`,
         audience: network,
-        expiresIn: 3600000
+        expiresIn: 3600000,
       },
       payload: {
         context: {
           ...context,
           challenge: { root, service, network },
-          identity: { root: identityRoot, service, network }
-        }
+          identity: { root: identityRoot, service, network },
+        },
       },
-      signFn: signature
+      signFn: signature,
     });
     expect(randomIntFake).to.have.been.calledWith(6);
-    expect(
-      Math.abs(
-        deps
-          .moment()
-          .add(3, "m")
-          .toDate() - new Date()
-      )
-    ).to.equal(180000);
+    expect(Math.abs(deps.moment().add(3, "m").toDate() - new Date())).to.equal(
+      180000
+    );
     expect(smsSendFake).to.have.been.calledWith({
       to: payloadPhone,
       from: sendingPhoneNumber,
-      body: `${code} is your verification code. Enter it in the app to let us know it's really you.`
+      body: `${code} is your verification code. Enter it in the app to let us know it's really you.`,
     });
   });
   it("should return successfully if identity is passed in as an option", async () => {
@@ -192,7 +183,7 @@ describe("Command handler unit tests", () => {
 
     const smsSendFake = fake();
     const smsFake = fake.returns({
-      send: smsSendFake
+      send: smsSendFake,
     });
     replace(deps, "sms", smsFake);
 
@@ -212,7 +203,7 @@ describe("Command handler unit tests", () => {
     const optionsPrinciple = {
       root: principleRoot,
       service: principleService,
-      network: principleNetwork
+      network: principleNetwork,
     };
 
     const compareFake = fake.returns(true);
@@ -223,8 +214,8 @@ describe("Command handler unit tests", () => {
       context,
       claims,
       options: {
-        principle: optionsPrinciple
-      }
+        principle: optionsPrinciple,
+      },
     });
 
     expect(compareFake).to.not.have.been.called;
@@ -239,13 +230,9 @@ describe("Command handler unit tests", () => {
             principle: optionsPrinciple,
             claims,
             issued: new Date().toISOString(),
-            expires: deps
-              .moment()
-              .add(180, "s")
-              .toDate()
-              .toISOString()
-          }
-        }
+            expires: deps.moment().add(180, "s").toDate().toISOString(),
+          },
+        },
       ],
       response: {
         tokens: [{ network, type: "challenge", value: token }],
@@ -253,51 +240,46 @@ describe("Command handler unit tests", () => {
           challenge: {
             root,
             service,
-            network
-          }
-        }
-      }
+            network,
+          },
+        },
+      },
     });
     expect(signFake).to.have.been.calledWith({
       ring: "jwt",
       key: "challenge",
       location: "global",
       version: "1",
-      project
+      project,
     });
     expect(createJwtFake).to.have.been.calledWith({
       options: {
         issuer: `${domain}.${service}.${network}/issue`,
         audience: network,
-        expiresIn: 3600000
+        expiresIn: 3600000,
       },
       payload: {
         context: {
           ...context,
           challenge: { root, service, network },
-          identity: contextIdentity
-        }
+          identity: contextIdentity,
+        },
       },
-      signFn: signature
+      signFn: signature,
     });
     expect(randomIntFake).to.have.been.calledWith(6);
-    expect(
-      Math.abs(
-        deps
-          .moment()
-          .add(3, "m")
-          .toDate() - new Date()
-      )
-    ).to.equal(180000);
+    expect(Math.abs(deps.moment().add(3, "m").toDate() - new Date())).to.equal(
+      180000
+    );
   });
   it("should throw correctly", async () => {
     const errorMessage = "some-error";
     const queryFake = fake.rejects(new Error(errorMessage));
     const setFake = fake.returns({
-      query: queryFake
+      query: queryFake,
     });
     const eventStoreFake = fake.returns({
-      set: setFake
+      set: setFake,
     });
     replace(deps, "eventStore", eventStoreFake);
 
@@ -313,24 +295,24 @@ describe("Command handler unit tests", () => {
   it("should throw correctly if no phones found", async () => {
     const queryFake = fake.returns([]);
     const setFake = fake.returns({
-      query: queryFake
+      query: queryFake,
     });
     const eventStoreFake = fake.returns({
-      set: setFake
+      set: setFake,
     });
     replace(deps, "eventStore", eventStoreFake);
 
     const error = "some-error";
     const messageFake = fake.returns(error);
     replace(deps, "invalidArgumentError", {
-      message: messageFake
+      message: messageFake,
     });
 
     try {
       await main({
         payload,
         claims,
-        context
+        context,
       });
 
       //shouldn't get called
@@ -346,7 +328,7 @@ describe("Command handler unit tests", () => {
 
     const smsSendFake = fake();
     const smsFake = fake.returns({
-      send: smsSendFake
+      send: smsSendFake,
     });
     replace(deps, "sms", smsFake);
 
@@ -355,10 +337,10 @@ describe("Command handler unit tests", () => {
 
     const queryFake = fake.returns([identity]);
     const setFake = fake.returns({
-      query: queryFake
+      query: queryFake,
     });
     const eventStoreFake = fake.returns({
-      set: setFake
+      set: setFake,
     });
     replace(deps, "eventStore", eventStoreFake);
 
@@ -368,12 +350,12 @@ describe("Command handler unit tests", () => {
     const error = "some-error";
     const messageFake = fake.returns(error);
     replace(deps, "badRequestError", {
-      message: messageFake
+      message: messageFake,
     });
     try {
       await main({
         payload,
-        context
+        context,
       });
 
       //shouldn't get called
@@ -391,7 +373,7 @@ describe("Command handler unit tests", () => {
 
     const smsSendFake = fake();
     const smsFake = fake.returns({
-      send: smsSendFake
+      send: smsSendFake,
     });
     replace(deps, "sms", smsFake);
 
@@ -400,10 +382,10 @@ describe("Command handler unit tests", () => {
 
     const queryFake = fake.returns([identity]);
     const setFake = fake.returns({
-      query: queryFake
+      query: queryFake,
     });
     const eventStoreFake = fake.returns({
-      set: setFake
+      set: setFake,
     });
     replace(deps, "eventStore", eventStoreFake);
 
@@ -413,13 +395,13 @@ describe("Command handler unit tests", () => {
     const error = "some-error";
     const messageFake = fake.returns(error);
     replace(deps, "badRequestError", {
-      message: messageFake
+      message: messageFake,
     });
     try {
       await main({
         payload,
         context,
-        claims: { sub: "some-bogus" }
+        claims: { sub: "some-bogus" },
       });
 
       //shouldn't get called
@@ -437,7 +419,7 @@ describe("Command handler unit tests", () => {
 
     const smsSendFake = fake();
     const smsFake = fake.returns({
-      send: smsSendFake
+      send: smsSendFake,
     });
     replace(deps, "sms", smsFake);
 
@@ -446,10 +428,10 @@ describe("Command handler unit tests", () => {
 
     const queryFake = fake.returns([identity]);
     const setFake = fake.returns({
-      query: queryFake
+      query: queryFake,
     });
     const eventStoreFake = fake.returns({
-      set: setFake
+      set: setFake,
     });
     replace(deps, "eventStore", eventStoreFake);
 
@@ -472,7 +454,7 @@ describe("Command handler unit tests", () => {
       payload,
       claims,
       context,
-      options
+      options,
     });
 
     expect(result).to.deep.equal({
@@ -482,9 +464,9 @@ describe("Command handler unit tests", () => {
           challenge: {
             root,
             service,
-            network
-          }
-        }
+            network,
+          },
+        },
       },
       events: [
         {
@@ -496,41 +478,37 @@ describe("Command handler unit tests", () => {
             principle: {
               root: principleRoot,
               service: principleService,
-              network: principleNetwork
+              network: principleNetwork,
             },
             issued: new Date().toISOString(),
             claims,
-            expires: deps
-              .moment()
-              .add(180, "s")
-              .toDate()
-              .toISOString(),
+            expires: deps.moment().add(180, "s").toDate().toISOString(),
             events: [
               {
-                a: 1
+                a: 1,
               },
               {
-                b: 2
-              }
-            ]
-          }
-        }
-      ]
+                b: 2,
+              },
+            ],
+          },
+        },
+      ],
     });
     expect(createJwtFake).to.have.been.calledWith({
       options: {
         issuer: `${domain}.${service}.${network}/issue`,
         audience: network,
-        expiresIn: 3600000
+        expiresIn: 3600000,
       },
       payload: {
         context: {
           c: 3,
           challenge: { root, service, network },
-          identity: { root: identityRoot, service, network }
-        }
+          identity: { root: identityRoot, service, network },
+        },
       },
-      signFn: signature
+      signFn: signature,
     });
   });
 });

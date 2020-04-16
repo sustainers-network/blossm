@@ -1,5 +1,5 @@
-module.exports = payload => {
+module.exports = (payload) => {
   return {
-    code: payload.code
+    code: payload.code,
   };
 };

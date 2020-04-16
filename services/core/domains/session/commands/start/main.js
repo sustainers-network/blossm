@@ -16,9 +16,9 @@ module.exports = async ({ payload, context = {} }) => {
         process.env.NETWORK,
         ...(context.network && context.network != process.env.NETWORK
           ? [context.network]
-          : [])
+          : []),
       ],
-      expiresIn: NINETY_DAYS
+      expiresIn: NINETY_DAYS,
     },
     payload: {
       context: {
@@ -26,17 +26,17 @@ module.exports = async ({ payload, context = {} }) => {
         session: {
           root,
           service: process.env.SERVICE,
-          network: process.env.NETWORK
-        }
-      }
+          network: process.env.NETWORK,
+        },
+      },
     },
     signFn: deps.sign({
       ring: "jwt",
       key: "access",
       location: "global",
       version: "1",
-      project: process.env.GCP_PROJECT
-    })
+      project: process.env.GCP_PROJECT,
+    }),
   });
 
   return {
@@ -46,26 +46,26 @@ module.exports = async ({ payload, context = {} }) => {
         action: "start",
         payload: {
           ...payload,
-          started: deps.stringDate()
+          started: deps.stringDate(),
         },
-        correctNumber: 0
-      }
+        correctNumber: 0,
+      },
     ],
     response: {
       tokens: [
         {
           network: context.network || process.env.NETWORK,
           type: "access",
-          value: token
-        }
+          value: token,
+        },
       ],
       references: {
         session: {
           root,
           service: process.env.SERVICE,
-          network: process.env.NETWORK
-        }
-      }
-    }
+          network: process.env.NETWORK,
+        },
+      },
+    },
   };
 };

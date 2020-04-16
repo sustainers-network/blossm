@@ -9,7 +9,7 @@ const payload = { network: payloadNetwork };
 const identity = "some-identity";
 const context = { identity };
 const claims = {
-  a: 1
+  a: 1,
 };
 
 const domain = "some-domain";
@@ -51,20 +51,20 @@ describe("Command handler unit tests", () => {
         principle: {
           root: principleRoot,
           service: principleService,
-          network: principleNetwork
+          network: principleNetwork,
         },
         scene: {
           root: sceneRoot,
           service: sceneService,
-          network: sceneNetwork
-        }
-      }
+          network: sceneNetwork,
+        },
+      },
     });
     const setFake = fake.returns({
-      issue: issueFake
+      issue: issueFake,
     });
     const commandFake = fake.returns({
-      set: setFake
+      set: setFake,
     });
     replace(deps, "command", commandFake);
 
@@ -79,8 +79,8 @@ describe("Command handler unit tests", () => {
           context: newContext,
           root: principleRoot,
           payload: {
-            roles: [{ id: "NodeAdmin", root: nodeRoot, service, network }]
-          }
+            roles: [{ id: "NodeAdmin", root: nodeRoot, service, network }],
+          },
         },
         {
           action: "register",
@@ -91,10 +91,10 @@ describe("Command handler unit tests", () => {
             scene: {
               root: sceneRoot,
               service: sceneService,
-              network: sceneNetwork
-            }
-          }
-        }
+              network: sceneNetwork,
+            },
+          },
+        },
       ],
       response: {
         tokens,
@@ -104,26 +104,26 @@ describe("Command handler unit tests", () => {
           scene: {
             root: sceneRoot,
             service: sceneService,
-            network: sceneNetwork
-          }
-        }
-      }
+            network: sceneNetwork,
+          },
+        },
+      },
     });
     expect(commandFake).to.have.been.calledWith({
       name: "register",
       domain: "scene",
-      service: "core"
+      service: "core",
     });
     expect(setFake).to.have.been.calledWith({
       context,
       claims,
-      tokenFns: { internal: deps.gcpToken }
+      tokenFns: { internal: deps.gcpToken },
     });
     expect(issueFake).to.have.been.calledWith({
       root: nodeRoot,
       domain,
       service,
-      network
+      network,
     });
   });
   it("should throw correctly", async () => {

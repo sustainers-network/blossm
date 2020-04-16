@@ -1,5 +1,5 @@
-module.exports = async payload => {
+module.exports = async (payload) => {
   return {
-    network: payload.network.toLowerCase()
+    network: payload.network.toLowerCase(),
   };
 };

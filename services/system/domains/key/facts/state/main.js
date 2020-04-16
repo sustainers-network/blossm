@@ -1,15 +1,16 @@
 const deps = require("./deps");
 
 module.exports = async ({ root }) => {
-  const aggregate = await deps.eventStore({ domain: "key", service: "system" })
-      .set({ tokenFns: { internal: deps.gcpToken } })
-      .aggregate(root);
+  const aggregate = await deps
+    .eventStore({ domain: "key", service: "system" })
+    .set({ tokenFns: { internal: deps.gcpToken } })
+    .aggregate(root);
 
   return {
     root,
     secret: aggregate.state.secret,
     node: aggregate.state.node,
     principle: aggregate.state.principle,
-    network: aggregate.state.network
-  }
+    network: aggregate.state.network,
+  };
 };

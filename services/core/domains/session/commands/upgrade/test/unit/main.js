@@ -17,8 +17,8 @@ const payload = {
   principle: {
     root: principleRoot,
     service: principleService,
-    network: principleNetwork
-  }
+    network: principleNetwork,
+  },
 };
 
 const token = "some-token";
@@ -36,7 +36,7 @@ const claims = {
   iss,
   aud,
   sub,
-  exp
+  exp,
 };
 
 process.env.GCP_PROJECT = project;
@@ -60,7 +60,7 @@ describe("Command handler unit tests", () => {
     replace(deps, "createJwt", createJwtFake);
 
     const aggregateFake = fake.returns({
-      aggregate: { upgraded: false }
+      aggregate: { upgraded: false },
     });
 
     const result = await main({
@@ -68,7 +68,7 @@ describe("Command handler unit tests", () => {
       root,
       context,
       claims,
-      aggregateFn: aggregateFake
+      aggregateFn: aggregateFake,
     });
 
     expect(result).to.deep.equal({
@@ -79,18 +79,18 @@ describe("Command handler unit tests", () => {
             principle: {
               root: principleRoot,
               service: principleService,
-              network: principleNetwork
+              network: principleNetwork,
             },
-            upgraded: deps.stringDate()
+            upgraded: deps.stringDate(),
           },
-          root
+          root,
         },
         {
           root: principleRoot,
           domain: "principle",
           action: "add-roles",
-          payload: { roles: [{ id: "SessionAdmin", root, service, network }] }
-        }
+          payload: { roles: [{ id: "SessionAdmin", root, service, network }] },
+        },
       ],
       response: {
         tokens: [{ network, type: "access", value: token }],
@@ -99,10 +99,10 @@ describe("Command handler unit tests", () => {
           principle: {
             root: principleRoot,
             service: principleService,
-            network: principleNetwork
-          }
-        }
-      }
+            network: principleNetwork,
+          },
+        },
+      },
     });
     expect(aggregateFake).to.have.been.calledWith(root);
     expect(signFake).to.have.been.calledWith({
@@ -110,14 +110,14 @@ describe("Command handler unit tests", () => {
       key: "access",
       location: "global",
       version: "1",
-      project
+      project,
     });
     expect(createJwtFake).to.have.been.calledWith({
       options: {
         issuer: iss,
         subject: principleRoot,
         audience: aud,
-        expiresIn: Date.parse(exp) - deps.fineTimestamp()
+        expiresIn: Date.parse(exp) - deps.fineTimestamp(),
       },
       payload: {
         context: {
@@ -125,11 +125,11 @@ describe("Command handler unit tests", () => {
           principle: {
             root: principleRoot,
             service: principleService,
-            network: principleNetwork
-          }
-        }
+            network: principleNetwork,
+          },
+        },
       },
-      signFn: signature
+      signFn: signature,
     });
   });
   it("should throw correctly if session terminated", async () => {
@@ -141,13 +141,13 @@ describe("Command handler unit tests", () => {
     replace(deps, "createJwt", createJwtFake);
 
     const aggregateFake = fake.returns({
-      aggregate: { terminated: deps.stringDate() }
+      aggregate: { terminated: deps.stringDate() },
     });
 
     const error = "some-error";
     const sessionTerminatedFake = fake.returns(error);
     replace(deps, "badRequestError", {
-      sessionTerminated: sessionTerminatedFake
+      sessionTerminated: sessionTerminatedFake,
     });
 
     try {
@@ -155,7 +155,7 @@ describe("Command handler unit tests", () => {
         payload,
         root,
         context,
-        aggregateFn: aggregateFake
+        aggregateFn: aggregateFake,
       });
       //shouldn't get called
       expect(2).to.equal(3);
@@ -173,13 +173,13 @@ describe("Command handler unit tests", () => {
     replace(deps, "createJwt", createJwtFake);
 
     const aggregateFake = fake.returns({
-      aggregate: { upgraded: true }
+      aggregate: { upgraded: true },
     });
 
     const error = "some-error";
     const sessionAlreadyUpgradedFake = fake.returns(error);
     replace(deps, "badRequestError", {
-      sessionAlreadyUpgraded: sessionAlreadyUpgradedFake
+      sessionAlreadyUpgraded: sessionAlreadyUpgradedFake,
     });
 
     try {
@@ -187,7 +187,7 @@ describe("Command handler unit tests", () => {
         payload,
         root,
         context,
-        aggregateFn: aggregateFake
+        aggregateFn: aggregateFake,
       });
       //shouldn't get called
       expect(2).to.equal(3);
@@ -205,7 +205,7 @@ describe("Command handler unit tests", () => {
     replace(deps, "createJwt", createJwtFake);
 
     const aggregateFake = fake.returns({
-      aggregate: { upgraded: false }
+      aggregate: { upgraded: false },
     });
 
     try {
@@ -214,7 +214,7 @@ describe("Command handler unit tests", () => {
         root,
         context,
         claims,
-        aggregateFn: aggregateFake
+        aggregateFn: aggregateFake,
       });
       //shouldn't get called
       expect(2).to.equal(3);

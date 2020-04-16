@@ -4,7 +4,7 @@ service: system
 schema:
   opened: Date
   terminated: Date
-  node:
+  scene:
     root: String
     service: String
     network: String
@@ -26,10 +26,10 @@ testing:
           root: some-key-root
           service: some-key-service
           network: some.key-network
-        node:
-          root: some-node-root
-          service: some-node-service
-          network: some.node-network
+        scene:
+          root: some-scene-root
+          service: some-scene-service
+          network: some.scene-network
     second:
       action: open
       payload:
@@ -38,10 +38,10 @@ testing:
           root: some-other-key-root
           service: some-other-key-service
           network: some.other-key-network
-        node:
-          root: some-other-node-root
-          service: some-other-node-service
-          network: some.other-node-network
+        scene:
+          root: some-other-scene-root
+          service: some-other-scene-service
+          network: some.other-scene-network
     more: []
 
   handlers:
@@ -53,10 +53,10 @@ testing:
               root: some-other-key-root
               service: some-other-key-service
               network: some.other-key-network
-            node:
-              root: some-other-node-root
-              service: some-other-node-service
-              network: some.other-node-network
+            scene:
+              root: some-other-scene-root
+              service: some-other-scene-service
+              network: some.other-scene-network
 
 #don't change
 procedure: event-store

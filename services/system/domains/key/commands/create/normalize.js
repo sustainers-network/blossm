@@ -1,6 +1,6 @@
-module.exports = async payload => {
+module.exports = async (payload) => {
   return {
     name: payload.name,
-    roles: payload.roles
+    roles: payload.roles,
   };
 };

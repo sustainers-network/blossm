@@ -2,25 +2,25 @@ module.exports = {
   start: (state, payload) => {
     return {
       ...state,
-      ...payload
+      ...payload,
     };
   },
   upgrade: (state, payload) => {
     return {
       ...state,
-      ...payload
+      ...payload,
     };
   },
   terminate: (state, payload) => {
     return {
       ...state,
-      ...payload
+      ...payload,
     };
   },
   "change-scene": (state, payload) => {
     return {
       ...state,
-      ...payload
+      ...payload,
     };
-  }
+  },
 };

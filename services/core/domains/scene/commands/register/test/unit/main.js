@@ -10,18 +10,18 @@ const service = "some-service";
 const network = "some-network";
 const contextSessionRoot = "some-context-session-root";
 const contextSession = {
-  root: contextSessionRoot
+  root: contextSessionRoot,
 };
 const principleRoot = "some-principle-root";
 const principleService = "some-principle-service";
 const principleNetwork = "some-principle-network";
 
 const context = {
-  session: contextSession
+  session: contextSession,
 };
 
 const claims = {
-  a: 1
+  a: 1,
 };
 
 process.env.SERVICE = service;
@@ -44,17 +44,17 @@ describe("Command handler unit tests", () => {
     const newContext = "some-new-context";
     const issueFake = fake.returns({ tokens, context: newContext });
     const setFake = fake.returns({
-      issue: issueFake
+      issue: issueFake,
     });
     const commandFake = fake.returns({
-      set: setFake
+      set: setFake,
     });
     replace(deps, "command", commandFake);
 
     const result = await main({
       payload,
       context,
-      claims
+      claims,
     });
     expect(result).to.deep.equal({
       events: [
@@ -65,8 +65,8 @@ describe("Command handler unit tests", () => {
           action: "add-roles",
           root: uuid,
           payload: {
-            roles: [{ id: "SceneAdmin", root, service, network }]
-          }
+            roles: [{ id: "SceneAdmin", root, service, network }],
+          },
         },
         {
           domain: "principle",
@@ -75,10 +75,10 @@ describe("Command handler unit tests", () => {
           action: "add-scenes",
           root: uuid,
           payload: {
-            scenes: [{ root, service, network }]
-          }
+            scenes: [{ root, service, network }],
+          },
         },
-        { action: "register", payload, root, correctNumber: 0 }
+        { action: "register", payload, root, correctNumber: 0 },
       ],
       response: {
         tokens,
@@ -87,32 +87,32 @@ describe("Command handler unit tests", () => {
           principle: {
             root: uuid,
             service,
-            network
+            network,
           },
           scene: {
             root,
             service,
-            network
-          }
-        }
-      }
+            network,
+          },
+        },
+      },
     });
     expect(commandFake).to.have.been.calledWith({
       domain: "session",
-      name: "upgrade"
+      name: "upgrade",
     });
     expect(setFake).to.have.been.calledWith({
       context,
       claims,
-      tokenFns: { internal: deps.gcpToken }
+      tokenFns: { internal: deps.gcpToken },
     });
     expect(issueFake).to.have.been.calledWith(
       {
         principle: {
           root: uuid,
           service,
-          network
-        }
+          network,
+        },
       },
       { root: contextSessionRoot }
     );
@@ -129,10 +129,10 @@ describe("Command handler unit tests", () => {
     const token = "some-token";
     const issueFake = fake.returns({ token });
     const setFake = fake.returns({
-      issue: issueFake
+      issue: issueFake,
     });
     const commandFake = fake.returns({
-      set: setFake
+      set: setFake,
     });
     replace(deps, "command", commandFake);
 
@@ -141,13 +141,13 @@ describe("Command handler unit tests", () => {
       principle: {
         root: principleRoot,
         service: principleService,
-        network: principleNetwork
-      }
+        network: principleNetwork,
+      },
     };
     const result = await main({
       payload,
       context: principleContext,
-      claims
+      claims,
     });
     expect(result).to.deep.equal({
       events: [
@@ -158,8 +158,8 @@ describe("Command handler unit tests", () => {
           action: "add-roles",
           root: principleRoot,
           payload: {
-            roles: [{ id: "SceneAdmin", root, service, network }]
-          }
+            roles: [{ id: "SceneAdmin", root, service, network }],
+          },
         },
         {
           domain: "principle",
@@ -168,25 +168,25 @@ describe("Command handler unit tests", () => {
           action: "add-scenes",
           root: principleRoot,
           payload: {
-            scenes: [{ root, service, network }]
-          }
+            scenes: [{ root, service, network }],
+          },
         },
-        { action: "register", payload, root, correctNumber: 0 }
+        { action: "register", payload, root, correctNumber: 0 },
       ],
       response: {
         references: {
           principle: {
             root: principleRoot,
             service: principleService,
-            network: principleNetwork
+            network: principleNetwork,
           },
           scene: {
             root,
             service,
-            network
-          }
-        }
-      }
+            network,
+          },
+        },
+      },
     });
   });
   it("should throw correctly", async () => {

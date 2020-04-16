@@ -7,7 +7,7 @@ module.exports = async ({ context, root }) => {
   const aggregate = await deps
     .eventStore({
       domain: "principle",
-      service: "core"
+      service: "core",
     })
     .set({ tokenFns: { internal: deps.gcpToken } })
     .aggregate(root);
@@ -20,7 +20,7 @@ module.exports = async ({ context, root }) => {
   console.log({ roles: aggregate.state.roles, context });
 
   const roles = aggregate.state.roles.filter(
-    role => role.network == context.network
+    (role) => role.network == context.network
   );
 
   return roles;

@@ -10,7 +10,7 @@ let clock;
 const now = new Date();
 const code = "some-code";
 const payload = {
-  code
+  code,
 };
 const domain = "some-domain";
 const service = "some-service";
@@ -44,7 +44,7 @@ describe("Command handler unit tests", () => {
     replace(deps, "uuid", uuidFake);
 
     const result = await main({
-      payload
+      payload,
     });
 
     expect(result).to.deep.equal({
@@ -52,12 +52,12 @@ describe("Command handler unit tests", () => {
         {
           payload: {
             ...payload,
-            started: deps.stringDate()
+            started: deps.stringDate(),
           },
           action: "start",
           root,
-          correctNumber: 0
-        }
+          correctNumber: 0,
+        },
       ],
       response: {
         tokens: [{ network, type: "access", value: token }],
@@ -65,23 +65,23 @@ describe("Command handler unit tests", () => {
           session: {
             root,
             service,
-            network
-          }
-        }
-      }
+            network,
+          },
+        },
+      },
     });
     expect(signFake).to.have.been.calledWith({
       ring: "jwt",
       key: "access",
       location: "global",
       version: "1",
-      project
+      project,
     });
     expect(createJwtFake).to.have.been.calledWith({
       options: {
         issuer: `${domain}.${service}.${network}/start`,
         audience: [network],
-        expiresIn: 7776000000
+        expiresIn: 7776000000,
       },
       payload: {
         context: {
@@ -89,11 +89,11 @@ describe("Command handler unit tests", () => {
           session: {
             root,
             service,
-            network
-          }
-        }
+            network,
+          },
+        },
       },
-      signFn: signature
+      signFn: signature,
     });
   });
   it("should return successfully with context", async () => {
@@ -110,11 +110,11 @@ describe("Command handler unit tests", () => {
 
     const nodeNetwork = "some-node-network";
     const context = {
-      network: nodeNetwork
+      network: nodeNetwork,
     };
     const result = await main({
       payload,
-      context
+      context,
     });
 
     expect(result).to.deep.equal({
@@ -122,12 +122,12 @@ describe("Command handler unit tests", () => {
         {
           payload: {
             ...payload,
-            started: deps.stringDate()
+            started: deps.stringDate(),
           },
           action: "start",
           root,
-          correctNumber: 0
-        }
+          correctNumber: 0,
+        },
       ],
       response: {
         tokens: [{ network: nodeNetwork, type: "access", value: token }],
@@ -135,23 +135,23 @@ describe("Command handler unit tests", () => {
           session: {
             root,
             service,
-            network
-          }
-        }
-      }
+            network,
+          },
+        },
+      },
     });
     expect(signFake).to.have.been.calledWith({
       ring: "jwt",
       key: "access",
       location: "global",
       version: "1",
-      project
+      project,
     });
     expect(createJwtFake).to.have.been.calledWith({
       options: {
         issuer: `${domain}.${service}.${network}/start`,
         audience: [network, nodeNetwork],
-        expiresIn: 7776000000
+        expiresIn: 7776000000,
       },
       payload: {
         context: {
@@ -159,11 +159,11 @@ describe("Command handler unit tests", () => {
           session: {
             root,
             service,
-            network
-          }
-        }
+            network,
+          },
+        },
       },
-      signFn: signature
+      signFn: signature,
     });
   });
   it("should return successfully with context on same network", async () => {
@@ -181,7 +181,7 @@ describe("Command handler unit tests", () => {
     const context = { network };
     const result = await main({
       payload,
-      context
+      context,
     });
 
     expect(result).to.deep.equal({
@@ -189,12 +189,12 @@ describe("Command handler unit tests", () => {
         {
           payload: {
             ...payload,
-            started: deps.stringDate()
+            started: deps.stringDate(),
           },
           action: "start",
           root,
-          correctNumber: 0
-        }
+          correctNumber: 0,
+        },
       ],
       response: {
         tokens: [{ network, type: "access", value: token }],
@@ -202,23 +202,23 @@ describe("Command handler unit tests", () => {
           session: {
             root,
             service,
-            network
-          }
-        }
-      }
+            network,
+          },
+        },
+      },
     });
     expect(signFake).to.have.been.calledWith({
       ring: "jwt",
       key: "access",
       location: "global",
       version: "1",
-      project
+      project,
     });
     expect(createJwtFake).to.have.been.calledWith({
       options: {
         issuer: `${domain}.${service}.${network}/start`,
         audience: [network],
-        expiresIn: 7776000000
+        expiresIn: 7776000000,
       },
       payload: {
         context: {
@@ -226,11 +226,11 @@ describe("Command handler unit tests", () => {
           session: {
             root,
             service,
-            network
-          }
-        }
+            network,
+          },
+        },
       },
-      signFn: signature
+      signFn: signature,
     });
   });
   it("should throw correctly", async () => {

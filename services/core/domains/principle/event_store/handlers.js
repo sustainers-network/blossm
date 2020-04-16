@@ -8,19 +8,21 @@ module.exports = {
       roles: state.roles.concat(
         difference(
           payload.roles.map(
-            role => `${role.id}:${role.root}:${role.service}:${role.network}`
+            (role) => `${role.id}:${role.root}:${role.service}:${role.network}`
           ),
-          state.roles.map(role => `${role.id}:${role.root}:${role.service}:${role.network}`)
-        ).map(stringRole => {
+          state.roles.map(
+            (role) => `${role.id}:${role.root}:${role.service}:${role.network}`
+          )
+        ).map((stringRole) => {
           const [id, root, service, network] = stringRole.split(":");
           return {
             id,
             root,
             service,
-            network
+            network,
           };
         })
-      )
+      ),
     };
   },
   "remove-roles": (state, payload) => {
@@ -28,17 +30,21 @@ module.exports = {
       ...state,
       ...payload,
       roles: difference(
-        state.roles.map(role => `${role.id}:${role.root}:${role.service}:${role.network}`),
-        payload.roles.map(role => `${role.id}:${role.root}:${role.service}:${role.network}`)
-      ).map(stringRole => {
+        state.roles.map(
+          (role) => `${role.id}:${role.root}:${role.service}:${role.network}`
+        ),
+        payload.roles.map(
+          (role) => `${role.id}:${role.root}:${role.service}:${role.network}`
+        )
+      ).map((stringRole) => {
         const [id, root, service, network] = stringRole.split(":");
         return {
           id,
           root,
           service,
-          network
+          network,
         };
-      })
+      }),
     };
   },
   "add-scenes": (state, payload) => {
@@ -48,20 +54,20 @@ module.exports = {
       scenes: state.scenes.concat(
         difference(
           payload.scenes.map(
-            scene => `${scene.root}:${scene.service}:${scene.network}`
+            (scene) => `${scene.root}:${scene.service}:${scene.network}`
           ),
           state.scenes.map(
-            scene => `${scene.root}:${scene.service}:${scene.network}`
+            (scene) => `${scene.root}:${scene.service}:${scene.network}`
           )
-        ).map(stringScene => {
+        ).map((stringScene) => {
           const [root, service, network] = stringScene.split(":");
           return {
             root,
             service,
-            network
+            network,
           };
         })
-      )
+      ),
     };
   },
   "remove-scenes": (state, payload) => {
@@ -70,19 +76,19 @@ module.exports = {
       ...payload,
       scenes: difference(
         state.scenes.map(
-          scene => `${scene.root}:${scene.service}:${scene.network}`
+          (scene) => `${scene.root}:${scene.service}:${scene.network}`
         ),
         payload.scenes.map(
-          scene => `${scene.root}:${scene.service}:${scene.network}`
+          (scene) => `${scene.root}:${scene.service}:${scene.network}`
         )
-      ).map(stringScene => {
+      ).map((stringScene) => {
         const [root, service, network] = stringScene.split(":");
         return {
           root,
           service,
-          network
+          network,
         };
-      })
+      }),
     };
-  }
+  },
 };

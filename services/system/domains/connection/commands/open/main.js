@@ -12,7 +12,7 @@ module.exports = async ({ context }) => {
       subject: context.principle.root,
       issuer: `${process.env.DOMAIN}.${process.env.SERVICE}.${process.env.NETWORK}/open`,
       audience: process.env.NETWORK,
-      expiresIn: NINETY_DAYS
+      expiresIn: NINETY_DAYS,
     },
     payload: {
       context: {
@@ -20,17 +20,17 @@ module.exports = async ({ context }) => {
         connection: {
           root,
           service: process.env.SERVICE,
-          network: process.env.NETWORK
-        }
-      }
+          network: process.env.NETWORK,
+        },
+      },
     },
     signFn: deps.sign({
       ring: "jwt",
       key: "access",
       location: "global",
       version: "1",
-      project: process.env.GCP_PROJECT
-    })
+      project: process.env.GCP_PROJECT,
+    }),
   });
 
   return {
@@ -38,13 +38,13 @@ module.exports = async ({ context }) => {
       {
         action: "open",
         payload: {
-          node: context.node,
+          scene: context.scene,
           key: context.key,
-          opened: deps.stringDate()
+          opened: deps.stringDate(),
         },
         root,
-        correctNumber: 0
-      }
+        correctNumber: 0,
+      },
     ],
     response: {
       tokens: [{ network: context.network, type: "access", value: token }],
@@ -52,9 +52,9 @@ module.exports = async ({ context }) => {
         connection: {
           root,
           service: process.env.SERVICE,
-          network: process.env.NETWORK
-        }
-      }
-    }
+          network: process.env.NETWORK,
+        },
+      },
+    },
   };
 };

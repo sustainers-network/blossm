@@ -32,13 +32,16 @@ describe("Command handler unit tests", () => {
     const nodeRoot = "some-node-root";
     const nodeService = "some-node-service";
     const nodeNetwork = "some-node-network";
+    const sceneRoot = "some-scene-root";
+    const sceneService = "some-scene-service";
+    const sceneNetwork = "some-scene-network";
     const hash = "some-hash";
     const secret = "some-secret;";
     const keyRoot = "some-key-root";
 
     const payload = {
       name,
-      roles: [roleRoot1, roleRoot2]
+      roles: [roleRoot1, roleRoot2],
     };
 
     const uuidFake = stub()
@@ -60,28 +63,35 @@ describe("Command handler unit tests", () => {
     const node = {
       root: nodeRoot,
       service: nodeService,
-      network: nodeNetwork
+      network: nodeNetwork,
+    };
+
+    const scene = {
+      root: sceneRoot,
+      service: sceneService,
+      network: sceneNetwork,
     };
 
     const context = {
       domain: "node",
-      node
+      node,
+      scene,
     };
 
     const nodeStateNetwork = "some-node-network";
     const aggregateFnFake = fake.returns({
-      aggregate: { network: nodeStateNetwork }
+      aggregate: { network: nodeStateNetwork },
     });
     const result = await main({
       payload,
       context,
-      aggregateFn: aggregateFnFake
+      aggregateFn: aggregateFnFake,
     });
 
     expect(aggregateFnFake).to.have.been.calledWith(nodeRoot, {
       domain: "node",
       service: nodeService,
-      network: nodeNetwork
+      network: nodeNetwork,
     });
     expect(uuidFake).to.have.been.calledTwice;
     expect(uuidFake).to.have.been.calledWith();
@@ -101,47 +111,47 @@ describe("Command handler unit tests", () => {
                 id: roleRoot1,
                 root: "some-tmp-root",
                 service,
-                network
+                network,
               },
               {
                 id: roleRoot2,
                 root: "some-tmp-root",
                 service,
-                network
-              }
-            ]
+                network,
+              },
+            ],
           },
-          root: principleRoot
+          root: principleRoot,
         },
         {
           action: "create",
           payload: {
             name: payload.name,
             network: nodeStateNetwork,
-            node,
+            scene,
             principle: {
               root: principleRoot,
               service: "core",
-              network
+              network,
             },
-            secret: hash
+            secret: hash,
           },
           root: keyRoot,
-          correctNumber: 0
-        }
+          correctNumber: 0,
+        },
       ],
       response: {
         root: keyRoot,
         secret,
-        references: { key: { root: keyRoot, service, network } }
-      }
+        references: { key: { root: keyRoot, service, network } },
+      },
     });
   });
   it("should throw correctly if not in node", async () => {
     const errorMessage = "some-error";
     const messageFake = fake.throws(errorMessage);
     replace(deps, "forbiddenError", {
-      message: messageFake
+      message: messageFake,
     });
     try {
       await main({ context: {} });
@@ -149,7 +159,7 @@ describe("Command handler unit tests", () => {
       expect(2).to.equal(3);
     } catch (e) {
       expect(messageFake).to.have.been.calledWith(
-        "A key can only be made by a node."
+        "A key can only be made for a node."
       );
       expect(e.message).to.equal(errorMessage);
     }

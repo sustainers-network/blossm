@@ -7,7 +7,7 @@ module.exports = async ({ payload, context, claims }) => {
   const principle = context.principle || {
     root: deps.uuid(),
     service: process.env.SERVICE,
-    network: process.env.NETWORK
+    network: process.env.NETWORK,
   };
 
   // Give the principle admin privileges to this context.
@@ -24,10 +24,10 @@ module.exports = async ({ payload, context, claims }) => {
             id: "SceneAdmin",
             root: sceneRoot,
             service: process.env.SERVICE,
-            network: process.env.NETWORK
-          }
-        ]
-      }
+            network: process.env.NETWORK,
+          },
+        ],
+      },
     },
     {
       domain: "principle",
@@ -40,17 +40,17 @@ module.exports = async ({ payload, context, claims }) => {
           {
             root: sceneRoot,
             service: process.env.SERVICE,
-            network: process.env.NETWORK
-          }
-        ]
-      }
+            network: process.env.NETWORK,
+          },
+        ],
+      },
     },
     {
       action: "register",
       root: sceneRoot,
       payload,
-      correctNumber: 0
-    }
+      correctNumber: 0,
+    },
   ];
 
   const response = {
@@ -59,9 +59,9 @@ module.exports = async ({ payload, context, claims }) => {
       scene: {
         root: sceneRoot,
         service: process.env.SERVICE,
-        network: process.env.NETWORK
-      }
-    }
+        network: process.env.NETWORK,
+      },
+    },
   };
 
   // If the session already has a principle, no need to upgrade it.
@@ -71,7 +71,7 @@ module.exports = async ({ payload, context, claims }) => {
   const { tokens, context: newContext } = await deps
     .command({
       domain: "session",
-      name: "upgrade"
+      name: "upgrade",
     })
     .set({ context, claims, tokenFns: { internal: deps.gcpToken } })
     .issue({ principle }, { root: context.session.root });
