@@ -1,13 +1,9 @@
-const { expect } = require("chai")
-  .use(require("chai-datetime"))
-  .use(require("sinon-chai"));
-const { restore, replace, fake, useFakeTimers } = require("sinon");
+const { expect } = require("chai").use(require("sinon-chai"));
+const { restore, replace, fake } = require("sinon");
 
 const main = require("../../main");
 const deps = require("../../deps");
 
-let clock;
-const now = new Date();
 const code = "some-code";
 const payload = {
   code,
@@ -24,11 +20,7 @@ process.env.NETWORK = network;
 process.env.GCP_PROJECT = project;
 
 describe("Command handler unit tests", () => {
-  beforeEach(() => {
-    clock = useFakeTimers(now.getTime());
-  });
   afterEach(() => {
-    clock.restore();
     restore();
   });
   it("should return successfully", async () => {
@@ -50,10 +42,7 @@ describe("Command handler unit tests", () => {
     expect(result).to.deep.equal({
       events: [
         {
-          payload: {
-            ...payload,
-            started: deps.stringDate(),
-          },
+          payload,
           action: "start",
           root,
           correctNumber: 0,
@@ -120,10 +109,7 @@ describe("Command handler unit tests", () => {
     expect(result).to.deep.equal({
       events: [
         {
-          payload: {
-            ...payload,
-            started: deps.stringDate(),
-          },
+          payload,
           action: "start",
           root,
           correctNumber: 0,
@@ -187,10 +173,7 @@ describe("Command handler unit tests", () => {
     expect(result).to.deep.equal({
       events: [
         {
-          payload: {
-            ...payload,
-            started: deps.stringDate(),
-          },
+          payload,
           action: "start",
           root,
           correctNumber: 0,

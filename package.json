@@ -25,10 +25,10 @@
     "eslint-config-prettier": "^6.10.1",
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-prettier": "^3.1.1",
-    "prettier": "^2.0.4",
     "husky": "^4.2.5",
     "lint-staged": "^10.1.3",
     "mocha": "^7.1.1",
+    "prettier": "^2.0.4",
     "sinon": "^9.0.2"
   },
   "lint-staged": {
@@ -40,5 +40,9 @@
       "eslint --fix",
       "git add"
     ]
+  },
+  "dependencies": {
+    "@blossm/cli": "^0.0.632",
+    "global": "^4.4.0"
   }
 }

@@ -5,10 +5,11 @@ module.exports = {
       ...payload,
     };
   },
-  upgrade: (state, payload) => {
+  upgrade: (state = {}, payload) => {
+    const principle = payload.principle || state.principle;
     return {
       ...state,
-      ...payload,
+      ...(principle && { principle }),
     };
   },
   terminate: (state, payload) => {

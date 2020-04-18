@@ -13,18 +13,24 @@ const id = "some-id";
 const phone = "some-phone";
 const payload = { id, phone };
 const tokens = "some-tokens";
-const context = "some-context";
+const contextPrincipleRoot = "some-context-principle-root";
+const contextPrincipleService = "some-context-principle-service";
+const contextPrincipleNetwork = "some-context-principle-network";
+const context = {
+  principle: {
+    root: contextPrincipleRoot,
+    service: contextPrincipleService,
+    network: contextPrincipleNetwork,
+  },
+};
 const service = "some-service";
 const network = "some-network";
 
-const sub = "some-sub";
-const claims = {
-  sub,
-};
+const claims = "some-claims";
 
 const principleRoot = "some-principle-root";
-const principleService = "some--principle-service";
-const principleNetwork = "some--principle-network";
+const principleService = "some-principle-service";
+const principleNetwork = "some-principle-network";
 const identityRoot = "some-root";
 
 const identity = {
@@ -39,9 +45,11 @@ const identity = {
     },
   },
 };
+
 const principleAggregate = {
   roles: [{ id: "some-role-id", root: "some-role-root", service, network }],
 };
+
 const sessionPrincipleAggregate = {
   roles: [
     {
@@ -124,8 +132,10 @@ describe("Command handler unit tests", () => {
     expect(aggregateFake).to.have.been.calledWith(principleRoot, {
       domain: "principle",
     });
-    expect(aggregateFake).to.have.been.calledWith(sub, {
+    expect(aggregateFake).to.have.been.calledWith(contextPrincipleRoot, {
       domain: "principle",
+      service: contextPrincipleService,
+      network: contextPrincipleNetwork,
     });
     expect(aggregateFake).to.have.been.calledTwice;
     expect(commandFake).to.have.been.calledWith({
@@ -133,14 +143,7 @@ describe("Command handler unit tests", () => {
       domain: "challenge",
     });
     expect(anotherSetFake).to.have.been.calledWith({
-      context: {
-        ...context,
-        identity: {
-          root: identityRoot,
-          service,
-          network,
-        },
-      },
+      context,
       claims,
       tokenFns: { internal: deps.gcpToken },
     });
@@ -148,10 +151,12 @@ describe("Command handler unit tests", () => {
       { id, phone },
       {
         options: {
-          principle: {
-            root: principleRoot,
-            service: principleService,
-            network: principleNetwork,
+          upgrade: {
+            identity: {
+              root: identityRoot,
+              service,
+              network,
+            },
           },
           events: [
             {
@@ -171,6 +176,98 @@ describe("Command handler unit tests", () => {
               },
             },
           ],
+        },
+      }
+    );
+  });
+  it("should return successfully if identity is found with no principle in the context", async () => {
+    const queryFake = fake.returns([identity]);
+    const otherQueryFake = fake.returns([]);
+    const setFake = fake.returns({
+      query: queryFake,
+    });
+    const otherSetFake = fake.returns({
+      query: otherQueryFake,
+    });
+    const eventStoreFake = stub()
+      .onFirstCall()
+      .returns({
+        set: setFake,
+      })
+      .onSecondCall()
+      .returns({ set: otherSetFake });
+    replace(deps, "eventStore", eventStoreFake);
+
+    const aggregateFake = stub()
+      .onFirstCall()
+      .returns({
+        aggregate: principleAggregate,
+      })
+      .onSecondCall()
+      .returns({
+        aggregate: sessionPrincipleAggregate,
+      });
+
+    const issueFake = fake.returns({ tokens });
+    const anotherSetFake = fake.returns({
+      issue: issueFake,
+    });
+    const commandFake = fake.returns({
+      set: anotherSetFake,
+    });
+
+    replace(deps, "command", commandFake);
+
+    replace(deps, "compare", fake.returns(true));
+
+    const context = {};
+    const result = await main({
+      payload,
+      context,
+      claims,
+      aggregateFn: aggregateFake,
+    });
+
+    expect(result).to.deep.equal({
+      response: { tokens },
+    });
+    expect(eventStoreFake).to.have.been.calledWith({ domain: "identity" });
+    expect(setFake).to.have.been.calledWith({
+      context,
+      claims,
+      tokenFns: { internal: deps.gcpToken },
+    });
+    expect(queryFake).to.have.been.calledWith({ key: "id", value: id });
+    expect(aggregateFake).to.have.been.calledWith(principleRoot, {
+      domain: "principle",
+    });
+    expect(aggregateFake).to.have.been.calledOnce;
+    expect(commandFake).to.have.been.calledWith({
+      name: "issue",
+      domain: "challenge",
+    });
+    expect(anotherSetFake).to.have.been.calledWith({
+      context,
+      claims,
+      tokenFns: { internal: deps.gcpToken },
+    });
+    expect(issueFake).to.have.been.calledWith(
+      { id, phone },
+      {
+        options: {
+          upgrade: {
+            identity: {
+              root: identityRoot,
+              service,
+              network,
+            },
+            principle: {
+              root: principleRoot,
+              service: principleService,
+              network: principleNetwork,
+            },
+          },
+          events: [],
         },
       }
     );
@@ -235,8 +332,10 @@ describe("Command handler unit tests", () => {
     expect(aggregateFake).to.have.been.calledWith(principleRoot, {
       domain: "principle",
     });
-    expect(aggregateFake).to.have.been.calledWith(sub, {
+    expect(aggregateFake).to.have.been.calledWith(contextPrincipleRoot, {
       domain: "principle",
+      service: contextPrincipleService,
+      network: contextPrincipleNetwork,
     });
     expect(aggregateFake).to.have.been.calledTwice;
     expect(commandFake).to.have.been.calledWith({
@@ -244,14 +343,7 @@ describe("Command handler unit tests", () => {
       domain: "challenge",
     });
     expect(anotherSetFake).to.have.been.calledWith({
-      context: {
-        ...context,
-        identity: {
-          root: identityRoot,
-          service,
-          network,
-        },
-      },
+      context,
       claims,
       tokenFns: { internal: deps.gcpToken },
     });
@@ -259,17 +351,19 @@ describe("Command handler unit tests", () => {
       { phone, id },
       {
         options: {
-          principle: {
-            root: principleRoot,
-            service: principleService,
-            network: principleNetwork,
+          upgrade: {
+            identity: {
+              root: identityRoot,
+              service,
+              network,
+            },
           },
           events: [],
         },
       }
     );
   });
-  it("should return successfully if principle not found with no subject", async () => {
+  it("should return successfully if identity not found with no principle in the context", async () => {
     const queryFake = fake.returns([]);
     const setFake = fake.returns({
       query: queryFake,
@@ -305,10 +399,11 @@ describe("Command handler unit tests", () => {
 
     replace(deps, "compare", fake.returns(true));
 
+    const context = {};
     const result = await main({
       payload,
       context,
-      claims: {},
+      claims,
     });
 
     expect(result).to.deep.equal({
@@ -317,7 +412,7 @@ describe("Command handler unit tests", () => {
     expect(eventStoreFake).to.have.been.calledWith({ domain: "identity" });
     expect(setFake).to.have.been.calledWith({
       context,
-      claims: {},
+      claims,
       tokenFns: { internal: deps.gcpToken },
     });
     expect(queryFake).to.have.been.calledWith({ key: "id", value: id });
@@ -327,22 +422,26 @@ describe("Command handler unit tests", () => {
       domain: "challenge",
     });
     expect(anotherSetFake).to.have.been.calledWith({
-      context: {
-        ...context,
-        identity: {
-          root: identityRoot,
-          service,
-          network,
-        },
-      },
-      claims: {},
+      context,
+      claims,
       tokenFns: { internal: deps.gcpToken },
     });
     expect(issueFake).to.have.been.calledWith(
       { id, phone },
       {
         options: {
-          principle: { root: principleRoot, service, network },
+          upgrade: {
+            identity: {
+              root: identityRoot,
+              service,
+              network,
+            },
+            principle: {
+              root: principleRoot,
+              service,
+              network,
+            },
+          },
           events: [
             {
               action: "register",
@@ -371,7 +470,7 @@ describe("Command handler unit tests", () => {
       }
     );
   });
-  it("should return successfully if principle not found with subject", async () => {
+  it("should return successfully if identity not found with principle in context", async () => {
     const queryFake = fake.returns([]);
     const setFake = fake.returns({
       query: queryFake,
@@ -423,14 +522,7 @@ describe("Command handler unit tests", () => {
       domain: "challenge",
     });
     expect(anotherSetFake).to.have.been.calledWith({
-      context: {
-        ...context,
-        identity: {
-          root: identityRoot,
-          service,
-          network,
-        },
-      },
+      context,
       claims,
       tokenFns: { internal: deps.gcpToken },
     });
@@ -438,7 +530,13 @@ describe("Command handler unit tests", () => {
       { id, phone },
       {
         options: {
-          principle: { root: sub, service, network },
+          upgrade: {
+            identity: {
+              root: identityRoot,
+              service,
+              network,
+            },
+          },
           events: [
             {
               action: "register",
@@ -448,14 +546,18 @@ describe("Command handler unit tests", () => {
               payload: {
                 phone: phoneHash,
                 id,
-                principle: { root: sub, service, network },
+                principle: {
+                  root: contextPrincipleRoot,
+                  service: contextPrincipleService,
+                  network: contextPrincipleNetwork,
+                },
               },
             },
             {
               action: "add-roles",
               domain: "principle",
               service,
-              root: sub,
+              root: contextPrincipleRoot,
               payload: {
                 roles: [
                   { id: "IdentityAdmin", root: identityRoot, service, network },
@@ -468,8 +570,18 @@ describe("Command handler unit tests", () => {
     );
   });
 
-  it("should return nothing if sub is the identity's principle", async () => {
-    const queryFake = fake.returns([{ state: { principle: { root: sub } } }]);
+  it("should return nothing if context principle is the identity's principle", async () => {
+    const queryFake = fake.returns([
+      {
+        state: {
+          principle: {
+            root: contextPrincipleRoot,
+            service: contextPrincipleService,
+            network: contextPrincipleNetwork,
+          },
+        },
+      },
+    ]);
     const setFake = fake.returns({
       query: queryFake,
     });
@@ -489,7 +601,15 @@ describe("Command handler unit tests", () => {
   });
   it("should throw correctly if the session is saved to a different identity", async () => {
     const firstQueryFake = fake.returns([
-      { state: { principle: { root: "some-random-root" } } },
+      {
+        state: {
+          principle: {
+            root: "some-random-root",
+            service: "some-random-service",
+            network: "some-random-network",
+          },
+        },
+      },
     ]);
     const secondQueryFake = fake.returns(["something"]);
     const firstSetFake = fake.returns({

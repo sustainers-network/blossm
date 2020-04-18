@@ -1,9 +1,12 @@
 module.exports = (payload) => {
-  return {
-    principle: {
-      root: payload.principle.root,
-      service: payload.principle.service,
-      network: payload.principle.network,
-    },
-  };
+  const normalizedPayload = {};
+  for (const key in payload) {
+    if (typeof payload[key] != "object") continue;
+    normalizedPayload[key] = {
+      root: payload[key].root,
+      service: payload[key].service,
+      network: payload[key].network,
+    };
+  }
+  return normalizedPayload;
 };

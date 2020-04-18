@@ -2,9 +2,7 @@ domain: session
 service: core
 
 schema:
-  started: Date
   terminated: Date
-  upgraded: Date
   scene:
     root: String
     service: String
@@ -32,7 +30,6 @@ testing:
     first:
       action: start
       payload:
-        started: 2020-12-31T00:00:00.000Z
         device:
           os: iOS
           version: "10"
@@ -42,7 +39,6 @@ testing:
     second:
       action: start
       payload:
-        started: 2020-12-31T00:00:00.000Z
         previous: some-previous-session-root
         scene:
           root: some-scene-root
@@ -69,7 +65,6 @@ testing:
     - action: start
       examples:
         - payload:
-            started: 2021-01-03T00:02:15.000Z
             device:
               os: Android
               version: "10"
@@ -78,8 +73,11 @@ testing:
               id: some-device-id
         - state: {}
           payload:
-            started: 2021-01-03T00:02:15.000Z
-            upgraded: 2021-01-03T00:02:15.000Z
+            context:
+              principle:
+                root: some-principle-root
+                service: some-principle-service
+                domain: some-principle-domain
             principle:
               root: some-principle-root
               service: some-principle-service
@@ -95,8 +93,11 @@ testing:
               manufacturer: Google
               id: some-device-id
           result:
-            started: 2021-01-03T00:02:15.000Z
-            upgraded: 2021-01-03T00:02:15.000Z
+            context:
+              principle:
+                root: some-principle-root
+                service: some-principle-service
+                domain: some-principle-domain
             principle:
               root: some-principle-root
               service: some-principle-service
@@ -118,7 +119,32 @@ testing:
               root: some-principle-root
               service: some-principle-service
               network: some.principle-network
-            upgraded: 2021-01-03T00:02:15.000Z
+          result:
+            principle:
+              root: some-principle-root
+              service: some-principle-service
+              network: some.principle-network
+        - payload:
+            something:
+              root: some-root
+              service: some-service
+              network: some-network
+          result: {}
+        - state:
+            principle:
+              root: some-principle-root
+              service: some-principle-service
+              network: some.principle-network
+          payload:
+            something:
+              root: some-root
+              service: some-service
+              network: some-network
+          result:
+            principle:
+              root: some-principle-root
+              service: some-principle-service
+              network: some.principle-network
     - action: terminate
       examples:
         - state: {}

@@ -2,62 +2,66 @@ const deps = require("./deps");
 
 const getEventsForPermissionsMerge = async ({
   principle,
-  claims,
+  context,
+  identityRoot,
   aggregateFn,
 }) => {
   // Get the aggregates of the principle of the identity and the current principle of the session.
   const [
     { aggregate: principleAggregate },
-    { aggregate: sessionPrincipleAggregate },
+    { aggregate: sessionPrincipleAggregate } = {},
   ] = await Promise.all([
     aggregateFn(principle.root, {
       domain: "principle",
     }),
-    aggregateFn(claims.sub, {
-      domain: "principle",
-    }),
+    ...(context.principle
+      ? [
+          aggregateFn(context.principle.root, {
+            domain: "principle",
+            service: context.principle.service,
+            network: context.principle.network,
+          }),
+        ]
+      : []),
   ]);
 
-  // Don't create an event if nothing is being saved.
-  if (
-    deps.difference(principleAggregate.roles, sessionPrincipleAggregate.roles)
-      .length == 0
-  )
-    return { events: [], principle };
-
   return {
+    identityRoot,
     events: [
-      {
-        domain: "principle",
-        service: process.env.SERVICE,
-        action: "add-roles",
-        root: principle.root,
-        payload: {
-          roles: sessionPrincipleAggregate.roles,
-        },
-      },
+      ...(sessionPrincipleAggregate &&
+      deps.difference(principleAggregate.roles, sessionPrincipleAggregate.roles)
+        .length > 0
+        ? [
+            {
+              domain: "principle",
+              service: process.env.SERVICE,
+              action: "add-roles",
+              root: principle.root,
+              payload: {
+                roles: sessionPrincipleAggregate.roles,
+              },
+            },
+          ]
+        : []),
     ],
     principle,
   };
 };
 
-const getEventsForIdentityRegistering = async ({ subject, payload }) => {
+const getEventsForIdentityRegistering = async ({ context, payload }) => {
   const identityRoot = deps.uuid();
-  const principleRoot = subject || deps.uuid();
   const hashedPhone = await deps.hash(payload.phone);
 
-  const principle = {
-    root: principleRoot,
-    service: process.env.SERVICE,
-    network: process.env.NETWORK,
-  };
+  const principle = context.principle
+    ? context.principle
+    : {
+        root: deps.uuid(),
+        service: process.env.SERVICE,
+        network: process.env.NETWORK,
+      };
 
   return {
-    identityContext: {
-      root: identityRoot,
-      service: process.env.SERVICE,
-      network: process.env.NETWORK,
-    },
+    identityRoot,
     events: [
       {
         action: "register",
@@ -74,7 +78,7 @@ const getEventsForIdentityRegistering = async ({ subject, payload }) => {
         action: "add-roles",
         domain: "principle",
         service: process.env.SERVICE,
-        root: principleRoot,
+        root: principle.root,
         payload: {
           roles: [
             {
@@ -104,17 +108,22 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
     if (!(await deps.compare(payload.phone, identity.state.phone)))
       throw deps.invalidArgumentError.message("This phone number isn't right.");
 
-    if (claims.sub) {
+    if (context.principle) {
       // Don't log an event or issue a challange if
-      // the identity's root is already set as the claims's subject.
-      if (identity.state.principle.root == claims.sub) return {};
+      // the context already has the identity's principle.
+      if (
+        identity.state.principle.root == context.principle.root &&
+        identity.state.principle.service == context.principle.service &&
+        identity.state.principle.network == context.principle.network
+      )
+        return {};
 
       const [subjectIdentity] = await deps
         .eventStore({
           domain: "identity",
         })
         .set({ context, claims, tokenFns: { internal: deps.gcpToken } })
-        .query({ key: "principle.root", value: claims.sub });
+        .query({ key: "principle.root", value: context.principle.root });
 
       if (subjectIdentity)
         throw deps.badRequestError.message(
@@ -123,23 +132,20 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
     }
   }
 
-  // If an identity is found, merge the roles given to the claims's subject
+  // If an identity is found, merge the roles given to the principle already in the context;
   // to the identity's principle.
-  // If not found, register a new identity and set the principle to be the claims's subject.
-  const { events, principle, identityContext } = identity
+  // If not found, register a new identity and set the principle to be the principle in the context.
+  const { events, principle, identityRoot } = identity
     ? await getEventsForPermissionsMerge({
         principle: identity.state.principle,
-        claims,
+        identityRoot: identity.headers.root,
+        context,
         aggregateFn,
       })
     : await getEventsForIdentityRegistering({
-        subject: claims.sub,
+        context,
         payload,
       });
-
-  //TODO
-  //eslint-disable-next-line no-console
-  console.log({ events, claims, principle, payload });
 
   const { tokens } = await deps
     .command({
@@ -147,14 +153,7 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
       domain: "challenge",
     })
     .set({
-      context: {
-        ...context,
-        identity: identityContext || {
-          root: identity.headers.root,
-          service: process.env.SERVICE,
-          network: process.env.NETWORK,
-        },
-      },
+      context,
       claims,
       tokenFns: { internal: deps.gcpToken },
     })
@@ -164,7 +163,19 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
         phone: payload.phone,
       },
       {
-        options: { principle, events },
+        options: {
+          events,
+          upgrade: {
+            identity: {
+              root: identityRoot,
+              service: process.env.SERVICE,
+              network: process.env.NETWORK,
+            },
+            ...(!context.principle && {
+              principle,
+            }),
+          },
+        },
       }
     );
 

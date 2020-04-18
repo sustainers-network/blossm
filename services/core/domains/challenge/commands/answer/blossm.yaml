@@ -66,10 +66,11 @@ testing:
           payload:
             code: "123456"
             expires: 9999-12-31T00:00:00.000Z
-            principle:
-              root: some-challenge-principle-root
-              service: some-service
-              network: some.network
+            upgrade:
+              principle:
+                root: some-principle-root
+                service: some-principle-service
+                network: some.principle-network
             claims:
               iss: some-iss
               aud: some-aud
@@ -106,10 +107,11 @@ testing:
           payload:
             code: "234567"
             expires: 9999-12-31T00:00:00.000Z
-            principle:
-              root: some-challenge-principle-root
-              service: some-service
-              network: some.network
+            upgrade:
+              principle:
+                root: some-principle-root
+                service: some-principle-service
+                network: some.principle-network
             claims:
               iss: some-iss
               aud: some-aud
@@ -133,6 +135,12 @@ testing:
           root: some-other-session-root
           service: some-service
           network: some.network
+      response:
+        tokens:
+          - network:
+            type: access
+            value:
+        context:
     - pre:
         - domain: challenge
           service: core

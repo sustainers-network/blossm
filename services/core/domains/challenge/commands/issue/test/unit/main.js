@@ -3,7 +3,6 @@ const { expect } = require("chai")
   .use(require("sinon-chai"));
 const { restore, replace, fake, useFakeTimers } = require("sinon");
 
-const main = require("../../main");
 const deps = require("../../deps");
 
 let clock;
@@ -54,10 +53,12 @@ process.env.SERVICE = service;
 process.env.NETWORK = network;
 process.env.GCP_PROJECT = project;
 process.env.TWILIO_SENDING_PHONE_NUMBER = sendingPhoneNumber;
-
+let main;
 describe("Command handler unit tests", () => {
   beforeEach(() => {
     clock = useFakeTimers(now.getTime());
+    delete require.cache[require.resolve("../../main")];
+    main = require("../../main");
   });
   afterEach(() => {
     clock.restore();
@@ -108,11 +109,6 @@ describe("Command handler unit tests", () => {
           correctNumber: 0,
           payload: {
             code,
-            principle: {
-              root: principleRoot,
-              service: principleService,
-              network: principleNetwork,
-            },
             claims,
             issued: new Date().toISOString(),
             expires: deps.moment().add(180, "s").toDate().toISOString(),
@@ -162,7 +158,257 @@ describe("Command handler unit tests", () => {
         context: {
           ...context,
           challenge: { root, service, network },
-          identity: { root: identityRoot, service, network },
+        },
+      },
+      signFn: signature,
+    });
+    expect(randomIntFake).to.have.been.calledWith(6);
+    expect(Math.abs(deps.moment().add(3, "m").toDate() - new Date())).to.equal(
+      180000
+    );
+    expect(smsSendFake).to.have.been.calledWith({
+      to: payloadPhone,
+      from: sendingPhoneNumber,
+      body: `${code} is your verification code. Enter it in the app to let us know it's really you.`,
+    });
+    await main({ payload, context, claims });
+    expect(smsFake).to.have.been.calledOnce;
+  });
+  it("should return successfully without identity in context, but with a principle in context", async () => {
+    const secretFake = fake.returns(secret);
+    replace(deps, "secret", secretFake);
+
+    const smsSendFake = fake();
+    const smsFake = fake.returns({
+      send: smsSendFake,
+    });
+    replace(deps, "sms", smsFake);
+
+    const uuidFake = fake.returns(root);
+    replace(deps, "uuid", uuidFake);
+
+    const compareFake = fake.returns(true);
+    replace(deps, "compare", compareFake);
+
+    const queryFake = fake.returns([identity]);
+    const setFake = fake.returns({
+      query: queryFake,
+    });
+    const eventStoreFake = fake.returns({
+      set: setFake,
+    });
+    replace(deps, "eventStore", eventStoreFake);
+
+    const signature = "some-signature";
+    const signFake = fake.returns(signature);
+    replace(deps, "sign", signFake);
+
+    const createJwtFake = fake.returns(token);
+    replace(deps, "createJwt", createJwtFake);
+
+    const randomIntFake = fake.returns(code);
+    replace(deps, "randomIntOfLength", randomIntFake);
+
+    const context = { principle: { root: principleRoot } };
+    const result = await main({
+      payload,
+      context,
+      claims,
+    });
+
+    expect(result).to.deep.equal({
+      events: [
+        {
+          action: "issue",
+          root,
+          correctNumber: 0,
+          payload: {
+            code,
+            upgrade: {
+              identity: {
+                root: identityRoot,
+                service,
+                network,
+              },
+            },
+            claims,
+            issued: new Date().toISOString(),
+            expires: deps.moment().add(180, "s").toDate().toISOString(),
+          },
+        },
+      ],
+      response: {
+        tokens: [{ network, type: "challenge", value: token }],
+        references: {
+          challenge: {
+            root,
+            service,
+            network,
+          },
+        },
+      },
+    });
+    expect(compareFake).to.have.been.calledWith(payloadPhone, phone);
+    expect(queryFake).to.have.been.calledWith({
+      key: "id",
+      value: id,
+    });
+    expect(setFake).to.have.been.calledWith({
+      context,
+      tokenFns: { internal: deps.gcpToken },
+    });
+    expect(eventStoreFake).to.have.been.calledWith({
+      domain: "identity",
+    });
+    expect(signFake).to.have.been.calledWith({
+      ring: "jwt",
+      key: "challenge",
+      location: "global",
+      version: "1",
+      project,
+    });
+    expect(secretFake).to.have.been.calledWith("twilio-account-sid");
+    expect(secretFake).to.have.been.calledWith("twilio-auth-token");
+    expect(smsFake).to.have.been.calledWith(secret, secret);
+    expect(createJwtFake).to.have.been.calledWith({
+      options: {
+        issuer: `${domain}.${service}.${network}/issue`,
+        audience: network,
+        expiresIn: 3600000,
+      },
+      payload: {
+        context: {
+          ...context,
+          challenge: { root, service, network },
+        },
+      },
+      signFn: signature,
+    });
+    expect(secretFake).to.have.been.calledWith("twilio-account-sid");
+    expect(secretFake).to.have.been.calledWith("twilio-auth-token");
+    expect(smsFake).to.have.been.calledWith(secret, secret);
+    expect(randomIntFake).to.have.been.calledWith(6);
+    expect(Math.abs(deps.moment().add(3, "m").toDate() - new Date())).to.equal(
+      180000
+    );
+    expect(smsSendFake).to.have.been.calledWith({
+      to: payloadPhone,
+      from: sendingPhoneNumber,
+      body: `${code} is your verification code. Enter it in the app to let us know it's really you.`,
+    });
+  });
+  it("should return successfully without identity or principle in context, with events in options", async () => {
+    const secretFake = fake.returns(secret);
+    replace(deps, "secret", secretFake);
+
+    const smsSendFake = fake();
+    const smsFake = fake.returns({
+      send: smsSendFake,
+    });
+    replace(deps, "sms", smsFake);
+
+    const uuidFake = fake.returns(root);
+    replace(deps, "uuid", uuidFake);
+
+    const compareFake = fake.returns(true);
+    replace(deps, "compare", compareFake);
+
+    const queryFake = fake.returns([identity]);
+    const setFake = fake.returns({
+      query: queryFake,
+    });
+    const eventStoreFake = fake.returns({
+      set: setFake,
+    });
+    replace(deps, "eventStore", eventStoreFake);
+
+    const signature = "some-signature";
+    const signFake = fake.returns(signature);
+    replace(deps, "sign", signFake);
+
+    const createJwtFake = fake.returns(token);
+    replace(deps, "createJwt", createJwtFake);
+
+    const randomIntFake = fake.returns(code);
+    replace(deps, "randomIntOfLength", randomIntFake);
+
+    const context = {};
+
+    const events = [{ a: 1 }, { b: 2 }];
+    const result = await main({
+      payload,
+      context,
+      claims,
+      options: { events },
+    });
+
+    expect(result).to.deep.equal({
+      events: [
+        {
+          action: "issue",
+          root,
+          correctNumber: 0,
+          payload: {
+            code,
+            upgrade: {
+              identity: {
+                root: identityRoot,
+                service,
+                network,
+              },
+              principle: {
+                root: principleRoot,
+                service: principleService,
+                network: principleNetwork,
+              },
+            },
+            claims,
+            issued: new Date().toISOString(),
+            expires: deps.moment().add(180, "s").toDate().toISOString(),
+            events,
+          },
+        },
+      ],
+      response: {
+        tokens: [{ network, type: "challenge", value: token }],
+        references: {
+          challenge: {
+            root,
+            service,
+            network,
+          },
+        },
+      },
+    });
+    expect(compareFake).to.have.been.calledWith(payloadPhone, phone);
+    expect(queryFake).to.have.been.calledWith({
+      key: "id",
+      value: id,
+    });
+    expect(setFake).to.have.been.calledWith({
+      context,
+      tokenFns: { internal: deps.gcpToken },
+    });
+    expect(eventStoreFake).to.have.been.calledWith({
+      domain: "identity",
+    });
+    expect(signFake).to.have.been.calledWith({
+      ring: "jwt",
+      key: "challenge",
+      location: "global",
+      version: "1",
+      project,
+    });
+    expect(createJwtFake).to.have.been.calledWith({
+      options: {
+        issuer: `${domain}.${service}.${network}/issue`,
+        audience: network,
+        expiresIn: 3600000,
+      },
+      payload: {
+        context: {
+          ...context,
+          challenge: { root, service, network },
         },
       },
       signFn: signature,
@@ -177,7 +423,7 @@ describe("Command handler unit tests", () => {
       body: `${code} is your verification code. Enter it in the app to let us know it's really you.`,
     });
   });
-  it("should return successfully if identity is passed in as an option", async () => {
+  it("should return successfully if an upgrade option is passed", async () => {
     const secretFake = fake.returns(secret);
     replace(deps, "secret", secretFake);
 
@@ -200,22 +446,15 @@ describe("Command handler unit tests", () => {
     const randomIntFake = fake.returns(code);
     replace(deps, "randomIntOfLength", randomIntFake);
 
-    const optionsPrinciple = {
-      root: principleRoot,
-      service: principleService,
-      network: principleNetwork,
-    };
-
     const compareFake = fake.returns(true);
     replace(deps, "compare", compareFake);
 
+    const upgrade = { some: "upgrade" };
     const result = await main({
       payload,
       context,
       claims,
-      options: {
-        principle: optionsPrinciple,
-      },
+      options: { upgrade },
     });
 
     expect(compareFake).to.not.have.been.called;
@@ -227,7 +466,7 @@ describe("Command handler unit tests", () => {
           correctNumber: 0,
           payload: {
             code,
-            principle: optionsPrinciple,
+            upgrade,
             claims,
             issued: new Date().toISOString(),
             expires: deps.moment().add(180, "s").toDate().toISOString(),
@@ -262,7 +501,6 @@ describe("Command handler unit tests", () => {
         context: {
           ...context,
           challenge: { root, service, network },
-          identity: contextIdentity,
         },
       },
       signFn: signature,
@@ -274,14 +512,8 @@ describe("Command handler unit tests", () => {
   });
   it("should throw correctly", async () => {
     const errorMessage = "some-error";
-    const queryFake = fake.rejects(new Error(errorMessage));
-    const setFake = fake.returns({
-      query: queryFake,
-    });
-    const eventStoreFake = fake.returns({
-      set: setFake,
-    });
-    replace(deps, "eventStore", eventStoreFake);
+    const secretFake = fake.rejects(new Error(errorMessage));
+    replace(deps, "secret", secretFake);
 
     try {
       await main({ payload, context, claims });
@@ -293,6 +525,15 @@ describe("Command handler unit tests", () => {
     }
   });
   it("should throw correctly if no phones found", async () => {
+    const secretFake = fake.returns(secret);
+    replace(deps, "secret", secretFake);
+
+    const smsSendFake = fake();
+    const smsFake = fake.returns({
+      send: smsSendFake,
+    });
+    replace(deps, "sms", smsFake);
+
     const queryFake = fake.returns([]);
     const setFake = fake.returns({
       query: queryFake,
@@ -367,7 +608,7 @@ describe("Command handler unit tests", () => {
       expect(e).to.equal(error);
     }
   });
-  it("should throw correctly if claims.sub doesn't match the identity's principle", async () => {
+  it("should throw correctly if context.principle doesn't match the identity's principle", async () => {
     const secretFake = fake.returns(secret);
     replace(deps, "secret", secretFake);
 
@@ -400,8 +641,7 @@ describe("Command handler unit tests", () => {
     try {
       await main({
         payload,
-        context,
-        claims: { sub: "some-bogus" },
+        context: { principle: { root: "some-bogus " } },
       });
 
       //shouldn't get called
@@ -412,103 +652,5 @@ describe("Command handler unit tests", () => {
       );
       expect(e).to.equal(error);
     }
-  });
-  it("should return successfully with context events", async () => {
-    const secretFake = fake.returns(secret);
-    replace(deps, "secret", secretFake);
-
-    const smsSendFake = fake();
-    const smsFake = fake.returns({
-      send: smsSendFake,
-    });
-    replace(deps, "sms", smsFake);
-
-    const uuidFake = fake.returns(root);
-    replace(deps, "uuid", uuidFake);
-
-    const queryFake = fake.returns([identity]);
-    const setFake = fake.returns({
-      query: queryFake,
-    });
-    const eventStoreFake = fake.returns({
-      set: setFake,
-    });
-    replace(deps, "eventStore", eventStoreFake);
-
-    const signature = "some-signature";
-    const signFake = fake.returns(signature);
-    replace(deps, "sign", signFake);
-
-    const createJwtFake = fake.returns(token);
-    replace(deps, "createJwt", createJwtFake);
-
-    const randomIntFake = fake.returns(code);
-    replace(deps, "randomIntOfLength", randomIntFake);
-
-    const compareFake = fake.returns(true);
-    replace(deps, "compare", compareFake);
-
-    const options = { events: [{ a: 1 }, { b: 2 }] };
-    const context = { c: 3 };
-    const result = await main({
-      payload,
-      claims,
-      context,
-      options,
-    });
-
-    expect(result).to.deep.equal({
-      response: {
-        tokens: [{ network, type: "challenge", value: token }],
-        references: {
-          challenge: {
-            root,
-            service,
-            network,
-          },
-        },
-      },
-      events: [
-        {
-          action: "issue",
-          root,
-          correctNumber: 0,
-          payload: {
-            code,
-            principle: {
-              root: principleRoot,
-              service: principleService,
-              network: principleNetwork,
-            },
-            issued: new Date().toISOString(),
-            claims,
-            expires: deps.moment().add(180, "s").toDate().toISOString(),
-            events: [
-              {
-                a: 1,
-              },
-              {
-                b: 2,
-              },
-            ],
-          },
-        },
-      ],
-    });
-    expect(createJwtFake).to.have.been.calledWith({
-      options: {
-        issuer: `${domain}.${service}.${network}/issue`,
-        audience: network,
-        expiresIn: 3600000,
-      },
-      payload: {
-        context: {
-          c: 3,
-          challenge: { root, service, network },
-          identity: { root: identityRoot, service, network },
-        },
-      },
-      signFn: signature,
-    });
   });
 });

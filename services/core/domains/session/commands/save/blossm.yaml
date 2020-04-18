@@ -58,6 +58,7 @@ testing:
       service: core
 
   steps:
+    # Should return 409 if the phone number is wrong.
     - pre:
         - domain: identity
           service: core
@@ -74,6 +75,8 @@ testing:
         id: some-identity-id
         phone: "+19195551133"
       code: 409
+
+    # Should return an empty response if saving isn't necessary.
     - pre:
         - domain: identity
           service: core
@@ -89,19 +92,27 @@ testing:
       payload:
         id: some-other-identity-id
         phone: "+19195551155"
-      claims:
-        sub: some-principle-root
+      context:
+        principle:
+          root: some-principle-root
+          service: some-service
+          network: some.network
       response:
     - payload:
         id: new-identity-id
         phone: "+19195551144"
-      claims:
-        sub: some-principle-root
+      context:
+        principle:
+          root: some-principle-root
+          service: some-service
+          network: some.network
       response:
         tokens:
           - network:
             type: challenge
             value:
+    # Return successfully if saving a new id with a context that has
+    # a principle that doesn't yet belong to an identity.
     - pre:
         - domain: principle
           service: core
@@ -135,15 +146,17 @@ testing:
       payload:
         id: yet-another-identity-id
         phone: "+19195551177"
-      claims:
-        sub: some-other-principle-root
-      code: 400
-      ## TODO remove
-      # response:
-      #   tokens:
-      #     - network:
-      #       type: challenge
-      #       value:
+      context:
+        principle:
+          root: some-other-principle-root
+          service: core
+          network: sustainers.network
+      response:
+        tokens:
+          - network:
+            type: challenge
+            value:
+      # Should return 400 if the principle in the context belongs to a different identity.
     - pre:
         - domain: principle
           service: core
@@ -189,7 +202,11 @@ testing:
         id: yet-another-identity-id_1
         phone: "+19195551177"
       claims:
-        sub: some-other-principle-root_1
+      context:
+        principle:
+          root: some-other-principle-root_1
+          service: some-service
+          network: some.network
       code: 400
 
 #don't change

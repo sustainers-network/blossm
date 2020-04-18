@@ -76,6 +76,6 @@ describe("Command gateway integration tests", () => {
       },
     });
 
-    expect(response1.statusCode).to.equal(204);
+    expect(response1.statusCode).to.equal(201);
   });
 });

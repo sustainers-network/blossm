@@ -2,11 +2,8 @@ name: upgrade
 domain: session
 service: core
 
-payload:
-  principle:
-    root: string
-    service: string
-    network: domain
+# An object of references i.e. { root: "some-root", service: "some-service": network: "some-network"}
+payload: object
 
 dependencies:
   "@blossm/jwt": "*"
@@ -33,6 +30,8 @@ testing:
       - principle:
           root: 1
       - principle:
+          network: some-string
+      - principle:
           service: 1
       - principle:
           network: 1
@@ -43,6 +42,7 @@ testing:
           root: some-principle-root
           service: some-principle-service
           network: some.principle-network
+          bogus: some-bogus
       normalized:
         principle:
           root: some-principle-root
@@ -55,6 +55,7 @@ testing:
       service: core
 
   steps:
+    - payload: {}
     - pre:
         - domain: session
           service: core
@@ -84,20 +85,6 @@ testing:
             root: some-principle-root
             service: some-principle-service
             network: some.principle-network
-    - pre:
-        - domain: session
-          service: core
-          root: some-other-root
-          action: upgrade
-          payload:
-            upgraded: 2019-12-31T00:00:00.000Z
-      payload:
-        principle:
-          root: some-principle-root
-          service: some-principle-service
-          network: some.principle-network
-      root: some-other-root
-      code: 400
     - pre:
         - domain: session
           service: core

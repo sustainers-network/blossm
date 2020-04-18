@@ -29,8 +29,8 @@ module.exports = async ({ payload, context, aggregateFn }) => {
     ...(challengeAggregate.events || []),
   ];
 
-  // If there's already a subject associated with this session, no need to upgrade the session.
-  if (challengeAggregate.claims.sub) return { events };
+  // If there isn't a need to upgrade the context, no need to return a token.
+  if (!challengeAggregate.upgrade) return { events };
 
   // Upgrade the session with the principle specified in the challenge.
   const { tokens, context: newContext } = await deps
@@ -43,12 +43,7 @@ module.exports = async ({ payload, context, aggregateFn }) => {
       claims: challengeAggregate.claims,
       tokenFns: { internal: deps.gcpToken },
     })
-    .issue(
-      {
-        principle: challengeAggregate.principle,
-      },
-      { root: context.session.root }
-    );
+    .issue(challengeAggregate.upgrade, { root: context.session.root });
 
   return { events, response: { tokens, context: newContext } };
 };

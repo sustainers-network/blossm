@@ -16,7 +16,6 @@ dependencies:
   "@blossm/gcp-kms": "*"
   "@blossm/uuid": "*"
   "@blossm/duration-consts": "*"
-  "@blossm/datetime": "*"
 
 devDependencies:
   "mocha": "^7.1.0"

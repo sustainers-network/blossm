@@ -65,24 +65,25 @@ testing:
       service: core
 
   steps:
+    # Should return 409 if the id isn't found.
     - payload:
         id: some-id
         phone: "(919) 555 1144"
       code: 409
+    # Should return successfully if upgrading a principle.
     - options:
+        upgrade:
+          principle:
+            root: some-principle-root
+            service: some-principle-service
+            network: some.principle-network
+      payload:
+        phone: "(919) 555 1133"
+      context:
         principle:
           root: some-principle-root
           service: some-principle-service
-          network: some.principle-network
-      payload:
-        phone: "(919) 555 1133"
-      claims:
-        sub: some-principle-root
-      context:
-        identity:
-          root: some-context-identity-root
-          service: some-context-identity-service
-          network: some-context-identity-network
+          network: some-principle-network
       response:
         tokens:
           - network:
@@ -93,21 +94,8 @@ testing:
             root:
             service:
             network:
-    - options:
-        principle:
-          root: some-principle-root
-          service: some-principle-service
-          network: some.principle-network
-      payload:
-        phone: "(919) 555 1133"
-      context:
-        identity:
-          root: some-context-identity-root
-          service: some-context-identity-service
-          network: some-context-identity-network
-      claims:
-        sub: some-whack-principle-root
-      code: 400
+    # Should return 400 if the context principle is
+    # different from the principle in the identity.
     - pre:
         - domain: identity
           service: core
@@ -123,9 +111,11 @@ testing:
       payload:
         id: some-id
         phone: "+19195551144"
-      claims:
-        sub: some-sub
+      context:
+        principle:
+          root: some-context-principle-root
       code: 400
+    # Should return successfully if challenging an existing identity correctly.
     - pre:
         - domain: identity
           service: core
@@ -135,13 +125,13 @@ testing:
             id: some-other-id
             phone: "#+19195551144"
             principle:
-              root: some-other-principle
+              root: some-principle
               service: some-service
               network: some.network
+      context: {}
       payload:
         id: some-other-id
         phone: "+19195551144"
-      claims: {}
       response:
         tokens:
           - network:
@@ -152,6 +142,7 @@ testing:
             root:
             service:
             network:
+      # Should return 400 if the phone number is not correct.
     - pre:
         - domain: identity
           service: core
@@ -165,7 +156,7 @@ testing:
               service: some-service
               network: some.network
       payload:
-        id: some-id
+        id: yet-another-id
         phone: "+19195551133"
       code: 400
 

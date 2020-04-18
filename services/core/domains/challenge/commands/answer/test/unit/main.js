@@ -8,14 +8,13 @@ const deps = require("../../deps");
 
 let clock;
 const now = new Date();
-const challengePrinciple = "some-challenge-principle";
+const challengeUpgrade = "some-challenge-upgrade";
 const code = "some-code";
 const exp = "some-exp";
 const iss = "some-iss";
 const aud = "some-aud";
 const challenge = {
   code,
-  principle: challengePrinciple,
   claims: {
     exp,
     iss,
@@ -55,6 +54,7 @@ describe("Command handler unit tests", () => {
     const aggregateFake = fake.returns({
       aggregate: {
         ...challenge,
+        upgrade: challengeUpgrade,
         expires: deps.stringDate(),
       },
     });
@@ -101,20 +101,14 @@ describe("Command handler unit tests", () => {
       },
       tokenFns: { internal: deps.gcpToken },
     });
-    expect(issueFake).to.have.been.calledWith(
-      {
-        principle: challengePrinciple,
-      },
-      { root: sessionRoot }
-    );
+    expect(issueFake).to.have.been.calledWith(challengeUpgrade, {
+      root: sessionRoot,
+    });
   });
-  it("should return successfully if claims.sub is provided.", async () => {
+  it("should return successfully if upgrade is not provided.", async () => {
     const aggregateFake = fake.returns({
       aggregate: {
         ...challenge,
-        claims: {
-          sub: "some-sub",
-        },
         expires: deps.stringDate(),
       },
     });

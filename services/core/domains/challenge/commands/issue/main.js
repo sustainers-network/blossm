@@ -12,17 +12,55 @@ const CODE_LENGTH = 6;
 
 let sms;
 
+const determineUpgrade = async (payload, context) => {
+  // Check to see if the phone is recognized.
+  // If the principle is being upgraded, use a placeholder identity with it instead.
+  const [identity] = await deps
+    .eventStore({ domain: "identity" })
+    .set({ context, tokenFns: { internal: deps.gcpToken } })
+    .query({ key: "id", value: payload.id });
+
+  if (!identity)
+    throw deps.invalidArgumentError.message("This id isn't recognized.", {
+      info: { id: payload.id },
+    });
+
+  if (!(await deps.compare(payload.phone, identity.state.phone)))
+    throw deps.badRequestError.message(
+      "This phone number can't be used to challenge."
+    );
+
+  // If the context already has a principle, don't allow another principle to be challenged.
+  if (
+    context.principle &&
+    context.principle.root != identity.state.principle.root
+  )
+    throw deps.badRequestError.message(
+      "This principle can't be challenged during the current session."
+    );
+
+  // No need to upgrade if the context already has an identity.
+  if (context.identity) return null;
+
+  return {
+    identity: {
+      root: identity.headers.root,
+      service: process.env.SERVICE,
+      network: process.env.NETWORK,
+    },
+    ...(!context.principle && { principle: identity.state.principle }),
+  };
+};
+
 module.exports = async ({
   payload,
   context,
   claims,
   // `events` are any events to submit once the challenge is answered.
-  // `principle` is the principle to set as the subject of the session token.
-  options: { events, principle } = {},
+  // `upgrade` is an object of properties to add to the context of the
+  // access token returned by answering this issued challenge.
+  options: { events, upgrade } = {},
 }) => {
-  //TODO
-  //eslint-disable-next-line no-console
-  console.log({ events, payload, context, claims, principle });
   // Lazily load up the sms connection.
   if (!sms) {
     sms = deps.sms(
@@ -31,29 +69,7 @@ module.exports = async ({
     );
   }
 
-  // Check to see if the phone is recognized.
-  // If identity and principle roots are passed in, use theme as the identity instead.
-  const [identity] = principle
-    ? [{ headers: {}, state: { principle } }]
-    : await deps
-        .eventStore({ domain: "identity" })
-        .set({ context, tokenFns: { internal: deps.gcpToken } })
-        .query({ key: "id", value: payload.id });
-
-  if (!identity)
-    throw deps.invalidArgumentError.message("This id isn't recognized.", {
-      info: { id: payload.id },
-    });
-
-  if (!principle && !(await deps.compare(payload.phone, identity.state.phone)))
-    throw deps.badRequestError.message(
-      "This phone number can't be used to challenge."
-    );
-
-  if (claims.sub && claims.sub != identity.state.principle.root)
-    throw deps.badRequestError.message(
-      "This principle can't be challenged during the current session."
-    );
+  upgrade = upgrade || (await determineUpgrade(payload, context));
 
   // Create the root for this challenge.
   const root = deps.uuid();
@@ -68,13 +84,7 @@ module.exports = async ({
     payload: {
       context: {
         ...context,
-        identity: identity.headers.root
-          ? {
-              root: identity.headers.root,
-              service: process.env.SERVICE,
-              network: process.env.NETWORK,
-            }
-          : context.identity,
+        // Add a reference to the challenge to the context.
         challenge: {
           root,
           service: process.env.SERVICE,
@@ -108,7 +118,7 @@ module.exports = async ({
         action: "issue",
         payload: {
           code,
-          principle: identity.state.principle,
+          ...(upgrade && { upgrade }),
           claims,
           issued: deps.stringDate(),
           expires: deps.moment().add(THREE_MINUTES, "s").toDate().toISOString(),

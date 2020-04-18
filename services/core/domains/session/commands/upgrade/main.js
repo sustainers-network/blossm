@@ -1,6 +1,9 @@
 const deps = require("./deps");
 
 module.exports = async ({ root, payload, context, claims, aggregateFn }) => {
+  // If there's nothing to upgrade to, dont save events.
+  if (!Object.keys(payload).length) return {};
+
   // Get the aggregate for this session.
   const { aggregate: sessionAggregate } = await aggregateFn(root);
 
@@ -8,20 +11,18 @@ module.exports = async ({ root, payload, context, claims, aggregateFn }) => {
   if (sessionAggregate.terminated)
     throw deps.badRequestError.sessionTerminated();
 
-  // Check to see if this session has already been upgraded.
-  if (sessionAggregate.upgraded)
-    throw deps.badRequestError.sessionAlreadyUpgraded();
-
   const newContext = {
     ...context,
-    principle: payload.principle,
+    ...payload,
   };
+
+  const subject = claims.sub || payload.principle.root;
 
   // Create a new token inheriting from the current claims.
   const token = await deps.createJwt({
     options: {
       issuer: claims.iss,
-      subject: payload.principle.root,
+      subject,
       audience: claims.aud,
       expiresIn: Date.parse(claims.exp) - deps.fineTimestamp(),
     },
@@ -42,26 +43,27 @@ module.exports = async ({ root, payload, context, claims, aggregateFn }) => {
       {
         root,
         action: "upgrade",
-        payload: {
-          upgraded: deps.stringDate(),
-          principle: payload.principle,
-        },
+        payload,
       },
-      {
-        root: payload.principle.root,
-        domain: "principle",
-        action: "add-roles",
-        payload: {
-          roles: [
+      ...(payload.principle
+        ? [
             {
-              id: "SessionAdmin",
-              root,
-              service: process.env.SERVICE,
-              network: process.env.NETWORK,
+              root: payload.principle.root,
+              domain: "principle",
+              action: "add-roles",
+              payload: {
+                roles: [
+                  {
+                    id: "SessionAdmin",
+                    root,
+                    service: process.env.SERVICE,
+                    network: process.env.NETWORK,
+                  },
+                ],
+              },
             },
-          ],
-        },
-      },
+          ]
+        : []),
     ],
     response: {
       tokens: [{ network: process.env.NETWORK, type: "access", value: token }],

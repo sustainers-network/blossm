@@ -44,10 +44,7 @@ module.exports = async ({ payload, context = {} }) => {
       {
         root,
         action: "start",
-        payload: {
-          ...payload,
-          started: deps.stringDate(),
-        },
+        payload,
         correctNumber: 0,
       },
     ],
