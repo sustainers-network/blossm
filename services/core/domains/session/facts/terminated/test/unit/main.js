@@ -22,7 +22,9 @@ describe("Fact unit tests", () => {
     const terminated = "some-terminated";
 
     const aggregateFake = fake.returns({
-      state: { terminated },
+      body: {
+        state: { terminated },
+      },
     });
     const setFake = fake.returns({
       aggregate: aggregateFake,
@@ -45,7 +47,9 @@ describe("Fact unit tests", () => {
   });
   it("should return false successfully", async () => {
     const aggregateFake = fake.returns({
-      state: {},
+      body: {
+        state: {},
+      },
     });
     const setFake = fake.returns({
       aggregate: aggregateFake,

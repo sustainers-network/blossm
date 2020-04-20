@@ -1,7 +1,7 @@
 const deps = require("./deps");
 
 module.exports = async ({ context, root }) => {
-  const aggregate = await deps
+  const { body: aggregate } = await deps
     .eventStore({
       domain: "principle",
       service: "core",

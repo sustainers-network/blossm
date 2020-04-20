@@ -68,7 +68,9 @@ module.exports = async ({ payload, context, claims }) => {
   if (context.principle) return { events, response };
 
   // Upgrade the session for the principle.
-  const { tokens, context: newContext } = await deps
+  const {
+    body: { tokens, context: newContext },
+  } = await deps
     .command({
       domain: "session",
       name: "upgrade",

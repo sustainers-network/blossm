@@ -99,6 +99,7 @@ testing:
             type: access
             value:
         context:
+      code: 202
     - pre:
         - domain: challenge
           service: core
@@ -141,6 +142,7 @@ testing:
             type: access
             value:
         context:
+      code: 202
     - pre:
         - domain: challenge
           service: core

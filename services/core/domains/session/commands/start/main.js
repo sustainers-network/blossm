@@ -8,6 +8,15 @@ module.exports = async ({ payload, context = {} }) => {
   // Create the root for this session.
   const root = deps.uuid();
 
+  const newContext = {
+    network: context.network || process.env.NETWORK,
+    session: {
+      root,
+      service: process.env.SERVICE,
+      network: process.env.NETWORK,
+    },
+  };
+
   // Create a long-lived token.
   const token = await deps.createJwt({
     options: {
@@ -21,14 +30,7 @@ module.exports = async ({ payload, context = {} }) => {
       expiresIn: NINETY_DAYS,
     },
     payload: {
-      context: {
-        network: context.network || process.env.NETWORK,
-        session: {
-          root,
-          service: process.env.SERVICE,
-          network: process.env.NETWORK,
-        },
-      },
+      context: newContext,
     },
     signFn: deps.sign({
       ring: "jwt",
@@ -56,6 +58,7 @@ module.exports = async ({ payload, context = {} }) => {
           value: token,
         },
       ],
+      context: newContext,
       references: {
         session: {
           root,

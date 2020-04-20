@@ -25,8 +25,10 @@ describe("Fact unit tests", () => {
     ];
 
     const aggregateFake = fake.returns({
-      state: {
-        roles,
+      body: {
+        state: {
+          roles,
+        },
       },
     });
     const setFake = fake.returns({

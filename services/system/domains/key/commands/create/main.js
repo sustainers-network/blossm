@@ -4,7 +4,7 @@ module.exports = async ({ payload, context, aggregateFn }) => {
   const node = context.domain == "node" && context.node;
 
   if (!node)
-    throw deps.forbiddenError.message("A key can only be made for a node.");
+    throw deps.forbiddenError.message("A key can only be made by a node.");
 
   const secret = deps.randomStringOfLength(40);
 
@@ -30,7 +30,7 @@ module.exports = async ({ payload, context, aggregateFn }) => {
           roles: payload.roles.map((role) => {
             return {
               id: role,
-              root: "some-tmp-root",
+              root: "some-tmp-root-TODO",
               service: process.env.SERVICE,
               network: process.env.NETWORK,
             };

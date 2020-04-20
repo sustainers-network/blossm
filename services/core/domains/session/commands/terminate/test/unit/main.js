@@ -42,15 +42,18 @@ describe("Command handler unit tests", () => {
       aggregate: { terminated: deps.stringDate() },
     });
     const error = "some-error";
-    const sessionAlreadyTerminatedFake = fake.returns(error);
+    const messageFake = fake.returns(error);
     replace(deps, "badRequestError", {
-      sessionAlreadyTerminated: sessionAlreadyTerminatedFake,
+      message: messageFake,
     });
     try {
       await main({ root, aggregateFn: aggregateFake });
       //shouldn't get called
       expect(2).to.equal(3);
     } catch (e) {
+      expect(messageFake).to.have.been.calledWith(
+        "This session has already been terminated."
+      );
       expect(e).to.equal(error);
     }
   });

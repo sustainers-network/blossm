@@ -1,7 +1,7 @@
 const deps = require("./deps");
 
 module.exports = async ({ context }) => {
-  const aggregate = await deps
+  const { body: aggregate } = await deps
     .eventStore({
       domain: process.env.DOMAIN,
     })

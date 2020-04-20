@@ -18,20 +18,22 @@ describe("Fact unit tests", () => {
     const id = "some-id";
     const permissions = "some-permissions";
 
-    const queryFake = fake.returns([
-      {
-        state: {
-          id,
-          permissions,
+    const queryFake = fake.returns({
+      body: [
+        {
+          state: {
+            id,
+            permissions,
+          },
         },
-      },
-      {
-        state: {
-          id: "some-other-id",
-          permissions: "some-other-permissions",
+        {
+          state: {
+            id: "some-other-id",
+            permissions: "some-other-permissions",
+          },
         },
-      },
-    ]);
+      ],
+    });
     const setFake = fake.returns({
       query: queryFake,
     });
@@ -59,14 +61,16 @@ describe("Fact unit tests", () => {
     const network = "some-network";
     const id = "some-id";
 
-    const queryFake = fake.returns([
-      {
-        state: {
-          id: "some-other-id",
-          permissions: "some-other-permissions",
+    const queryFake = fake.returns({
+      body: [
+        {
+          state: {
+            id: "some-other-id",
+            permissions: "some-other-permissions",
+          },
         },
-      },
-    ]);
+      ],
+    });
 
     const setFake = fake.returns({
       query: queryFake,

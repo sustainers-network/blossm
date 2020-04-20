@@ -6,7 +6,9 @@ module.exports = async ({ root, aggregateFn }) => {
 
   // Check to see if this session has already been terminated.
   if (aggregate.terminated)
-    throw deps.badRequestError.sessionAlreadyTerminated();
+    throw deps.badRequestError.message(
+      "This session has already been terminated."
+    );
 
   return {
     events: [

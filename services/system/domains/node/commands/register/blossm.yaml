@@ -74,6 +74,7 @@ testing:
             root:
             service: "core"
             network:
+      code: 202
     - pre:
         - domain: session
           service: core
@@ -107,6 +108,7 @@ testing:
             root:
             service: "core"
             network:
+      code: 202
 
 #don't change
 procedure: command

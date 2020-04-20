@@ -12,12 +12,12 @@ const principleRoot = "some-principle-root";
 const principle = {
   root: principleRoot,
 };
-const node = "some-node";
+const scene = "some-scene";
 const key = "some-key";
 const contextNetwork = "some-context-network";
 const context = {
   principle,
-  node,
+  scene,
   key,
   network: contextNetwork,
 };
@@ -61,7 +61,7 @@ describe("Command handler unit tests", () => {
       events: [
         {
           payload: {
-            node,
+            scene,
             key,
             opened: deps.stringDate(),
           },

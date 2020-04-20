@@ -23,6 +23,7 @@ const context = {
     network: contextPrincipleNetwork,
   },
 };
+const statusCode = "status-code";
 const service = "some-service";
 const network = "some-network";
 
@@ -73,8 +74,8 @@ describe("Command handler unit tests", () => {
     restore();
   });
   it("should return successfully if identity is found", async () => {
-    const queryFake = fake.returns([identity]);
-    const otherQueryFake = fake.returns([]);
+    const queryFake = fake.returns({ body: [identity] });
+    const otherQueryFake = fake.returns({ body: [] });
     const setFake = fake.returns({
       query: queryFake,
     });
@@ -100,7 +101,7 @@ describe("Command handler unit tests", () => {
         aggregate: sessionPrincipleAggregate,
       });
 
-    const issueFake = fake.returns({ tokens });
+    const issueFake = fake.returns({ body: { tokens }, statusCode });
     const anotherSetFake = fake.returns({
       issue: issueFake,
     });
@@ -121,6 +122,7 @@ describe("Command handler unit tests", () => {
 
     expect(result).to.deep.equal({
       response: { tokens },
+      statusCode,
     });
     expect(eventStoreFake).to.have.been.calledWith({ domain: "identity" });
     expect(setFake).to.have.been.calledWith({
@@ -181,7 +183,7 @@ describe("Command handler unit tests", () => {
     );
   });
   it("should return successfully if identity is found with no principle in the context", async () => {
-    const queryFake = fake.returns([identity]);
+    const queryFake = fake.returns({ body: [identity] });
     const otherQueryFake = fake.returns([]);
     const setFake = fake.returns({
       query: queryFake,
@@ -208,7 +210,7 @@ describe("Command handler unit tests", () => {
         aggregate: sessionPrincipleAggregate,
       });
 
-    const issueFake = fake.returns({ tokens });
+    const issueFake = fake.returns({ body: { tokens }, statusCode });
     const anotherSetFake = fake.returns({
       issue: issueFake,
     });
@@ -230,6 +232,7 @@ describe("Command handler unit tests", () => {
 
     expect(result).to.deep.equal({
       response: { tokens },
+      statusCode,
     });
     expect(eventStoreFake).to.have.been.calledWith({ domain: "identity" });
     expect(setFake).to.have.been.calledWith({
@@ -273,8 +276,8 @@ describe("Command handler unit tests", () => {
     );
   });
   it("should return successfully if identity is found and there are no new roles to add", async () => {
-    const queryFake = fake.returns([identity]);
-    const otherQueryFake = fake.returns([]);
+    const queryFake = fake.returns({ body: [identity] });
+    const otherQueryFake = fake.returns({ body: [] });
     const setFake = fake.returns({
       query: queryFake,
     });
@@ -300,7 +303,7 @@ describe("Command handler unit tests", () => {
         aggregate: principleAggregate,
       });
 
-    const issueFake = fake.returns({ tokens });
+    const issueFake = fake.returns({ body: { tokens }, statusCode });
     const anotherSetFake = fake.returns({
       issue: issueFake,
     });
@@ -321,6 +324,7 @@ describe("Command handler unit tests", () => {
 
     expect(result).to.deep.equal({
       response: { tokens },
+      statusCode,
     });
     expect(eventStoreFake).to.have.been.calledWith({ domain: "identity" });
     expect(setFake).to.have.been.calledWith({
@@ -364,7 +368,7 @@ describe("Command handler unit tests", () => {
     );
   });
   it("should return successfully if identity not found with no principle in the context", async () => {
-    const queryFake = fake.returns([]);
+    const queryFake = fake.returns({ body: [] });
     const setFake = fake.returns({
       query: queryFake,
     });
@@ -387,7 +391,7 @@ describe("Command handler unit tests", () => {
     const hashFake = fake.returns(phoneHash);
     replace(deps, "hash", hashFake);
 
-    const issueFake = fake.returns({ tokens });
+    const issueFake = fake.returns({ body: { tokens }, statusCode });
     const anotherSetFake = fake.returns({
       issue: issueFake,
     });
@@ -408,6 +412,7 @@ describe("Command handler unit tests", () => {
 
     expect(result).to.deep.equal({
       response: { tokens },
+      statusCode,
     });
     expect(eventStoreFake).to.have.been.calledWith({ domain: "identity" });
     expect(setFake).to.have.been.calledWith({
@@ -471,7 +476,7 @@ describe("Command handler unit tests", () => {
     );
   });
   it("should return successfully if identity not found with principle in context", async () => {
-    const queryFake = fake.returns([]);
+    const queryFake = fake.returns({ body: [] });
     const setFake = fake.returns({
       query: queryFake,
     });
@@ -489,7 +494,7 @@ describe("Command handler unit tests", () => {
     const hashFake = fake.returns(phoneHash);
     replace(deps, "hash", hashFake);
 
-    const issueFake = fake.returns({ tokens });
+    const issueFake = fake.returns({ body: { tokens }, statusCode });
     const anotherSetFake = fake.returns({
       issue: issueFake,
     });
@@ -508,6 +513,7 @@ describe("Command handler unit tests", () => {
 
     expect(result).to.deep.equal({
       response: { tokens },
+      statusCode,
     });
     expect(eventStoreFake).to.have.been.calledWith({ domain: "identity" });
     expect(setFake).to.have.been.calledWith({
@@ -571,17 +577,19 @@ describe("Command handler unit tests", () => {
   });
 
   it("should return nothing if context principle is the identity's principle", async () => {
-    const queryFake = fake.returns([
-      {
-        state: {
-          principle: {
-            root: contextPrincipleRoot,
-            service: contextPrincipleService,
-            network: contextPrincipleNetwork,
+    const queryFake = fake.returns({
+      body: [
+        {
+          state: {
+            principle: {
+              root: contextPrincipleRoot,
+              service: contextPrincipleService,
+              network: contextPrincipleNetwork,
+            },
           },
         },
-      },
-    ]);
+      ],
+    });
     const setFake = fake.returns({
       query: queryFake,
     });
@@ -600,18 +608,20 @@ describe("Command handler unit tests", () => {
     expect(result).to.deep.equal({});
   });
   it("should throw correctly if the session is saved to a different identity", async () => {
-    const firstQueryFake = fake.returns([
-      {
-        state: {
-          principle: {
-            root: "some-random-root",
-            service: "some-random-service",
-            network: "some-random-network",
+    const firstQueryFake = fake.returns({
+      body: [
+        {
+          state: {
+            principle: {
+              root: "some-random-root",
+              service: "some-random-service",
+              network: "some-random-network",
+            },
           },
         },
-      },
-    ]);
-    const secondQueryFake = fake.returns(["something"]);
+      ],
+    });
+    const secondQueryFake = fake.returns({ body: ["something"] });
     const firstSetFake = fake.returns({
       query: firstQueryFake,
     });
@@ -670,7 +680,7 @@ describe("Command handler unit tests", () => {
     }
   });
   it("should throw if compare fails", async () => {
-    const queryFake = fake.returns([identity]);
+    const queryFake = fake.returns({ body: [identity] });
     const setFake = fake.returns({
       query: queryFake,
     });
@@ -689,7 +699,7 @@ describe("Command handler unit tests", () => {
         aggregate: sessionPrincipleAggregate,
       });
 
-    const issueFake = fake.returns({ tokens });
+    const issueFake = fake.returns({ body: { tokens }, statusCode });
     const anotherSetFake = fake.returns({
       issue: issueFake,
     });

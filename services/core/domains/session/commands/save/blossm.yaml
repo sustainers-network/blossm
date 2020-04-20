@@ -97,7 +97,7 @@ testing:
           root: some-principle-root
           service: some-service
           network: some.network
-      response:
+      code: 204
     - payload:
         id: new-identity-id
         phone: "+19195551144"
@@ -106,6 +106,7 @@ testing:
           root: some-principle-root
           service: some-service
           network: some.network
+      code: 202
       response:
         tokens:
           - network:
@@ -156,6 +157,7 @@ testing:
           - network:
             type: challenge
             value:
+      code: 202
       # Should return 400 if the principle in the context belongs to a different identity.
     - pre:
         - domain: principle

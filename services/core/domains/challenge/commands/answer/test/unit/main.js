@@ -59,7 +59,7 @@ describe("Command handler unit tests", () => {
       },
     });
 
-    const issueFake = fake.returns({ tokens, context: newContext });
+    const issueFake = fake.returns({ body: { tokens, context: newContext } });
     const setFake = fake.returns({
       issue: issueFake,
     });
@@ -153,9 +153,9 @@ describe("Command handler unit tests", () => {
     });
 
     const error = "some-error";
-    const wrongCodeFake = fake.returns(error);
+    const messageFake = fake.returns(error);
     replace(deps, "invalidArgumentError", {
-      wrongCode: wrongCodeFake,
+      message: messageFake,
     });
 
     try {
@@ -163,6 +163,9 @@ describe("Command handler unit tests", () => {
       //shouldn't get called
       expect(2).to.equal(3);
     } catch (e) {
+      expect(messageFake).to.have.been.calledWith("This code is wrong.", {
+        info: { reason: "wrong" },
+      });
       expect(e).to.equal(error);
     }
   });
@@ -175,9 +178,9 @@ describe("Command handler unit tests", () => {
     });
 
     const error = "some-error";
-    const codeExpiredFake = fake.returns(error);
+    const messageFake = fake.returns(error);
     replace(deps, "invalidArgumentError", {
-      codeExpired: codeExpiredFake,
+      message: messageFake,
     });
 
     try {
@@ -189,6 +192,9 @@ describe("Command handler unit tests", () => {
       //shouldn't get called
       expect(2).to.equal(3);
     } catch (e) {
+      expect(messageFake).to.have.been.calledWith("This code expired.", {
+        info: { reason: "expired" },
+      });
       expect(e).to.equal(error);
     }
   });

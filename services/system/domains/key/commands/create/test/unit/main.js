@@ -109,13 +109,13 @@ describe("Command handler unit tests", () => {
             roles: [
               {
                 id: roleRoot1,
-                root: "some-tmp-root",
+                root: "some-tmp-root-TODO",
                 service,
                 network,
               },
               {
                 id: roleRoot2,
-                root: "some-tmp-root",
+                root: "some-tmp-root-TODO",
                 service,
                 network,
               },
@@ -159,7 +159,7 @@ describe("Command handler unit tests", () => {
       expect(2).to.equal(3);
     } catch (e) {
       expect(messageFake).to.have.been.calledWith(
-        "A key can only be made for a node."
+        "A key can only be made by a node."
       );
       expect(e.message).to.equal(errorMessage);
     }

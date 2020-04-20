@@ -9,7 +9,7 @@ module.exports = async ({ root, payload, context, claims, aggregateFn }) => {
 
   // Check to see if this session has already been terminated.
   if (sessionAggregate.terminated)
-    throw deps.badRequestError.sessionTerminated();
+    throw deps.badRequestError.message("This session is terminated.");
 
   const newContext = {
     ...context,

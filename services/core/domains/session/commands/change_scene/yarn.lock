@@ -2,37 +2,22 @@
 # yarn lockfile v1
 
 
-"@blossm/array-difference@*":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@blossm/array-difference/-/array-difference-0.0.4.tgz#b1c17f18d453c839a724dd9653e71f741198f972"
-  integrity sha512-AGgIKGi4xbXUdg0Q6FeuW5mLLn1A0Qwe1zauc6NqKKldcWfzMtb7LaEIhSs0JjVyYKstXeNeW4LBBX397NrIoA==
-  dependencies:
-    lodash "^4.17.15"
-
-"@blossm/command-post@^0.0.15":
-  version "0.0.15"
-  resolved "https://registry.yarnpkg.com/@blossm/command-post/-/command-post-0.0.15.tgz#5766274f0e77a6a9d85b60e0f5510ee57e41dc5d"
-  integrity sha512-GA/anQHutX0yRB1K/iP/nU4RJyNZ1rasE/gT8oL2LRsdMwImaXazjnQ+rB24+y9uk9rsb/py9LdhkuGfTJN0qA==
+"@blossm/command-post@^0.0.24":
+  version "0.0.24"
+  resolved "https://registry.yarnpkg.com/@blossm/command-post/-/command-post-0.0.24.tgz#13c2213400c5fdbe9e329d29f027f251a3b93c4c"
+  integrity sha512-f2FG34Pt68h1UKqEKuME7hDXcdy8ivL8xbiNFZe17pd2xZS29OYZDp9jHLsrnSa2EeXBs7wXJNtj8JhwDv4rAw==
   dependencies:
     "@blossm/create-event" "^0.0.30"
     "@blossm/datetime" "^0.0.5"
-    "@blossm/event-store-rpc" "^0.0.106"
+    "@blossm/event-store-rpc" "^0.0.108"
     "@blossm/uuid" "^0.0.5"
 
-"@blossm/command-rpc@*":
-  version "0.0.107"
-  resolved "https://registry.yarnpkg.com/@blossm/command-rpc/-/command-rpc-0.0.107.tgz#618930d1c6dee2656f986500d12860406c955f09"
-  integrity sha512-TFe2Bgja9nF0O9TOMGnfINFq2FfmsJ0LtSFL/6mTIxe3tfRuW9kL4xnIM9rRLudiZdmfjD96heeGmwftjiYfCA==
-  dependencies:
-    "@blossm/datetime" "^0.0.5"
-    "@blossm/rpc" "^0.0.93"
-
 "@blossm/command@*":
-  version "0.0.15"
-  resolved "https://registry.yarnpkg.com/@blossm/command/-/command-0.0.15.tgz#eda53dab71a21b932952fc153cadc057a3c21c4b"
-  integrity sha512-xH3qmRVM9CBO2tDiglVkH1wYjfQz3VyS0dL+gmjeKSTj6LWE0u7eEIpiV2HJu27d/y+Kmz+gxdvdw0yXawO2Sw==
+  version "0.0.24"
+  resolved "https://registry.yarnpkg.com/@blossm/command/-/command-0.0.24.tgz#81e834ce14c8ac333d8540630a5dffb3904ee198"
+  integrity sha512-WcA/Kr/5WtlKa7venkbKxps8VxL4x31VVTHimcskKKq35C2hAJHXBzuP5h23Byp60fh8gx8dqN1w/kbsHHdhmw==
   dependencies:
-    "@blossm/command-post" "^0.0.15"
+    "@blossm/command-post" "^0.0.24"
     "@blossm/server" "^0.0.11"
 
 "@blossm/create-event@*", "@blossm/create-event@^0.0.30":
@@ -70,21 +55,21 @@
   dependencies:
     "@blossm/logger" "^0.0.8"
 
-"@blossm/errors@*", "@blossm/errors@^0.0.27":
-  version "0.0.27"
-  resolved "https://registry.yarnpkg.com/@blossm/errors/-/errors-0.0.27.tgz#ae0314e84841990ab2d6ba72a8b8f89bc5c01c1b"
-  integrity sha512-wgejzJ7T+vI+WYXofRQnCoDrGhvktQufoTuJMHpz0OQ+Mi/Y0TvoKqR9z4pOD3L91iFGitg5FFVLZ8K48LElEQ==
+"@blossm/errors@*", "@blossm/errors@^0.0.28":
+  version "0.0.28"
+  resolved "https://registry.yarnpkg.com/@blossm/errors/-/errors-0.0.28.tgz#0d3d896c3d5d516e2c9ed98184adce90ffbf8bbd"
+  integrity sha512-CtEqg1RryxUVn++T6K5ieXhbqVx3yajMOUkxOsHNJrjpVvY6rWm/szIRBNPUgmj1ah2kcXa/S3mo0ouLj8+4ag==
   dependencies:
     restify-errors "^8.0.0"
 
-"@blossm/event-store-rpc@*", "@blossm/event-store-rpc@^0.0.106":
-  version "0.0.106"
-  resolved "https://registry.yarnpkg.com/@blossm/event-store-rpc/-/event-store-rpc-0.0.106.tgz#ebd7e48e5f9424e29a78ce3d1ee60782de5a898c"
-  integrity sha512-xpWScQ+NxRk/h0RI4QbmDX2SUX5aiigfmb7+DaR6MAqGrVnS/6qTdUGEwp4R5xRbDV9+pQVqD4koe029xeJr0A==
+"@blossm/event-store-rpc@*", "@blossm/event-store-rpc@^0.0.108":
+  version "0.0.108"
+  resolved "https://registry.yarnpkg.com/@blossm/event-store-rpc/-/event-store-rpc-0.0.108.tgz#e2b8a22dc6e1dc65023aa5e98d60f023586a43f4"
+  integrity sha512-nYsJ9CM6vLvIIYi99jw+8fNmCWgLUtzfq0FiSDcBNlnohMtIOHZg5D5BKoHgHs35++k0i84Imlu4G/gqsFdd3g==
   dependencies:
     "@blossm/datetime" "^0.0.5"
     "@blossm/request" "^0.0.12"
-    "@blossm/rpc" "^0.0.93"
+    "@blossm/rpc" "^0.0.95"
 
 "@blossm/express-middleware@^0.0.5":
   version "0.0.5"
@@ -93,6 +78,13 @@
   dependencies:
     body-parser "^1.19.0"
     cookie-parser "^1.4.4"
+
+"@blossm/gcp-kms@*":
+  version "0.0.29"
+  resolved "https://registry.yarnpkg.com/@blossm/gcp-kms/-/gcp-kms-0.0.29.tgz#d55052a5ec1879bbf8216f3d79f5001106443d25"
+  integrity sha512-L0ddCjUZ/MUfy4w220PVV8J8lGxCaWcNaHOgiMTg1VSqX+7DVubMyYBlhDLdyDIH9rO+EPWLn6qFfYZxsQmUuQ==
+  dependencies:
+    "@google-cloud/kms" "^1.3.2"
 
 "@blossm/gcp-log-transports@^0.0.3":
   version "0.0.3"
@@ -124,6 +116,17 @@
   integrity sha512-HIe4aexho7t3zsosp6VawPiDBAz7oM3XsGIdFWq5g9kjMqpcp5MdR18648bxNB0MmgeeTIf0MJ9luqWNd0GW4Q==
   dependencies:
     string-hash "^1.1.3"
+
+"@blossm/jwt@*":
+  version "0.0.45"
+  resolved "https://registry.yarnpkg.com/@blossm/jwt/-/jwt-0.0.45.tgz#faa908906c2dba7ad4f04947024b28b44091be81"
+  integrity sha512-FrD3vMdy9Bx7CDooTqzoIS8hbrWbYlExpnHsEayF50CpKrAwLopm81po5/eTil/XVWfWqaIXXLv5Jis0b1IZgw==
+  dependencies:
+    "@blossm/datetime" "^0.0.5"
+    "@blossm/errors" "^0.0.28"
+    "@blossm/uuid" "^0.0.5"
+    base64url "^3.0.1"
+    jwt-decode "^2.2.0"
 
 "@blossm/logger@^0.0.8":
   version "0.0.8"
@@ -165,7 +168,7 @@
   dependencies:
     "@blossm/operation-hash" "^0.0.10"
 
-"@blossm/phone-number@*", "@blossm/phone-number@^0.0.5":
+"@blossm/phone-number@^0.0.5":
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/@blossm/phone-number/-/phone-number-0.0.5.tgz#a68ccd4e3818e6a7e8eab09ac56402c4760816de"
   integrity sha512-MN+MgtNAf1BmrYFr9lE5pi92xtrz5QbQwLi2twwF0iAEE6lb4XF7DrNIxcmGV+JpAA/qXTWi4MlzFvQNX8abyg==
@@ -182,12 +185,12 @@
     query-string "^6.8.1"
     request "^1.2.0"
 
-"@blossm/rpc@^0.0.93":
-  version "0.0.93"
-  resolved "https://registry.yarnpkg.com/@blossm/rpc/-/rpc-0.0.93.tgz#5096d543ec18ffeecd12b56c8b8980ab7450b5a2"
-  integrity sha512-SxY9LHOqmSMSL03mJRO08qVfj29TYVVdE1GQeUcFFS8aOEGqI358oShfglI6p4NhNd3w9ZOnBnc3g5um4QuoYw==
+"@blossm/rpc@^0.0.95":
+  version "0.0.95"
+  resolved "https://registry.yarnpkg.com/@blossm/rpc/-/rpc-0.0.95.tgz#a434c10af8d3deada94377c51ce449d00b488b71"
+  integrity sha512-KfcOZEFv8TPEWbugcLy1jMZqS+VK5VXiXrFMGv/Te6Y26pEdtg8sUzDIaoUG+n8gNsPLEfnlTzLE1HMxQr728g==
   dependencies:
-    "@blossm/errors" "^0.0.27"
+    "@blossm/errors" "^0.0.28"
     "@blossm/logger" "^0.0.8"
     "@blossm/network-token" "^0.0.4"
     "@blossm/network-url" "^0.0.3"
@@ -232,22 +235,22 @@
     tcomb-validation "^3.4.1"
 
 "@blossm/validator@*":
-  version "0.0.38"
-  resolved "https://registry.yarnpkg.com/@blossm/validator/-/validator-0.0.38.tgz#dd0fe382883130f2dc0f25a2224dfddfa57393d3"
-  integrity sha512-RDYs5yfOrlTvlir7YIhBqwhAkGoh6YUnBXzjeDDOnGf/6Z83ALzzjuXoSlMmBvTsX2j88grVeNFh2wfWDyUAwg==
+  version "0.0.39"
+  resolved "https://registry.yarnpkg.com/@blossm/validator/-/validator-0.0.39.tgz#2d055a4839810cc8473963946af7d9038f707195"
+  integrity sha512-rxGKbklUTmgzTUM+pN7kekEvMcCEsD05Z9sYjbV16orT6p7hJQmcJBtV/HkukTP0K29ME7LuFhH8GaDhEXQAAA==
   dependencies:
     "@blossm/email-validator" "^0.0.6"
-    "@blossm/errors" "^0.0.27"
+    "@blossm/errors" "^0.0.28"
     "@blossm/phone-number" "^0.0.5"
     "@blossm/validation" "^0.0.8"
     is-image-url "1.1.8"
 
 "@blossm/view-store-rpc@*":
-  version "0.0.113"
-  resolved "https://registry.yarnpkg.com/@blossm/view-store-rpc/-/view-store-rpc-0.0.113.tgz#6d18fae0255fe88e60a6a3513238a046b4a9d6f4"
-  integrity sha512-zdyRB0qXRdhqpVhPsWR38gPd8Q/Cjkwx1ECwKK2d/iOhfrbA5FeLwWg8A4elccO6JHSoKGO1xg1DleMN6jxTaA==
+  version "0.0.115"
+  resolved "https://registry.yarnpkg.com/@blossm/view-store-rpc/-/view-store-rpc-0.0.115.tgz#dc611a9b632234513498d89e29d239cb2f5cf095"
+  integrity sha512-h2vExKve26HUfkBPrD3RBVrB+I9iVhPDOrYLCwYET8iGm1NWcr0zqP8eRGrJyRMaYqlj2trCae/SyQSD1oW+iw==
   dependencies:
-    "@blossm/rpc" "^0.0.93"
+    "@blossm/rpc" "^0.0.95"
 
 "@google-cloud/common@^2.2.2":
   version "2.4.0"
@@ -263,6 +266,13 @@
     google-auth-library "^5.5.0"
     retry-request "^4.0.0"
     teeny-request "^6.0.0"
+
+"@google-cloud/kms@^1.3.2":
+  version "1.6.3"
+  resolved "https://registry.yarnpkg.com/@google-cloud/kms/-/kms-1.6.3.tgz#bdfe617e813f940018fb50e51e4025af68c3f885"
+  integrity sha512-355OGw1bCI4MqtXjLO0yWCm6itGoaAMfbj7GoUHilG+LIumK+F28kD/pMDMXn30jlnaN07XH1EaL7bu61BIlgQ==
+  dependencies:
+    google-gax "^1.7.5"
 
 "@google-cloud/logging-winston@^2.0.1":
   version "2.1.0"
@@ -511,14 +521,14 @@
   integrity sha512-5tXH6Bx/kNGd3MgffdmP4dy2Z+G4eaXw0SE81Tq3BNadtnMR5/ySMzX4SLEzHJzSmPNn4HIdpQsBvXMUykr58w==
 
 "@types/node@*":
-  version "13.11.1"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-13.11.1.tgz#49a2a83df9d26daacead30d0ccc8762b128d53c7"
-  integrity sha512-eWQGP3qtxwL8FGneRrC5DwrJLGN4/dH1clNTuLfN81HCrxVtxRjygDTUoZJ5ASlDEeo0ppYFQjQIlXhtXpOn6g==
+  version "13.13.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-13.13.0.tgz#30d2d09f623fe32cde9cb582c7a6eda2788ce4a8"
+  integrity sha512-WE4IOAC6r/yBZss1oQGM5zs2D7RuKR6Q+w+X2SouPofnWn+LbCqClRyhO3ZE7Ix8nmFgo/oVuuE01cJT2XB13A==
 
 "@types/node@^10.1.0":
-  version "10.17.19"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.17.19.tgz#1d31ddd5503dba2af7a901aafef3392e4955620e"
-  integrity sha512-46/xThm3zvvc9t9/7M3AaLEqtOpqlYYYcCZbpYVAQHG20+oMZBkae/VMrn4BTi6AJ8cpack0mEXhGiKmDNbLrQ==
+  version "10.17.20"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.17.20.tgz#e6d8b3631af1e59bbb4fda04926b078acdd3c2ef"
+  integrity sha512-XgDgo6W10SeGEAM0k7FosJpvLCynOTYns4Xk3J5HGrA+UI/bKZ30PGMzOP5Lh2zs4259I71FSYLAtjnx3qhObw==
 
 abort-controller@^3.0.0:
   version "3.0.0"
@@ -638,6 +648,11 @@ base64-js@^1.3.0:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.3.1.tgz#58ece8cb75dd07e71ed08c736abc5fac4dbf8df1"
   integrity sha512-mLQ4i2QO1ytvGWFWmcngKO//JXAQueZvwEKtjgQFM4jIK0kU+ytMfplL8j+n5mspOfjHwoAg+9yhb7BwAHm36g==
+
+base64url@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/base64url/-/base64url-3.0.1.tgz#6399d572e2bc3f90a9a8b22d5dbb0a32d33f788d"
+  integrity sha512-ir1UPr3dkwexU7FdV8qBBbNDRUhMmIekYMFZfi+C/sLNnRESKPl23nB9b2pltqfOQNnGzsDdId90AEtG5tCx4A==
 
 bcryptjs@^2.4.3:
   version "2.4.3"
@@ -1615,6 +1630,11 @@ jws@^4.0.0:
   dependencies:
     jwa "^2.0.0"
     safe-buffer "^5.0.1"
+
+jwt-decode@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/jwt-decode/-/jwt-decode-2.2.0.tgz#7d86bd56679f58ce6a84704a657dd392bba81a79"
+  integrity sha1-fYa9VmefWM5qhHBKZX3TkruoGnk=
 
 kuler@1.0.x:
   version "1.0.1"

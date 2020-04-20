@@ -45,18 +45,20 @@ describe("Command handler unit tests", () => {
 
     const newContext = "some-new-context";
     const issueFake = fake.returns({
-      tokens,
-      context: newContext,
-      references: {
-        principle: {
-          root: principleRoot,
-          service: principleService,
-          network: principleNetwork,
-        },
-        scene: {
-          root: sceneRoot,
-          service: sceneService,
-          network: sceneNetwork,
+      body: {
+        tokens,
+        context: newContext,
+        references: {
+          principle: {
+            root: principleRoot,
+            service: principleService,
+            network: principleNetwork,
+          },
+          scene: {
+            root: sceneRoot,
+            service: sceneService,
+            network: sceneNetwork,
+          },
         },
       },
     });

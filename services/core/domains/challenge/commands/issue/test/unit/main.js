@@ -80,7 +80,7 @@ describe("Command handler unit tests", () => {
     const compareFake = fake.returns(true);
     replace(deps, "compare", compareFake);
 
-    const queryFake = fake.returns([identity]);
+    const queryFake = fake.returns({ body: [identity] });
     const setFake = fake.returns({
       query: queryFake,
     });
@@ -190,7 +190,7 @@ describe("Command handler unit tests", () => {
     const compareFake = fake.returns(true);
     replace(deps, "compare", compareFake);
 
-    const queryFake = fake.returns([identity]);
+    const queryFake = fake.returns({ body: [identity] });
     const setFake = fake.returns({
       query: queryFake,
     });
@@ -313,7 +313,7 @@ describe("Command handler unit tests", () => {
     const compareFake = fake.returns(true);
     replace(deps, "compare", compareFake);
 
-    const queryFake = fake.returns([identity]);
+    const queryFake = fake.returns({ body: [identity] });
     const setFake = fake.returns({
       query: queryFake,
     });
@@ -534,7 +534,7 @@ describe("Command handler unit tests", () => {
     });
     replace(deps, "sms", smsFake);
 
-    const queryFake = fake.returns([]);
+    const queryFake = fake.returns({ body: [] });
     const setFake = fake.returns({
       query: queryFake,
     });
@@ -576,7 +576,7 @@ describe("Command handler unit tests", () => {
     const uuidFake = fake.returns(root);
     replace(deps, "uuid", uuidFake);
 
-    const queryFake = fake.returns([identity]);
+    const queryFake = fake.returns({ body: [identity] });
     const setFake = fake.returns({
       query: queryFake,
     });
@@ -621,7 +621,7 @@ describe("Command handler unit tests", () => {
     const uuidFake = fake.returns(root);
     replace(deps, "uuid", uuidFake);
 
-    const queryFake = fake.returns([identity]);
+    const queryFake = fake.returns({ body: [identity] });
     const setFake = fake.returns({
       query: queryFake,
     });

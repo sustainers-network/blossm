@@ -8,14 +8,18 @@ module.exports = async ({ payload, context, aggregateFn }) => {
 
   // Throw if the code is wrong.
   if (challengeAggregate.code != payload.code)
-    throw deps.invalidArgumentError.wrongCode();
+    throw deps.invalidArgumentError.message("This code is wrong.", {
+      info: { reason: "wrong" },
+    });
 
   // Throw if the challenge is expired.
   const now = new Date();
 
   // Throw if the code is expired.
   if (Date.parse(challengeAggregate.expires) < now)
-    throw deps.invalidArgumentError.codeExpired();
+    throw deps.invalidArgumentError.message("This code expired.", {
+      info: { reason: "expired" },
+    });
 
   const events = [
     {
@@ -33,7 +37,9 @@ module.exports = async ({ payload, context, aggregateFn }) => {
   if (!challengeAggregate.upgrade) return { events };
 
   // Upgrade the session with the principle specified in the challenge.
-  const { tokens, context: newContext } = await deps
+  const {
+    body: { tokens, context: newContext },
+  } = await deps
     .command({
       domain: "session",
       name: "upgrade",

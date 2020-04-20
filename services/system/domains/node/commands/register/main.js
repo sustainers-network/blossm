@@ -6,9 +6,11 @@ module.exports = async ({ payload, context, claims }) => {
 
   // Register the scene.
   const {
-    tokens,
-    context: newContext,
-    references: { principle, scene },
+    body: {
+      tokens,
+      context: newContext,
+      references: { principle, scene },
+    },
   } = await deps
     .command({
       name: "register",

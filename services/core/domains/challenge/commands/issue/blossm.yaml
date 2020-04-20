@@ -94,6 +94,7 @@ testing:
             root:
             service:
             network:
+      code: 202
     # Should return 400 if the context principle is
     # different from the principle in the identity.
     - pre:
@@ -142,6 +143,7 @@ testing:
             root:
             service:
             network:
+      code: 202
       # Should return 400 if the phone number is not correct.
     - pre:
         - domain: identity

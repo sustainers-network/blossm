@@ -23,7 +23,8 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
     });
 
   // Check to see if this session has already been terminated.
-  if (aggregate.terminated) throw deps.badRequestError.sessionTerminated();
+  if (aggregate.terminated)
+    throw deps.badRequestError.message("This session is terminated.");
 
   // Remove the old context domain.
   delete context[context.domain];

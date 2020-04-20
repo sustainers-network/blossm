@@ -72,6 +72,18 @@ testing:
           - network:
             type: access
             value:
+        references:
+          session:
+            root:
+            service:
+            network:
+        context:
+          network:
+          session:
+            root:
+            service:
+            network:
+      code: 202
     - payload:
         device:
           os: "iOS"
@@ -91,6 +103,13 @@ testing:
             root:
             service:
             network:
+        context:
+          network:
+          session:
+            root:
+            service:
+            network:
+      code: 202
 
 #don't change
 procedure: command

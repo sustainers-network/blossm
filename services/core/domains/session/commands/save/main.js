@@ -97,7 +97,7 @@ const getEventsForIdentityRegistering = async ({ context, payload }) => {
 
 module.exports = async ({ payload, context, claims, aggregateFn }) => {
   // Check to see if there is an identity with the provided id.
-  const [identity] = await deps
+  const { body: [identity] = [] } = await deps
     .eventStore({
       domain: "identity",
     })
@@ -118,7 +118,7 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
       )
         return {};
 
-      const [subjectIdentity] = await deps
+      const { body: [subjectIdentity] = [] } = await deps
         .eventStore({
           domain: "identity",
         })
@@ -147,7 +147,10 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
         payload,
       });
 
-  const { tokens } = await deps
+  const {
+    body: { tokens },
+    statusCode,
+  } = await deps
     .command({
       name: "issue",
       domain: "challenge",
@@ -179,5 +182,5 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
       }
     );
 
-  return { response: { tokens } };
+  return { response: { tokens }, statusCode };
 };

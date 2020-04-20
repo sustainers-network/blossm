@@ -32,6 +32,7 @@ testing:
           action: start
           payload: {}
       root: some-root
+      code: 202
     - pre:
         - domain: session
           service: core

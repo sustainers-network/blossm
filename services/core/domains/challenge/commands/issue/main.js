@@ -15,7 +15,7 @@ let sms;
 const determineUpgrade = async (payload, context) => {
   // Check to see if the phone is recognized.
   // If the principle is being upgraded, use a placeholder identity with it instead.
-  const [identity] = await deps
+  const { body: [identity] = [] } = await deps
     .eventStore({ domain: "identity" })
     .set({ context, tokenFns: { internal: deps.gcpToken } })
     .query({ key: "id", value: payload.id });

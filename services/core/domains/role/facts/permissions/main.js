@@ -1,7 +1,7 @@
 const deps = require("./deps");
 
 module.exports = async ({ context, query }) => {
-  const networkRoles = await deps
+  const { body: networkRoles } = await deps
     .eventStore({ domain: process.env.DOMAIN })
     .set({ tokenFns: { internal: deps.gcpToken } })
     .query({ key: "network", value: context.network });

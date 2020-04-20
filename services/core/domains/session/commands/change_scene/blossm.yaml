@@ -78,6 +78,7 @@ testing:
           - network:
             type: access
             value:
+      code: 202
     - pre:
         - domain: principle
           service: core

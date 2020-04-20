@@ -55,6 +55,7 @@ testing:
       context:
         network: some-network
       root: some-root
+      code: 202
 
 #don't change
 procedure: command

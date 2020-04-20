@@ -50,6 +50,14 @@ describe("Command handler unit tests", () => {
       ],
       response: {
         tokens: [{ network, type: "access", value: token }],
+        context: {
+          network,
+          session: {
+            root,
+            service,
+            network,
+          },
+        },
         references: {
           session: {
             root,
@@ -117,6 +125,14 @@ describe("Command handler unit tests", () => {
       ],
       response: {
         tokens: [{ network: nodeNetwork, type: "access", value: token }],
+        context: {
+          network: nodeNetwork,
+          session: {
+            root,
+            service,
+            network,
+          },
+        },
         references: {
           session: {
             root,
@@ -182,6 +198,14 @@ describe("Command handler unit tests", () => {
       response: {
         tokens: [{ network, type: "access", value: token }],
         references: {
+          session: {
+            root,
+            service,
+            network,
+          },
+        },
+        context: {
+          network,
           session: {
             root,
             service,

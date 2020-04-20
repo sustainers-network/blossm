@@ -76,6 +76,7 @@ testing:
             root:
             service:
             network:
+      code: 202
     - payload:
         name: some name
         roles:

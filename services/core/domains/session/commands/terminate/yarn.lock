@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@blossm/command-post@^0.0.24":
-  version "0.0.24"
-  resolved "https://registry.yarnpkg.com/@blossm/command-post/-/command-post-0.0.24.tgz#13c2213400c5fdbe9e329d29f027f251a3b93c4c"
-  integrity sha512-f2FG34Pt68h1UKqEKuME7hDXcdy8ivL8xbiNFZe17pd2xZS29OYZDp9jHLsrnSa2EeXBs7wXJNtj8JhwDv4rAw==
+"@blossm/command-post@^0.0.23":
+  version "0.0.23"
+  resolved "https://registry.yarnpkg.com/@blossm/command-post/-/command-post-0.0.23.tgz#a7f81c715a08cf4f7ce79c06f31078928e59a917"
+  integrity sha512-taJDhJO6kveBHmSCGEFIxKTLP8QiOKb98N1vUfRAF7ueJ5WnyJisWXJjQNm2RY/L/a+31tVLJQGnAN8u8Oa8xQ==
   dependencies:
     "@blossm/create-event" "^0.0.30"
     "@blossm/datetime" "^0.0.5"
@@ -13,11 +13,11 @@
     "@blossm/uuid" "^0.0.5"
 
 "@blossm/command@*":
-  version "0.0.24"
-  resolved "https://registry.yarnpkg.com/@blossm/command/-/command-0.0.24.tgz#81e834ce14c8ac333d8540630a5dffb3904ee198"
-  integrity sha512-WcA/Kr/5WtlKa7venkbKxps8VxL4x31VVTHimcskKKq35C2hAJHXBzuP5h23Byp60fh8gx8dqN1w/kbsHHdhmw==
+  version "0.0.23"
+  resolved "https://registry.yarnpkg.com/@blossm/command/-/command-0.0.23.tgz#9a3456d26b0eccc466013c48a0600bfa0b292450"
+  integrity sha512-82DAcZbSTAvPcBRPVFjZ5as5AWR2lsYqyPmeftG+Lnqw05i/pF8x6+Xb8UDjvgN2R2RBO1YPD2oNRq8WiRcQpQ==
   dependencies:
-    "@blossm/command-post" "^0.0.24"
+    "@blossm/command-post" "^0.0.23"
     "@blossm/server" "^0.0.11"
 
 "@blossm/create-event@*", "@blossm/create-event@^0.0.30":
@@ -40,11 +40,6 @@
   integrity sha512-V2FzPbfFMB0HYLZ1hGKP2fhTHLDSTpTatX9Q7eVGuOOpIzvfAjP4YVxTPkJBcuSfN9fsGKhCMn90gcqpaEQ9qQ==
   dependencies:
     moment "^2.24.0"
-
-"@blossm/duration-consts@*":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@blossm/duration-consts/-/duration-consts-0.0.3.tgz#681c7d5f504626c79875c46e3437faab3ee26ee6"
-  integrity sha512-INRoAjV7RbshCUpJOTm55lhJIbaqNSK2zO7cL+qVLUhev2Z190mPGh1V4dkTaJ1TGAHJ5GSBZZQOrfbzF6eqrA==
 
 "@blossm/email-validator@^0.0.6":
   version "0.0.6"
@@ -84,13 +79,6 @@
     body-parser "^1.19.0"
     cookie-parser "^1.4.4"
 
-"@blossm/gcp-kms@*":
-  version "0.0.29"
-  resolved "https://registry.yarnpkg.com/@blossm/gcp-kms/-/gcp-kms-0.0.29.tgz#d55052a5ec1879bbf8216f3d79f5001106443d25"
-  integrity sha512-L0ddCjUZ/MUfy4w220PVV8J8lGxCaWcNaHOgiMTg1VSqX+7DVubMyYBlhDLdyDIH9rO+EPWLn6qFfYZxsQmUuQ==
-  dependencies:
-    "@google-cloud/kms" "^1.3.2"
-
 "@blossm/gcp-log-transports@^0.0.3":
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/@blossm/gcp-log-transports/-/gcp-log-transports-0.0.3.tgz#64a88c99b5b49ded9e4c31efdd65419905a001af"
@@ -121,17 +109,6 @@
   integrity sha512-HIe4aexho7t3zsosp6VawPiDBAz7oM3XsGIdFWq5g9kjMqpcp5MdR18648bxNB0MmgeeTIf0MJ9luqWNd0GW4Q==
   dependencies:
     string-hash "^1.1.3"
-
-"@blossm/jwt@*":
-  version "0.0.45"
-  resolved "https://registry.yarnpkg.com/@blossm/jwt/-/jwt-0.0.45.tgz#faa908906c2dba7ad4f04947024b28b44091be81"
-  integrity sha512-FrD3vMdy9Bx7CDooTqzoIS8hbrWbYlExpnHsEayF50CpKrAwLopm81po5/eTil/XVWfWqaIXXLv5Jis0b1IZgw==
-  dependencies:
-    "@blossm/datetime" "^0.0.5"
-    "@blossm/errors" "^0.0.28"
-    "@blossm/uuid" "^0.0.5"
-    base64url "^3.0.1"
-    jwt-decode "^2.2.0"
 
 "@blossm/logger@^0.0.8":
   version "0.0.8"
@@ -271,13 +248,6 @@
     google-auth-library "^5.5.0"
     retry-request "^4.0.0"
     teeny-request "^6.0.0"
-
-"@google-cloud/kms@^1.3.2":
-  version "1.6.3"
-  resolved "https://registry.yarnpkg.com/@google-cloud/kms/-/kms-1.6.3.tgz#bdfe617e813f940018fb50e51e4025af68c3f885"
-  integrity sha512-355OGw1bCI4MqtXjLO0yWCm6itGoaAMfbj7GoUHilG+LIumK+F28kD/pMDMXn30jlnaN07XH1EaL7bu61BIlgQ==
-  dependencies:
-    google-gax "^1.7.5"
 
 "@google-cloud/logging-winston@^2.0.1":
   version "2.1.0"
@@ -653,11 +623,6 @@ base64-js@^1.3.0:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.3.1.tgz#58ece8cb75dd07e71ed08c736abc5fac4dbf8df1"
   integrity sha512-mLQ4i2QO1ytvGWFWmcngKO//JXAQueZvwEKtjgQFM4jIK0kU+ytMfplL8j+n5mspOfjHwoAg+9yhb7BwAHm36g==
-
-base64url@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/base64url/-/base64url-3.0.1.tgz#6399d572e2bc3f90a9a8b22d5dbb0a32d33f788d"
-  integrity sha512-ir1UPr3dkwexU7FdV8qBBbNDRUhMmIekYMFZfi+C/sLNnRESKPl23nB9b2pltqfOQNnGzsDdId90AEtG5tCx4A==
 
 bcryptjs@^2.4.3:
   version "2.4.3"
@@ -1635,11 +1600,6 @@ jws@^4.0.0:
   dependencies:
     jwa "^2.0.0"
     safe-buffer "^5.0.1"
-
-jwt-decode@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/jwt-decode/-/jwt-decode-2.2.0.tgz#7d86bd56679f58ce6a84704a657dd392bba81a79"
-  integrity sha1-fYa9VmefWM5qhHBKZX3TkruoGnk=
 
 kuler@1.0.x:
   version "1.0.1"

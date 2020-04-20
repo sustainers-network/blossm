@@ -289,12 +289,6 @@ describe("Command handler unit tests", () => {
       aggregate: { terminated: deps.stringDate() },
     });
 
-    const error = "some-error";
-    const sessionTerminatedFake = fake.returns(error);
-    replace(deps, "badRequestError", {
-      sessionTerminated: sessionTerminatedFake,
-    });
-
     const response = await main({
       payload: {},
       root,
@@ -316,9 +310,9 @@ describe("Command handler unit tests", () => {
     });
 
     const error = "some-error";
-    const sessionTerminatedFake = fake.returns(error);
+    const messageFake = fake.returns(error);
     replace(deps, "badRequestError", {
-      sessionTerminated: sessionTerminatedFake,
+      message: messageFake,
     });
 
     try {
@@ -331,6 +325,9 @@ describe("Command handler unit tests", () => {
       //shouldn't get called
       expect(2).to.equal(3);
     } catch (e) {
+      expect(messageFake).to.have.been.calledWith(
+        "This session is terminated."
+      );
       expect(e).to.equal(error);
     }
   });
