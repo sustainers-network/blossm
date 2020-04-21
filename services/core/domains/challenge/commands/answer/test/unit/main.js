@@ -101,9 +101,7 @@ describe("Command handler unit tests", () => {
       },
       tokenFns: { internal: deps.gcpToken },
     });
-    expect(issueFake).to.have.been.calledWith(challengeUpgrade, {
-      root: sessionRoot,
-    });
+    expect(issueFake).to.have.been.calledWith(challengeUpgrade);
   });
   it("should return successfully if upgrade is not provided.", async () => {
     const aggregateFake = fake.returns({

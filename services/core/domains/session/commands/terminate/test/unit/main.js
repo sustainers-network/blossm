@@ -9,6 +9,7 @@ const deps = require("../../deps");
 let clock;
 const now = new Date();
 const root = "some-root";
+const context = { session: { root } };
 
 describe("Command handler unit tests", () => {
   beforeEach(() => {
@@ -21,7 +22,7 @@ describe("Command handler unit tests", () => {
   it("should return successfully", async () => {
     const aggregateFake = fake.returns({ aggregate: {} });
     const result = await main({
-      root,
+      context,
       aggregateFn: aggregateFake,
     });
 
@@ -47,7 +48,7 @@ describe("Command handler unit tests", () => {
       message: messageFake,
     });
     try {
-      await main({ root, aggregateFn: aggregateFake });
+      await main({ context, aggregateFn: aggregateFake });
       //shouldn't get called
       expect(2).to.equal(3);
     } catch (e) {
@@ -61,7 +62,7 @@ describe("Command handler unit tests", () => {
     const errorMessage = "some-error";
     const aggregateFake = fake.rejects(errorMessage);
     try {
-      await main({ root, aggregateFn: aggregateFake });
+      await main({ context, aggregateFn: aggregateFake });
       //shouldn't get called
       expect(2).to.equal(3);
     } catch (e) {

@@ -106,16 +106,13 @@ describe("Command handler unit tests", () => {
       claims,
       tokenFns: { internal: deps.gcpToken },
     });
-    expect(issueFake).to.have.been.calledWith(
-      {
-        principle: {
-          root: uuid,
-          service,
-          network,
-        },
+    expect(issueFake).to.have.been.calledWith({
+      principle: {
+        root: uuid,
+        service,
+        network,
       },
-      { root: contextSessionRoot }
-    );
+    });
   });
   it("should return successfully if there's a context principle", async () => {
     const uuid = "some-uuid";

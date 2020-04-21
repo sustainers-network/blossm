@@ -1,8 +1,8 @@
 const deps = require("./deps");
 
-module.exports = async ({ root, aggregateFn }) => {
+module.exports = async ({ context, aggregateFn }) => {
   // Get the aggregate for this session.
-  const { aggregate } = await aggregateFn(root);
+  const { aggregate } = await aggregateFn(context.session.root);
 
   // Check to see if this session has already been terminated.
   if (aggregate.terminated)
@@ -12,7 +12,11 @@ module.exports = async ({ root, aggregateFn }) => {
 
   return {
     events: [
-      { root, action: "terminate", payload: { terminated: deps.stringDate() } },
+      {
+        root: context.session.root,
+        action: "terminate",
+        payload: { terminated: deps.stringDate() },
+      },
     ],
   };
 };

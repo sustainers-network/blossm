@@ -24,7 +24,15 @@ const payload = {
 const token = "some-token";
 const project = "some-projectl";
 const root = "some-root";
-const context = { a: "some-context" };
+const contextSessionService = "some-context-session-service";
+const contextSessionNetwork = "some-context-session-network";
+const context = {
+  session: {
+    root,
+    service: contextSessionService,
+    network: contextSessionNetwork,
+  },
+};
 const service = "some-service";
 const network = "some-network";
 
@@ -65,7 +73,6 @@ describe("Command handler unit tests", () => {
 
     const result = await main({
       payload,
-      root,
       context,
       claims,
       aggregateFn: aggregateFake,
@@ -88,7 +95,16 @@ describe("Command handler unit tests", () => {
           root: principleRoot,
           domain: "principle",
           action: "add-roles",
-          payload: { roles: [{ id: "SessionAdmin", root, service, network }] },
+          payload: {
+            roles: [
+              {
+                id: "SessionAdmin",
+                root,
+                service: contextSessionService,
+                network: contextSessionNetwork,
+              },
+            ],
+          },
         },
       ],
       response: {
@@ -145,7 +161,6 @@ describe("Command handler unit tests", () => {
 
     const result = await main({
       payload: { a: 1 },
-      root,
       context,
       claims,
       aggregateFn: aggregateFake,
@@ -207,7 +222,6 @@ describe("Command handler unit tests", () => {
 
     const result = await main({
       payload,
-      root,
       context,
       claims: {
         iss,
@@ -234,7 +248,16 @@ describe("Command handler unit tests", () => {
           root: principleRoot,
           domain: "principle",
           action: "add-roles",
-          payload: { roles: [{ id: "SessionAdmin", root, service, network }] },
+          payload: {
+            roles: [
+              {
+                id: "SessionAdmin",
+                root,
+                service: contextSessionService,
+                network: contextSessionNetwork,
+              },
+            ],
+          },
         },
       ],
       response: {
@@ -291,7 +314,6 @@ describe("Command handler unit tests", () => {
 
     const response = await main({
       payload: {},
-      root,
       context,
       aggregateFn: aggregateFake,
     });
@@ -318,7 +340,6 @@ describe("Command handler unit tests", () => {
     try {
       await main({
         payload,
-        root,
         context,
         aggregateFn: aggregateFake,
       });
@@ -348,7 +369,6 @@ describe("Command handler unit tests", () => {
     try {
       await main({
         payload,
-        root,
         context,
         claims,
         aggregateFn: aggregateFake,

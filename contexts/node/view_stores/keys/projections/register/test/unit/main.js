@@ -9,13 +9,10 @@ describe("Event handler unit tests", () => {
   });
   it("should return successfully", async () => {
     const network = "some.network";
+    const name = "some name";
     const payload = {
       network,
-      scene: {
-        root: "some-scene-root",
-        service: "some-scene-service",
-        network: "some-scene.network",
-      },
+      name,
     };
 
     const root = "some-root";
@@ -25,8 +22,8 @@ describe("Event handler unit tests", () => {
 
     expect(response).to.deep.equal({
       body: {
-        scene: "some-scene-root",
-        network: "some.network",
+        name,
+        network,
       },
       root,
     });

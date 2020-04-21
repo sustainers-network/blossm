@@ -68,13 +68,16 @@ testing:
           root: some-principle-root
           service: some-principle-service
           network: some.principle-network
-      root: some-root
       claims:
         iss: some-iss
         aud: some-aud
         exp: 9999-12-31T00:00:00.000
       context:
         some: context
+        session:
+          root: some-root
+          service: core
+          network: sustainers.network
       response:
         tokens:
           - network:
@@ -99,7 +102,11 @@ testing:
           root: some-principle-root
           service: some-principle-service
           network: some.principle-network
-      root: yet-another-root
+      context:
+        session:
+          root: yet-another-root
+          service: core
+          network: sustainers.network
       code: 400
 
 #don't change

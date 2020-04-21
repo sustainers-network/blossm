@@ -31,7 +31,9 @@ testing:
           root: some-root
           action: start
           payload: {}
-      root: some-root
+      context:
+        session:
+          root: some-root
       code: 202
     - pre:
         - domain: session
@@ -40,7 +42,9 @@ testing:
           action: terminate
           payload:
             terminated: 2019-12-31T00:00:00.000Z
-      root: some-root
+      context:
+        session:
+          root: some-root
       code: 400
 
 #don't change

@@ -49,7 +49,7 @@ module.exports = async ({ payload, context, aggregateFn }) => {
       claims: challengeAggregate.claims,
       tokenFns: { internal: deps.gcpToken },
     })
-    .issue(challengeAggregate.upgrade, { root: context.session.root });
+    .issue(challengeAggregate.upgrade);
 
   return { events, response: { tokens, context: newContext } };
 };

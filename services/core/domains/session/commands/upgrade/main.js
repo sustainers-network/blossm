@@ -1,11 +1,13 @@
 const deps = require("./deps");
 
-module.exports = async ({ root, payload, context, claims, aggregateFn }) => {
+module.exports = async ({ payload, context, claims, aggregateFn }) => {
   // If there's nothing to upgrade to, dont save events.
   if (!Object.keys(payload).length) return {};
 
   // Get the aggregate for this session.
-  const { aggregate: sessionAggregate } = await aggregateFn(root);
+  const { aggregate: sessionAggregate } = await aggregateFn(
+    context.session.root
+  );
 
   // Check to see if this session has already been terminated.
   if (sessionAggregate.terminated)
@@ -41,7 +43,7 @@ module.exports = async ({ root, payload, context, claims, aggregateFn }) => {
   return {
     events: [
       {
-        root,
+        root: context.session.root,
         action: "upgrade",
         payload,
       },
@@ -55,9 +57,9 @@ module.exports = async ({ root, payload, context, claims, aggregateFn }) => {
                 roles: [
                   {
                     id: "SessionAdmin",
-                    root,
-                    service: process.env.SERVICE,
-                    network: process.env.NETWORK,
+                    root: context.session.root,
+                    service: context.session.service,
+                    network: context.session.network,
                   },
                 ],
               },
