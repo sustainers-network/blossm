@@ -16,14 +16,14 @@ devDependencies:
 testing:
   examples:
     query:
-      root: some-principle
+      root: some-node
       first:
         put:
           scene: some-scene
           network: some.network
         get:
           scene: some-scene
-          root: some-principle
+          root: some-node
           network: some.network
       second:
         put:
@@ -31,7 +31,7 @@ testing:
           network: some.other-network
         get:
           scene: some-other-scene
-          root: some-principle
+          root: some-node
           network: some.other-network
     index:
       put:

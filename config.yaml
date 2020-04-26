@@ -33,6 +33,7 @@ vendors:
         memory: 128Mi
         memoryOverrides:
           event-store: 256Mi
+          event-handler: 256Mi
           view-store: 256Mi
   viewStore:
     mongodb:
@@ -59,6 +60,19 @@ vendors:
         sandbox:
         staging:
         development: event-store-7kjnk.gcp.mongodb.net
+      protocol: mongodb+srv
+  eventHandler:
+    mongodb:
+      users:
+        production:
+        sandbox:
+        staging:
+        development: blossm
+      hosts:
+        production:
+        sandbox:
+        staging:
+        development: event-handler-b8xbj.mongodb.net
       protocol: mongodb+srv
   texting:
     twilio:

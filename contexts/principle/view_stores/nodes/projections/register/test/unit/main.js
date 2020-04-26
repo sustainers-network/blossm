@@ -18,17 +18,13 @@ describe("Event handler unit tests", () => {
       },
     };
 
-    const root = "some-root";
-    const headers = { root };
-
-    const response = await main({ payload, headers });
+    const response = await main({}, { payload });
 
     expect(response).to.deep.equal({
       body: {
         scene: "some-scene-root",
         network: "some.network",
       },
-      root,
     });
   });
 });

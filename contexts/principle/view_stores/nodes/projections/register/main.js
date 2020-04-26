@@ -1,9 +1,8 @@
-module.exports = async (event) => {
+module.exports = async (_, event) => {
   return {
     body: {
       scene: event.payload.scene.root,
       network: event.payload.network,
     },
-    root: event.headers.root,
   };
 };
