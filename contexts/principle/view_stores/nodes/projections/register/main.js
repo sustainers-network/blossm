@@ -1,4 +1,4 @@
-module.exports = async (_, event) => {
+module.exports = (_, event) => {
   return {
     body: {
       scene: event.payload.scene.root,

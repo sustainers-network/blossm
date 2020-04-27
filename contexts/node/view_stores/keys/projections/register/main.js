@@ -1,9 +1,8 @@
-module.exports = async (event) => {
+module.exports = (_, event) => {
   return {
     body: {
       name: event.payload.name,
       network: event.payload.network,
     },
-    root: event.headers.root,
   };
 };

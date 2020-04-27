@@ -34,6 +34,7 @@ vendors:
         memoryOverrides:
           event-store: 256Mi
           event-handler: 256Mi
+          projection: 256Mi
           view-store: 256Mi
   viewStore:
     mongodb:

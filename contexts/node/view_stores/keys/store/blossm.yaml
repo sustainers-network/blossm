@@ -16,14 +16,14 @@ devDependencies:
 testing:
   examples:
     query:
-      root: some-node
+      root: some-key
       first:
         put:
           name: some name
           network: some.network
         get:
           name: some name
-          root: some-node
+          root: some-key
           network: some.network
       second:
         put:
@@ -31,7 +31,7 @@ testing:
           network: some.other-network
         get:
           name: some other name
-          root: some-node
+          root: some-key
           network: some.other-network
     index:
       put:
