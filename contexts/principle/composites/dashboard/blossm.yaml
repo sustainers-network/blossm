@@ -1,0 +1,47 @@
+name: dashboard
+context: principle
+
+dependencies:
+  "@blossm/view-store-rpc": "*"
+  "@blossm/gcp-token": "*"
+
+devDependencies:
+  "mocha": "^7.1.1"
+  "chai": "^4.2.0"
+  "sinon": "^7.3.2"
+  "sinon-chai": "^3.5.0"
+  "chai-datetime": "^1.5.0"
+
+testing:
+  dependencies:
+    - name: nodes
+      context: principle
+      procedure: view-store
+
+  steps:
+    - pre:
+        - name: nodes
+          context: principle
+          root: some-node-root
+          view:
+            headers:
+              principle:
+                root: some-principle-root
+                service: some-principle-service
+                network: some-principle-network
+            body:
+              network: some.network
+              scene: some-scene-root
+      context:
+        principle:
+          root: some-principle-root
+          service: some-principle-service
+          network: some-principle-network
+      response:
+        nodes:
+          - root: some-node-root
+            network: some-network
+            scene: some-scene-root
+
+#don't change
+procedure: view-composite
