@@ -1,7 +1,11 @@
 context: node
 
-stores:
+views:
   - name: keys
+    procedure: view-store
+    permissions: none
+  - name: dashboard
+    procedure: view-composite
     permissions: none
 
 whitelist:

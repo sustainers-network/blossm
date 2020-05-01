@@ -1,6 +1,6 @@
 const { expect } = require("chai")
   .use(require("sinon-chai"));
-const { restore, fake, replace } = require("sinon");
+const { restore, fake, replace, stub } = require("sinon");
 
 const main = require("../../main");
 const deps = require("../../deps");
@@ -10,8 +10,14 @@ describe("Composite unit tests", () => {
     restore();
   });
   it("should return successfully", async () => {
-    const nodes = "some-nodes";
-    const readFake = fake.returns({ body: nodes });
+    const keys = "some-keys";
+    const title = "some-title";
+
+    const readFake = stub()
+      .onFirstCall()
+      .returns({ body: keys })
+      .onSecondCall()
+      .returns({ body: title });
     const setFake = fake.returns({
       read: readFake,
     });
@@ -24,11 +30,17 @@ describe("Composite unit tests", () => {
       context,
       tokenFns: { internal: deps.gcpToken },
     });
+    expect(setFake).to.be.calledTwice;
     expect(readFake).to.have.been.calledWith();
+    expect(readFake).to.have.been.calledTwice;
     expect(viewStoreFake).to.have.been.calledWith({
-      name: "nodes",
-      context: "principle",
+      name: "keys",
+      context: "node",
     });
-    expect(result).to.deep.equal({ nodes });
+    expect(viewStoreFake).to.have.been.calledWith({
+      name: "title",
+      context: "node",
+    });
+    expect(result).to.deep.equal({ keys, title });
   });
 });
