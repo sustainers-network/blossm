@@ -1,0 +1,46 @@
+name: keys
+domain: node
+
+dependencies:
+  "@blossm/view-store-rpc": "*"
+  "@blossm/gcp-token": "*"
+
+devDependencies:
+  "mocha": "^7.1.1"
+  "chai": "^4.2.0"
+  "sinon": "^7.3.2"
+  "sinon-chai": "^3.5.0"
+
+testing:
+  dependencies:
+    - name: keys
+      context: node
+      procedure: view-store
+
+  steps:
+    - pre:
+        - name: keys
+          context: node
+          root: some-key-root
+          view:
+            headers:
+              node:
+                root: some-node-root
+                service: some-node-service
+                network: some-node-network
+            body:
+              name: some-key-name
+              id: some-key-id
+      context:
+        node:
+          root: some-node-root
+          service: some-node-service
+          network: some-node-network
+      response:
+        keys:
+          - name: some-key-name
+            id: some-key-id
+            root: some-key-root
+
+#don't change
+procedure: view-composite

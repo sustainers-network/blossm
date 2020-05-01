@@ -42,7 +42,6 @@
     ]
   },
   "dependencies": {
-    "@blossm/cli": "^0.0.632",
     "global": "^4.4.0"
   }
 }
