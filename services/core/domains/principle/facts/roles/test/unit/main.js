@@ -52,6 +52,6 @@ describe("Fact unit tests", () => {
       tokenFns: { internal: deps.gcpToken },
     });
     expect(aggregateFake).to.have.been.calledWith(root);
-    expect(result).to.deep.equal([role]);
+    expect(result).to.deep.equal({ response: [role] });
   });
 });

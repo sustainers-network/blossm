@@ -13,5 +13,5 @@ module.exports = async ({ context, query }) => {
       "There's no role with this id in this network."
     );
 
-  return role.state.permissions;
+  return { response: role.state.permissions };
 };

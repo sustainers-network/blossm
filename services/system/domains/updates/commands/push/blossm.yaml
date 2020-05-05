@@ -1,0 +1,62 @@
+name: push
+domain: updates
+service: system
+
+payload:
+  view:
+    headers: object
+    body: object
+  channel: string
+
+dependencies:
+  "grip": "*"
+  "faas-grip": "*"
+  "@blossm/uuid": "*"
+
+devDependencies:
+  "mocha": "^7.1.1"
+  "chai": "^4.2.0"
+  "sinon": "^7.3.2"
+  "sinon-chai": "^3.5.0"
+  "chai-datetime": "^1.5.0"
+
+testing:
+  validate:
+    ok:
+      - view:
+          headers:
+            some: header
+          body:
+            some: property
+        channel: some-channel
+    bad:
+      - view: 3
+      - view:
+          headers: 3
+      - view:
+          body: 3
+      - channel: 3
+
+  normalize:
+    - payload:
+        view:
+          headers: some-headers
+          body: some-body
+          other: som-bogus
+        channel: some-channel
+      normalized:
+        view:
+          headers: some-headers
+          body: some-body
+        channel: some-channel
+
+  steps:
+    - pre:
+      payload:
+      context:
+      session:
+      root:
+      response:
+
+#don't change
+procedure: command

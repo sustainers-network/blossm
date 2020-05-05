@@ -14,6 +14,7 @@
 
 //const deps = require("./deps");
 
+//Consider making the root the role name.
 module.exports = async ({ payload, root, context, aggregateFn }) => {
   //eslint-disable-next-line no-console
   console.log("Do something with: ", {

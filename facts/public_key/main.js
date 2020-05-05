@@ -23,14 +23,9 @@ const standardizedAlgorithm = (algorithm) => {
   }
 };
 module.exports = async () => {
-  if (cache) return cache;
-  //eslint-disable-next-line
-  console.log({ project: process.env.GCP_PROJECT });
+  if (cache) return { response: cache };
 
   const client = new kms.KeyManagementServiceClient();
-
-  //eslint-disable-next-line
-  console.log({ client });
 
   const versionPath = client.cryptoKeyVersionPath(
     process.env.GCP_PROJECT,
@@ -40,9 +35,6 @@ module.exports = async () => {
     "1"
   );
 
-  //eslint-disable-next-line
-  console.log({ versionPath });
-
   const [{ pem: newKey, algorithm: newAlgorithm }] = await client.getPublicKey({
     name: versionPath,
   });
@@ -51,7 +43,6 @@ module.exports = async () => {
     key: newKey,
     algorithm: standardizedAlgorithm(newAlgorithm),
   };
-  //eslint-disable-next-line
-  console.log({ cache });
-  return cache;
+
+  return { response: cache };
 };

@@ -1,0 +1,73 @@
+domain: updates
+service: system
+
+schema:
+  node:
+    root: String
+    service: String
+    network: String
+  key:
+    root: String
+    service: String
+    network: String
+  connection:
+    root: String
+    service: String
+    network: String
+
+actions:
+  - push
+
+testing:
+  examples:
+    first:
+      action: push
+      payload:
+        node:
+          root: some-node-root
+          service: some-node-service
+          network: some.node-network
+        key:
+          root: some-key-root
+          service: some-key-service
+          network: some.key-network
+        connection:
+          root: some-connection-root
+          service: some-connection-service
+          network: some.connection-network
+    second:
+      action: push
+      payload:
+        node:
+          root: some-other-node-root
+          service: some-other-node-service
+          network: some.other-node-network
+        key:
+          root: some-other-key-root
+          service: some-other-key-service
+          network: some.other-key-network
+        connection:
+          root: some-other-connection-root
+          service: some-other-connection-service
+          network: some.other-connection-network
+    more: []
+
+  handlers:
+    - action: push
+      examples:
+        - payload:
+            node:
+              root: some-node-root
+              service: some-node-service
+              network: some.node-network
+            key:
+              root: some-key-root
+              service: some-key-service
+              network: some.key-network
+            connection:
+              root: some-connection-root
+              service: some-connection-service
+              network: some.connection-network
+
+#don't change
+procedure: event-store

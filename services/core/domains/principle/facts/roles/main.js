@@ -13,5 +13,5 @@ module.exports = async ({ context, root }) => {
     (role) => role.network == context.network
   );
 
-  return roles;
+  return { response: roles };
 };

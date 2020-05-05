@@ -7,6 +7,7 @@ schema:
   network: String
   id: String
   # unique is network + id
+  # unique could be Root
   unique:
     type: String
     unique: true

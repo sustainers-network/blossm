@@ -1,0 +1,18 @@
+domain: updates
+service: system
+
+commands:
+  - name: subscribe-to
+    privileges: none
+  # - name: some-other-name
+  #   protection: none
+
+whitelist:
+  - "127.0.0.1"
+
+devDependencies:
+  "mocha": "^7.1.1"
+  "chai": "^4.2.0"
+
+#don't change
+procedure: command-gateway

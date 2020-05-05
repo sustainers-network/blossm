@@ -38,9 +38,13 @@ describe("Command handler unit tests", () => {
       "access",
       "1"
     );
-    expect(result).to.deep.equal({ key: pem, algorithm: "ES256" });
+    expect(result).to.deep.equal({
+      response: { key: pem, algorithm: "ES256" },
+    });
     const otherResult = await main();
     expect(pathFake).to.have.been.calledOnce;
-    expect(otherResult).to.deep.equal({ key: pem, algorithm: "ES256" });
+    expect(otherResult).to.deep.equal({
+      response: { key: pem, algorithm: "ES256" },
+    });
   });
 });

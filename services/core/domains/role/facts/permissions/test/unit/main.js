@@ -55,7 +55,7 @@ describe("Fact unit tests", () => {
       key: "network",
       value: network,
     });
-    expect(result).to.deep.equal(permissions);
+    expect(result).to.deep.equal({ response: permissions });
   });
   it("should throw correctly if the id isn't found", async () => {
     const network = "some-network";
