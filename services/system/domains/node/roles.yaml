@@ -7,3 +7,4 @@ NodeAdmin:
     - system:key:create
     - system:key:read
     - system:connection:create
+    - system:updates:create

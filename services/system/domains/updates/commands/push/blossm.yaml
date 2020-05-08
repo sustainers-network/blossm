@@ -12,6 +12,7 @@ dependencies:
   "grip": "*"
   "faas-grip": "*"
   "@blossm/uuid": "*"
+  "@blossm/gcp-secret": "*"
 
 devDependencies:
   "mocha": "^7.1.1"
@@ -21,6 +22,15 @@ devDependencies:
   "chai-datetime": "^1.5.0"
 
 testing:
+  dependencies:
+    - procedure: http
+      host: api.fanout.io
+      mocks:
+        - method: post
+          path: "*"
+          code: 200
+          response: some-channel
+
   validate:
     ok:
       - view:
@@ -51,12 +61,27 @@ testing:
         channel: some-channel
 
   steps:
-    - pre:
-      payload:
+    - payload:
+        view:
+          headers:
+            a: 1
+          body:
+            b: 2
+        channel: some-channel
       context:
-      session:
-      root:
-      response:
+        node:
+          root: some-node-root
+          service: some-node-service
+          network: some-node-network
+        connection:
+          root: some-connection-root
+          service: some-connection-service
+          network: some-connection-network
+        key:
+          root: some-key-root
+          service: some-key-service
+          network: some-key-network
+      code: 202
 
 #don't change
 procedure: command

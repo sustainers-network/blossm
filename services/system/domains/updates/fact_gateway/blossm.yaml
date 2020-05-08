@@ -3,7 +3,7 @@ service: system
 
 facts:
   - name: channel
-    protection: none
+    privileges: none
     # privileges:
     #   - some-privilege
   # - name: some-other-name

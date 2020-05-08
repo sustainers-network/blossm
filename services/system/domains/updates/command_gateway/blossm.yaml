@@ -3,9 +3,9 @@ service: system
 
 commands:
   - name: subscribe-to
-    privileges: none
-  # - name: some-other-name
-  #   protection: none
+    context: node
+    privileges:
+      - create
 
 whitelist:
   - "127.0.0.1"

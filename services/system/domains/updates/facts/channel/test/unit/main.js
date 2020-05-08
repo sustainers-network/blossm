@@ -10,6 +10,8 @@ const service = "some-service";
 const context = "some-context";
 const network = "some-network";
 
+const queryContext = "some-query-context";
+
 describe("Fact unit tests", () => {
   afterEach(() => {
     restore();
@@ -17,7 +19,7 @@ describe("Fact unit tests", () => {
   it("should return successfully", async () => {
     const query = {
       name,
-      context,
+      context: queryContext,
       network,
     };
 
@@ -31,7 +33,12 @@ describe("Fact unit tests", () => {
     const padding = new Array(2048);
     const body = `:${padding.join(" ")}\n\n`;
     expect(response).to.deep.equal(body);
-    expect(getFake).to.have.been.calledWith(`http://v.${context}.${network}`);
+    expect(getFake).to.have.been.calledWith(`v.${queryContext}.${network}`, {
+      query: {
+        context,
+        name: query.name,
+      },
+    });
     expect(headers).to.deep.equal({
       "Content-Type": "text/event-stream",
       "Cache-Control": "no-cache",
@@ -40,12 +47,14 @@ describe("Fact unit tests", () => {
       "Grip-Keep-Alive": ":\\n\\n; format=cstring; timeout=20",
     });
   });
-  it("should return successfully with domain and service", async () => {
+  it("should return successfully with domain", async () => {
     const query = {
       name,
       domain,
-      service,
-      context,
+      [domain]: {
+        service,
+      },
+      context: queryContext,
       network,
     };
 
@@ -60,7 +69,16 @@ describe("Fact unit tests", () => {
     const body = `:${padding.join(" ")}\n\n`;
     expect(response).to.deep.equal(body);
     expect(getFake).to.have.been.calledWith(
-      `http://v.${domain}.${service}.${context}.${network}`
+      `v.${domain}.${service}.${queryContext}.${network}`,
+      {
+        query: {
+          context,
+          name: query.name,
+          [domain]: {
+            service,
+          },
+        },
+      }
     );
     expect(headers).to.deep.equal({
       "Content-Type": "text/event-stream",

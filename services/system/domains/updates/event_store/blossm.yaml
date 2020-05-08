@@ -2,6 +2,7 @@ domain: updates
 service: system
 
 schema:
+  channel: String
   node:
     root: String
     service: String
@@ -23,6 +24,7 @@ testing:
     first:
       action: push
       payload:
+        channel: some-channel
         node:
           root: some-node-root
           service: some-node-service
@@ -38,6 +40,7 @@ testing:
     second:
       action: push
       payload:
+        channel: some-other-channel
         node:
           root: some-other-node-root
           service: some-other-node-service
@@ -56,6 +59,7 @@ testing:
     - action: push
       examples:
         - payload:
+            channel: some-channel
             node:
               root: some-node-root
               service: some-node-service

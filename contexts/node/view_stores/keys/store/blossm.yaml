@@ -23,7 +23,6 @@ testing:
           network: some.network
         get:
           name: some name
-          root: some-key
           network: some.network
       second:
         put:
@@ -31,7 +30,6 @@ testing:
           network: some.other-network
         get:
           name: some other name
-          root: some-key
           network: some.other-network
     index:
       put:

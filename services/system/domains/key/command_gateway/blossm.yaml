@@ -3,7 +3,7 @@ service: system
 
 commands:
   - name: create
-    subcontextKey: node
+    context: node
     privileges:
       - create
 

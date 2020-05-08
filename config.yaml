@@ -87,8 +87,15 @@ vendors:
         sandbox:
         staging:
         development: "+16122237366"
+  fanout:
+    realmId:
+      production:
+      sandbox:
+      staging:
+      development: 53b46805
 defaults:
   viewStore: mongodb
   eventStore: mongodb
   cloud: gcp
   texting: twilio
+  updates: fanout
