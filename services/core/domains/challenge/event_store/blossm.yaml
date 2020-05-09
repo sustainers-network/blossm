@@ -15,10 +15,6 @@ schema:
     sub: String
     aud: String
 
-actions:
-  - issue
-  - answer
-
 devDependencies:
   "localenv": "^0.2.2"
   "mocha": "^7.1.0"

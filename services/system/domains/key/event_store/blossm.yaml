@@ -14,9 +14,6 @@ schema:
     network: String
   secret: String
 
-actions:
-  - create
-
 testing:
   examples:
     first:

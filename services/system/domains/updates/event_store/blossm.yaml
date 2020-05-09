@@ -16,9 +16,6 @@ schema:
     service: String
     network: String
 
-actions:
-  - push
-
 testing:
   examples:
     first:

@@ -2,7 +2,6 @@ const deps = require("./deps");
 
 // Internal requests will have no context.
 module.exports = async ({ payload, context }) => {
-
   // Lazily set the environment variable.
   if (!process.env.GRIP_URL) {
     process.env.GRIP_URL = `${
@@ -18,8 +17,6 @@ module.exports = async ({ payload, context }) => {
       `event: update\ndata: ${JSON.stringify(payload.view)}\n\n`
     )
   );
-
-  console.log({ context, payload });
 
   return {
     events: [

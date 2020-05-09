@@ -1,8 +1,7 @@
 name: nodes
 context: principle
 
-event:
-  action: register
+events:
   domain: node
   service: system
 
@@ -18,6 +17,7 @@ devDependencies:
 testing:
   examples:
     - root: some-node-root
+      action: register
       context:
         principle:
           root: some-principle-root
@@ -35,6 +35,19 @@ testing:
           root: some-node-root
           scene: some-scene-root
           network: some.network
+
+  handlers:
+    - action: register
+      examples:
+        - event:
+            payload:
+              scene:
+                root: some-scene-root
+              network: some-network
+          result:
+            body:
+              scene: some-scene-root
+              network: some-network
 
 #don't change
 procedure: projection

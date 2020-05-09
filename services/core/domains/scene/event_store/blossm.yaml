@@ -7,9 +7,6 @@ schema:
   service: String
   network: String
 
-actions:
-  - register
-
 testing:
   examples:
     first:

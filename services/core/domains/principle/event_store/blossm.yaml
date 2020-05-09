@@ -12,12 +12,6 @@ schema:
       service: String
       network: String
 
-actions:
-  - add-roles
-  - remove-roles
-  - add-scenes
-  - remove-scenes
-
 dependencies:
   "@blossm/array-difference": "*"
 

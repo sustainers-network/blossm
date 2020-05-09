@@ -18,13 +18,6 @@ schema:
     manufacturer: String
     id: String
 
-actions:
-  - terminate
-  - start
-  - save
-  - upgrade
-  - change-scene
-
 testing:
   examples:
     first:

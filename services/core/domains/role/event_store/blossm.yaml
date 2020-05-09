@@ -19,11 +19,6 @@ schema:
 indexes:
   - network
 
-actions:
-  - create
-  - add-permissions
-  - remove-permissions
-
 dependencies:
   "@blossm/array-difference": "*"
 

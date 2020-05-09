@@ -15,6 +15,7 @@ module.exports = async ({ payload, context = {} }) => {
       service: process.env.SERVICE,
       network: process.env.NETWORK,
     },
+    device: payload.device,
   };
 
   // Create a long-lived token.

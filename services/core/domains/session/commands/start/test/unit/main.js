@@ -4,10 +4,8 @@ const { restore, replace, fake } = require("sinon");
 const main = require("../../main");
 const deps = require("../../deps");
 
-const code = "some-code";
-const payload = {
-  code,
-};
+const device = "some-device";
+const payload = { device };
 const domain = "some-domain";
 const service = "some-service";
 const network = "some-network";
@@ -57,6 +55,7 @@ describe("Command handler unit tests", () => {
             service,
             network,
           },
+          device,
         },
         references: {
           session: {
@@ -88,6 +87,7 @@ describe("Command handler unit tests", () => {
             service,
             network,
           },
+          device,
         },
       },
       signFn: signature,
@@ -132,6 +132,7 @@ describe("Command handler unit tests", () => {
             service,
             network,
           },
+          device,
         },
         references: {
           session: {
@@ -163,6 +164,7 @@ describe("Command handler unit tests", () => {
             service,
             network,
           },
+          device,
         },
       },
       signFn: signature,
@@ -184,6 +186,7 @@ describe("Command handler unit tests", () => {
     const result = await main({
       payload,
       context,
+      device,
     });
 
     expect(result).to.deep.equal({
@@ -211,6 +214,7 @@ describe("Command handler unit tests", () => {
             service,
             network,
           },
+          device,
         },
       },
     });
@@ -235,6 +239,7 @@ describe("Command handler unit tests", () => {
             service,
             network,
           },
+          device,
         },
       },
       signFn: signature,

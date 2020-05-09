@@ -18,9 +18,6 @@ indexes:
   - principle.service
   - principle.network
 
-actions:
-  - register
-
 testing:
   examples:
     first:
