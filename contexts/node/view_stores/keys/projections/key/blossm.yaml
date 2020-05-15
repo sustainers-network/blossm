@@ -28,10 +28,9 @@ testing:
         name: some name
       result:
         query: {}
-        value:
-          root: some-key-root
-          name: some name
-          network: some.network
+        values:
+          - name: some name
+            network: some.network
 
   handlers:
     - action: create
