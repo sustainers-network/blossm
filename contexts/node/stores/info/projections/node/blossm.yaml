@@ -1,47 +1,40 @@
-name: keys
+name: info
 context: node
 
-events:
-  domain: key
+store:
+  domain: node
   service: system
 
 devDependencies:
   "localenv": "^0.2.2"
   "mocha": "^7.1.0"
-  "chai": "^4.2.0"
   "sinon": "^7.3.2"
   "sinon-chai": "^3.3.0"
   "chai-datetime": "^1.5.0"
-  "@blossm/request": "*"
 
 testing:
   examples:
-    - root: some-key-root
-      action: create
+    - root: some-node-root
+      action: register
       context:
-        node:
-          root: some-node-root
-          service: some-node-service
-          network: some-node-network
+        principle:
+          root: some-principle-root
+          service: some-principle-service
+          network: some-principle-network
       payload:
         network: some.network
-        name: some name
       result:
-        query: {}
-        values:
-          - name: some name
-            network: some.network
+        value:
+          network: some.network
 
   handlers:
-    - action: create
+    - action: register
       examples:
         - event:
             payload:
-              name: some-name
               network: some-network
           result:
             body:
-              name: some-name
               network: some-network
 
 #don't change
