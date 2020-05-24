@@ -5,55 +5,22 @@ schema:
   name: String
   network: String
 
-devDependencies:
-  "localenv": "^0.2.2"
-  "mocha": "^7.1.0"
-  "chai": "^4.2.0"
-  "sinon-chai": "^3.3.0"
-  "@blossm/request": "*"
-  "@blossm/uuid": "*"
-
 testing:
   examples:
-    query:
-      root: some-key
-      first:
-        put:
-          name: some name
-          network: some.network
-        get:
-          name: some name
-          network: some.network
-      second:
-        put:
-          name: some other name
-          network: some.other-network
-        get:
-          name: some other name
-          network: some.other-network
-    index:
+    first:
       put:
-        network: some.domain
         name: some name
-      query: {}
+        network: some.network
       get:
-        network: some.domain
         name: some name
-    stream:
-      first:
-        put:
-          network: some.network
-          name: some name
-        get:
-          network: some.network
-          name: some name
-      second:
-        put:
-          network: some.other-domain
-          name: some other name
-        get:
-          network: some.other-domain
-          name: some other name
+        network: some.network
+    second:
+      put:
+        name: some other name
+        network: some.other-network
+      get:
+        name: some other name
+        network: some.other-network
 
 #don't change
 procedure: view-store

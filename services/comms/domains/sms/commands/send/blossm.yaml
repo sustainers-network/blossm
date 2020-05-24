@@ -1,0 +1,62 @@
+name: send
+domain: sms
+service: comms
+
+memory: 256Mi
+
+payload:
+  to:
+    type: phoneNumber
+    title: to phone number
+  message:
+    type: string
+
+dependencies:
+  "@blossm/phone-number": "*"
+  "@blossm/duration-consts": "*"
+  "@blossm/gcp-secret": "*"
+  "@blossm/twilio-sms": "*"
+
+devDependencies:
+  "mocha": "^7.1.0"
+  "chai": "^4.2.0"
+  "sinon": "^7.3.2"
+  "sinon-chai": "^3.3.0"
+
+testing:
+  validate:
+    ok:
+      - message: some message
+        to: "919 555 1144"
+      - message: some message
+        to: "(919) 555 1144"
+    bad:
+      - message:
+          a: 1
+      - to: "919"
+      - to: 919
+      - to: false
+
+  normalize:
+    - payload:
+        message: some message
+        to: "919 555 1144"
+      normalized:
+        to: "+19195551144"
+        message: some message
+
+  steps:
+    # Should return 409 if the id isn't found.
+    - payload:
+        message: some message
+        to: "(919) 555 1144"
+      response:
+        references:
+          sms:
+            root:
+            service:
+            network:
+      code: 202
+
+#don't change
+procedure: command

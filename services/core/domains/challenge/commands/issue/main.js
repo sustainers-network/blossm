@@ -10,8 +10,6 @@ const THREE_MINUTES = 3 * SECONDS_IN_MINUTE;
 
 const CODE_LENGTH = 6;
 
-let sms;
-
 const determineUpgrade = async (payload, context) => {
   // Check to see if the phone is recognized.
   // If the principle is being upgraded, use a placeholder identity with it instead.
@@ -61,14 +59,6 @@ module.exports = async ({
   // access token returned by answering this issued challenge.
   options: { events, upgrade } = {},
 }) => {
-  // Lazily load up the sms connection.
-  if (!sms) {
-    sms = deps.sms(
-      await deps.secret("twilio-account-sid"),
-      await deps.secret("twilio-auth-token")
-    );
-  }
-
   upgrade = upgrade || (await determineUpgrade(payload, context));
 
   // Create the root for this challenge.
@@ -105,11 +95,20 @@ module.exports = async ({
   const code = deps.randomIntOfLength(CODE_LENGTH);
 
   // Send the code.
-  await sms.send({
-    to: payload.phone,
-    from: process.env.TWILIO_SENDING_PHONE_NUMBER,
-    body: `${code} is your verification code. Enter it in the app to let us know it's really you.`,
-  });
+  await deps
+    .command({
+      name: "send",
+      domain: "sms",
+      service: "comms",
+    })
+    .set({
+      tokenFns: { internal: deps.gcpToken },
+      context,
+    })
+    .issue({
+      to: payload.phone,
+      message: `${code} is your verification code. Enter it in the app to let us know it's really you.`,
+    });
 
   // Send the token to the requester so they can access the answer command.
   return {

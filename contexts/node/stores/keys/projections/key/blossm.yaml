@@ -18,11 +18,6 @@ testing:
   examples:
     - root: some-key-root
       action: create
-      context:
-        node:
-          root: some-node-root
-          service: some-node-service
-          network: some-node-network
       payload:
         network: some.network
         name: some name

@@ -2,8 +2,6 @@ name: issue
 domain: challenge
 service: core
 
-memory: 256Mi
-
 payload:
   phone:
     type: phoneNumber
@@ -21,11 +19,10 @@ dependencies:
   "@blossm/uuid": "*"
   "@blossm/datetime": "*"
   "@blossm/random-int-of-length": "*"
-  "@blossm/twilio-sms": "*"
   "@blossm/event-store-rpc": "*"
+  "@blossm/command-rpc": "*"
   "@blossm/errors": "*"
   "@blossm/crypt": "*"
-  "@blossm/gcp-secret": "*"
 
 devDependencies:
   "mocha": "^7.1.0"
@@ -63,6 +60,10 @@ testing:
     - domain: challenge
       procedure: event-store
       service: core
+    - name: send
+      domain: sms
+      procedure: command
+      service: comms
 
   steps:
     # Should return 409 if the id isn't found.

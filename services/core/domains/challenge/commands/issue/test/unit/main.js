@@ -40,7 +40,6 @@ const service = "some-service";
 const network = "some-network";
 const token = "some-token";
 const code = "some-code";
-const secret = "some-secret";
 const project = "some-projectl";
 const claims = {
   iss: "some-iss",
@@ -65,14 +64,14 @@ describe("Command handler unit tests", () => {
     restore();
   });
   it("should return successfully", async () => {
-    const secretFake = fake.returns(secret);
-    replace(deps, "secret", secretFake);
-
-    const smsSendFake = fake();
-    const smsFake = fake.returns({
-      send: smsSendFake,
+    const issueFake = fake();
+    const commandSetFake = fake.returns({
+      issue: issueFake,
     });
-    replace(deps, "sms", smsFake);
+    const commandFake = fake.returns({
+      set: commandSetFake,
+    });
+    replace(deps, "command", commandFake);
 
     const uuidFake = fake.returns(root);
     replace(deps, "uuid", uuidFake);
@@ -131,9 +130,6 @@ describe("Command handler unit tests", () => {
       key: "id",
       value: id,
     });
-    expect(secretFake).to.have.been.calledWith("twilio-account-sid");
-    expect(secretFake).to.have.been.calledWith("twilio-auth-token");
-    expect(smsFake).to.have.been.calledWith(secret, secret);
     expect(setFake).to.have.been.calledWith({
       context,
       tokenFns: { internal: deps.gcpToken },
@@ -166,23 +162,29 @@ describe("Command handler unit tests", () => {
     expect(Math.abs(deps.moment().add(3, "m").toDate() - new Date())).to.equal(
       180000
     );
-    expect(smsSendFake).to.have.been.calledWith({
-      to: payloadPhone,
-      from: sendingPhoneNumber,
-      body: `${code} is your verification code. Enter it in the app to let us know it's really you.`,
+    expect(commandFake).to.have.been.calledWith({
+      name: "send",
+      domain: "sms",
+      service: "comms",
     });
-    await main({ payload, context, claims });
-    expect(smsFake).to.have.been.calledOnce;
+    expect(commandSetFake).to.have.been.calledWith({
+      context,
+      tokenFns: { internal: deps.gcpToken },
+    });
+    expect(issueFake).to.have.been.calledWith({
+      to: payloadPhone,
+      message: `${code} is your verification code. Enter it in the app to let us know it's really you.`,
+    });
   });
   it("should return successfully without identity in context, but with a principle in context", async () => {
-    const secretFake = fake.returns(secret);
-    replace(deps, "secret", secretFake);
-
-    const smsSendFake = fake();
-    const smsFake = fake.returns({
-      send: smsSendFake,
+    const issueFake = fake();
+    const commandSetFake = fake.returns({
+      issue: issueFake,
     });
-    replace(deps, "sms", smsFake);
+    const commandFake = fake.returns({
+      set: commandSetFake,
+    });
+    replace(deps, "command", commandFake);
 
     const uuidFake = fake.returns(root);
     replace(deps, "uuid", uuidFake);
@@ -267,9 +269,6 @@ describe("Command handler unit tests", () => {
       version: "1",
       project,
     });
-    expect(secretFake).to.have.been.calledWith("twilio-account-sid");
-    expect(secretFake).to.have.been.calledWith("twilio-auth-token");
-    expect(smsFake).to.have.been.calledWith(secret, secret);
     expect(createJwtFake).to.have.been.calledWith({
       options: {
         issuer: `${domain}.${service}.${network}/issue`,
@@ -284,28 +283,33 @@ describe("Command handler unit tests", () => {
       },
       signFn: signature,
     });
-    expect(secretFake).to.have.been.calledWith("twilio-account-sid");
-    expect(secretFake).to.have.been.calledWith("twilio-auth-token");
-    expect(smsFake).to.have.been.calledWith(secret, secret);
     expect(randomIntFake).to.have.been.calledWith(6);
     expect(Math.abs(deps.moment().add(3, "m").toDate() - new Date())).to.equal(
       180000
     );
-    expect(smsSendFake).to.have.been.calledWith({
+    expect(commandFake).to.have.been.calledWith({
+      name: "send",
+      domain: "sms",
+      service: "comms",
+    });
+    expect(commandSetFake).to.have.been.calledWith({
+      context,
+      tokenFns: { internal: deps.gcpToken },
+    });
+    expect(issueFake).to.have.been.calledWith({
       to: payloadPhone,
-      from: sendingPhoneNumber,
-      body: `${code} is your verification code. Enter it in the app to let us know it's really you.`,
+      message: `${code} is your verification code. Enter it in the app to let us know it's really you.`,
     });
   });
   it("should return successfully without identity or principle in context, with events in options", async () => {
-    const secretFake = fake.returns(secret);
-    replace(deps, "secret", secretFake);
-
-    const smsSendFake = fake();
-    const smsFake = fake.returns({
-      send: smsSendFake,
+    const issueFake = fake();
+    const commandSetFake = fake.returns({
+      issue: issueFake,
     });
-    replace(deps, "sms", smsFake);
+    const commandFake = fake.returns({
+      set: commandSetFake,
+    });
+    replace(deps, "command", commandFake);
 
     const uuidFake = fake.returns(root);
     replace(deps, "uuid", uuidFake);
@@ -417,21 +421,29 @@ describe("Command handler unit tests", () => {
     expect(Math.abs(deps.moment().add(3, "m").toDate() - new Date())).to.equal(
       180000
     );
-    expect(smsSendFake).to.have.been.calledWith({
+    expect(commandFake).to.have.been.calledWith({
+      name: "send",
+      domain: "sms",
+      service: "comms",
+    });
+    expect(commandSetFake).to.have.been.calledWith({
+      context,
+      tokenFns: { internal: deps.gcpToken },
+    });
+    expect(issueFake).to.have.been.calledWith({
       to: payloadPhone,
-      from: sendingPhoneNumber,
-      body: `${code} is your verification code. Enter it in the app to let us know it's really you.`,
+      message: `${code} is your verification code. Enter it in the app to let us know it's really you.`,
     });
   });
   it("should return successfully if an upgrade option is passed", async () => {
-    const secretFake = fake.returns(secret);
-    replace(deps, "secret", secretFake);
-
-    const smsSendFake = fake();
-    const smsFake = fake.returns({
-      send: smsSendFake,
+    const issueFake = fake();
+    const commandSetFake = fake.returns({
+      issue: issueFake,
     });
-    replace(deps, "sms", smsFake);
+    const commandFake = fake.returns({
+      set: commandSetFake,
+    });
+    replace(deps, "command", commandFake);
 
     const uuidFake = fake.returns(root);
     replace(deps, "uuid", uuidFake);
@@ -512,8 +524,14 @@ describe("Command handler unit tests", () => {
   });
   it("should throw correctly", async () => {
     const errorMessage = "some-error";
-    const secretFake = fake.rejects(new Error(errorMessage));
-    replace(deps, "secret", secretFake);
+    const queryFake = fake.rejects(new Error(errorMessage));
+    const setFake = fake.returns({
+      query: queryFake,
+    });
+    const eventStoreFake = fake.returns({
+      set: setFake,
+    });
+    replace(deps, "eventStore", eventStoreFake);
 
     try {
       await main({ payload, context, claims });
@@ -525,15 +543,6 @@ describe("Command handler unit tests", () => {
     }
   });
   it("should throw correctly if no phones found", async () => {
-    const secretFake = fake.returns(secret);
-    replace(deps, "secret", secretFake);
-
-    const smsSendFake = fake();
-    const smsFake = fake.returns({
-      send: smsSendFake,
-    });
-    replace(deps, "sms", smsFake);
-
     const queryFake = fake.returns({ body: [] });
     const setFake = fake.returns({
       query: queryFake,
@@ -564,15 +573,6 @@ describe("Command handler unit tests", () => {
     }
   });
   it("should throw correctly if phone number comparing fails.", async () => {
-    const secretFake = fake.returns(secret);
-    replace(deps, "secret", secretFake);
-
-    const smsSendFake = fake();
-    const smsFake = fake.returns({
-      send: smsSendFake,
-    });
-    replace(deps, "sms", smsFake);
-
     const uuidFake = fake.returns(root);
     replace(deps, "uuid", uuidFake);
 
@@ -609,15 +609,6 @@ describe("Command handler unit tests", () => {
     }
   });
   it("should throw correctly if context.principle doesn't match the identity's principle", async () => {
-    const secretFake = fake.returns(secret);
-    replace(deps, "secret", secretFake);
-
-    const smsSendFake = fake();
-    const smsFake = fake.returns({
-      send: smsSendFake,
-    });
-    replace(deps, "sms", smsFake);
-
     const uuidFake = fake.returns(root);
     replace(deps, "uuid", uuidFake);
 
