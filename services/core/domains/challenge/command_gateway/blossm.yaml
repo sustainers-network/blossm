@@ -22,5 +22,12 @@ devDependencies:
   "@blossm/twilio-sms": "*"
   "@blossm/gcp-secret": "*"
 
+devEnv:
+  production:
+  sandbox:
+  staging:
+  development: 
+    TWILIO_TEST_RECEIVING_PHONE_NUMBER: "+12018018796"
+
 #don't change
 procedure: command-gateway

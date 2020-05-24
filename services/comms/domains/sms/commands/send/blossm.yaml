@@ -23,6 +23,13 @@ devDependencies:
   "sinon": "^7.3.2"
   "sinon-chai": "^3.3.0"
 
+env:
+  production:
+  sandbox:
+  staging:
+  development: 
+    TWILIO_SENDING_PHONE_NUMBER: "+16122237366" 
+
 testing:
   validate:
     ok:

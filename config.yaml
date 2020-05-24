@@ -75,18 +75,6 @@ vendors:
         staging:
         development: event-handler-b8xbj.mongodb.net
       protocol: mongodb+srv
-  texting:
-    twilio:
-      testReceivingPhoneNumber:
-        production:
-        sandbox:
-        staging:
-        development: "+12018018796"
-      sendingPhoneNumber:
-        production:
-        sandbox:
-        staging:
-        development: "+16122237366"
   fanout:
     realmId:
       production:
@@ -97,5 +85,4 @@ defaults:
   viewStore: mongodb
   eventStore: mongodb
   cloud: gcp
-  texting: twilio
   updates: fanout

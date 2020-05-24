@@ -45,19 +45,16 @@ const claims = {
   iss: "some-iss",
 };
 
-const sendingPhoneNumber = "some-sending-phone-number";
-
 process.env.DOMAIN = domain;
 process.env.SERVICE = service;
 process.env.NETWORK = network;
 process.env.GCP_PROJECT = project;
-process.env.TWILIO_SENDING_PHONE_NUMBER = sendingPhoneNumber;
-let main;
+
+const main = require("../../main");
+
 describe("Command handler unit tests", () => {
   beforeEach(() => {
     clock = useFakeTimers(now.getTime());
-    delete require.cache[require.resolve("../../main")];
-    main = require("../../main");
   });
   afterEach(() => {
     clock.restore();
