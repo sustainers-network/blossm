@@ -12,14 +12,14 @@ describe("Fact unit tests", () => {
     const root = "some-root";
     const secret = "some-secret";
     const node = "some-node";
-    const principle = "some-principle";
+    const principal = "some-principal";
     const network = "some-network";
 
     const aggregate = {
       state: {
         secret,
         node,
-        principle,
+        principal,
         network,
       },
     };
@@ -44,7 +44,7 @@ describe("Fact unit tests", () => {
       root,
       secret,
       node,
-      principle,
+      principal,
       network,
     });
   });

@@ -29,10 +29,10 @@ testing:
       payload:
         issued: 2020-01-03T00:02:12.000Z
         upgrade:
-          principle:
+          principal:
             root: some-root
-            service: some-principle-service
-            network: some.principle-network
+            service: some-principal-service
+            network: some.principal-network
         expires: 2020-01-03T00:02:15.000Z
         events:
           - anything: goes
@@ -52,10 +52,10 @@ testing:
         - payload:
             issued: 2020-01-03T00:02:12.000Z
             upgrade:
-              principle:
+              principal:
                 root: some-root
-                service: some-principle-service
-                network: some.principle-network
+                service: some-principal-service
+                network: some.principal-network
             expires: 2020-01-03T00:02:15.000Z
             events:
               - any: thing

@@ -37,7 +37,7 @@ describe("Composite unit tests", () => {
     expect(readFake).to.have.been.calledWith();
     expect(viewStoreFake).to.have.been.calledWith({
       name: "nodes",
-      context: "principle",
+      context: "principal",
     });
     expect(result).to.deep.equal({ nodes });
   });

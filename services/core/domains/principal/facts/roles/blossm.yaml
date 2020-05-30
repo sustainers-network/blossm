@@ -1,5 +1,5 @@
 name: roles
-domain: principle
+domain: principal
 service: core
 
 dependencies:
@@ -14,13 +14,13 @@ devDependencies:
 
 testing:
   dependencies:
-    - domain: principle
+    - domain: principal
       procedure: event-store
       service: core
 
   steps:
     - pre:
-        - domain: principle
+        - domain: principal
           service: core
           root: some-root
           action: add-roles

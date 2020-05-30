@@ -8,15 +8,15 @@ const deps = require("../../deps");
 
 let clock;
 const now = new Date();
-const principleRoot = "some-principle-root";
-const principle = {
-  root: principleRoot,
+const principalRoot = "some-principal-root";
+const principal = {
+  root: principalRoot,
 };
 const scene = "some-scene";
 const key = "some-key";
 const contextNetwork = "some-context-network";
 const context = {
-  principle,
+  principal,
   scene,
   key,
   network: contextNetwork,
@@ -84,7 +84,7 @@ describe("Command handler unit tests", () => {
     });
     expect(createJwtFake).to.have.been.calledWith({
       options: {
-        subject: principleRoot,
+        subject: principalRoot,
         issuer: `${domain}.${service}.${network}/open`,
         audience: network,
         expiresIn: 7776000000,

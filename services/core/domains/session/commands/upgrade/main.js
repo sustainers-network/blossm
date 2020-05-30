@@ -18,7 +18,7 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
     ...payload,
   };
 
-  const subject = claims.sub || payload.principle.root;
+  const subject = claims.sub || payload.principal.root;
 
   // Create a new token inheriting from the current claims.
   const token = await deps.createJwt({
@@ -47,11 +47,11 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
         action: "upgrade",
         payload,
       },
-      ...(payload.principle
+      ...(payload.principal
         ? [
             {
-              root: payload.principle.root,
-              domain: "principle",
+              root: payload.principal.root,
+              domain: "principal",
               action: "add-roles",
               payload: {
                 roles: [

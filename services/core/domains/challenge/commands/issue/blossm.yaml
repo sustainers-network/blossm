@@ -71,20 +71,20 @@ testing:
         id: some-id
         phone: "(919) 555 1144"
       code: 409
-    # Should return successfully if upgrading a principle.
+    # Should return successfully if upgrading a principal.
     - options:
         upgrade:
-          principle:
-            root: some-principle-root
-            service: some-principle-service
-            network: some.principle-network
+          principal:
+            root: some-principal-root
+            service: some-principal-service
+            network: some.principal-network
       payload:
         phone: "(919) 555 1133"
       context:
-        principle:
-          root: some-principle-root
-          service: some-principle-service
-          network: some-principle-network
+        principal:
+          root: some-principal-root
+          service: some-principal-service
+          network: some-principal-network
       response:
         tokens:
           - network:
@@ -96,8 +96,8 @@ testing:
             service:
             network:
       code: 202
-    # Should return 400 if the context principle is
-    # different from the principle in the identity.
+    # Should return 400 if the context principal is
+    # different from the principal in the identity.
     - pre:
         - domain: identity
           service: core
@@ -106,16 +106,16 @@ testing:
           payload:
             id: some-id
             phone: "#+19195551144"
-            principle:
-              root: some-principle
+            principal:
+              root: some-principal
               service: some-service
               network: some.network
       payload:
         id: some-id
         phone: "+19195551144"
       context:
-        principle:
-          root: some-context-principle-root
+        principal:
+          root: some-context-principal-root
       code: 400
     # Should return successfully if challenging an existing identity correctly.
     - pre:
@@ -126,8 +126,8 @@ testing:
           payload:
             id: some-other-id
             phone: "#+19195551144"
-            principle:
-              root: some-principle
+            principal:
+              root: some-principal
               service: some-service
               network: some.network
       context: {}
@@ -154,8 +154,8 @@ testing:
           payload:
             id: yet-another-id
             phone: "+19195551144"
-            principle:
-              root: yet-another-principle
+            principal:
+              root: yet-another-principal
               service: some-service
               network: some.network
       payload:

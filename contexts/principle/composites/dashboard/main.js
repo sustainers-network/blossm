@@ -4,7 +4,7 @@ module.exports = async ({ query, params, context }) => {
   const { body: nodes } = await deps
     .viewStore({
       name: "nodes",
-      context: "principle",
+      context: "principal",
     })
     .set({ context, tokenFns: { internal: deps.gcpToken } })
     .read();

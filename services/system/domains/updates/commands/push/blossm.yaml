@@ -21,6 +21,10 @@ devDependencies:
   "sinon-chai": "^3.5.0"
   "chai-datetime": "^1.5.0"
 
+env:
+  development:
+    FANOUT_REALM_ID: 53b46805
+    
 testing:
   dependencies:
     - procedure: http

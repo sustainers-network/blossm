@@ -1,14 +1,14 @@
 const deps = require("./deps");
 
 module.exports = async ({ payload, context, claims, aggregateFn }) => {
-  // Get aggregates for the principle, this session, and the context to be switched in to.
+  // Get aggregates for the principal, this session, and the context to be switched in to.
   const [
-    { aggregate: principleAggregate },
+    { aggregate: principalAggregate },
     { aggregate },
     { aggregate: sceneAggregate },
   ] = await Promise.all([
     aggregateFn(claims.sub, {
-      domain: "principle",
+      domain: "principal",
     }),
     aggregateFn(context.session.root),
     aggregateFn(payload.scene, {
@@ -16,8 +16,8 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
     }),
   ]);
 
-  // Check to see if the principle has access to the context being switched in to.
-  if (!principleAggregate.scenes.some((scene) => scene.root == payload.scene))
+  // Check to see if the principal has access to the context being switched in to.
+  if (!principalAggregate.scenes.some((scene) => scene.root == payload.scene))
     throw deps.unauthorizedError.message("This scene isn't accessible.", {
       info: { scene: payload.scene },
     });

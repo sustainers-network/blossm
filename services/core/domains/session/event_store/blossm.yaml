@@ -7,7 +7,7 @@ schema:
     root: String
     service: String
     network: String
-  principle:
+  principal:
     root: String
     service: String
     network: String
@@ -67,14 +67,14 @@ testing:
         - state: {}
           payload:
             context:
-              principle:
-                root: some-principle-root
-                service: some-principle-service
-                domain: some-principle-domain
-            principle:
-              root: some-principle-root
-              service: some-principle-service
-              domain: some-principle-domain
+              principal:
+                root: some-principal-root
+                service: some-principal-service
+                domain: some-principal-domain
+            principal:
+              root: some-principal-root
+              service: some-principal-service
+              domain: some-principal-domain
             scene:
               root: some-scene-root
               service: some-scene-service
@@ -87,14 +87,14 @@ testing:
               id: some-device-id
           result:
             context:
-              principle:
-                root: some-principle-root
-                service: some-principle-service
-                domain: some-principle-domain
-            principle:
-              root: some-principle-root
-              service: some-principle-service
-              domain: some-principle-domain
+              principal:
+                root: some-principal-root
+                service: some-principal-service
+                domain: some-principal-domain
+            principal:
+              root: some-principal-root
+              service: some-principal-service
+              domain: some-principal-domain
             scene:
               root: some-scene-root
               service: some-scene-service
@@ -108,15 +108,15 @@ testing:
     - action: upgrade
       examples:
         - payload:
-            principle:
-              root: some-principle-root
-              service: some-principle-service
-              network: some.principle-network
+            principal:
+              root: some-principal-root
+              service: some-principal-service
+              network: some.principal-network
           result:
-            principle:
-              root: some-principle-root
-              service: some-principle-service
-              network: some.principle-network
+            principal:
+              root: some-principal-root
+              service: some-principal-service
+              network: some.principal-network
         - payload:
             something:
               root: some-root
@@ -124,20 +124,20 @@ testing:
               network: some-network
           result: {}
         - state:
-            principle:
-              root: some-principle-root
-              service: some-principle-service
-              network: some.principle-network
+            principal:
+              root: some-principal-root
+              service: some-principal-service
+              network: some.principal-network
           payload:
             something:
               root: some-root
               service: some-service
               network: some-network
           result:
-            principle:
-              root: some-principle-root
-              service: some-principle-service
-              network: some.principle-network
+            principal:
+              root: some-principal-root
+              service: some-principal-service
+              network: some.principal-network
     - action: terminate
       examples:
         - state: {}

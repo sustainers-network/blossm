@@ -46,7 +46,7 @@ testing:
         phone: "+19195551144"
 
   dependencies:
-    - domain: principle
+    - domain: principal
       procedure: event-store
       service: core
     - domain: identity
@@ -67,7 +67,7 @@ testing:
           payload:
             id: some-identity-id
             phone: "#+19195551144"
-            principle:
+            principal:
               root: some-sub
               service: some-service
               network: some.network
@@ -85,16 +85,16 @@ testing:
           payload:
             id: some-other-identity-id
             phone: "#+19195551155"
-            principle:
-              root: some-principle-root
+            principal:
+              root: some-principal-root
               service: some-service
               network: some.network
       payload:
         id: some-other-identity-id
         phone: "+19195551155"
       context:
-        principle:
-          root: some-principle-root
+        principal:
+          root: some-principal-root
           service: some-service
           network: some.network
       code: 204
@@ -102,8 +102,8 @@ testing:
         id: new-identity-id
         phone: "+19195551144"
       context:
-        principle:
-          root: some-principle-root
+        principal:
+          root: some-principal-root
           service: some-service
           network: some.network
       code: 202
@@ -113,20 +113,20 @@ testing:
             type: challenge
             value:
     # Return successfully if saving a new id with a context that has
-    # a principle that doesn't yet belong to an identity.
+    # a principal that doesn't yet belong to an identity.
     - pre:
-        - domain: principle
+        - domain: principal
           service: core
-          root: some-principle-root
+          root: some-principal-root
           action: add-roles
           payload:
             roles:
               - id: some-role
                 service: some-service
                 network: some.network
-        - domain: principle
+        - domain: principal
           service: core
-          root: some-other-principle-root
+          root: some-other-principal-root
           action: add-roles
           payload:
             roles:
@@ -140,16 +140,16 @@ testing:
           payload:
             id: yet-another-identity-id
             phone: "#+19195551177"
-            principle:
-              root: some-principle-root
+            principal:
+              root: some-principal-root
               service: some-service
               network: some.network
       payload:
         id: yet-another-identity-id
         phone: "+19195551177"
       context:
-        principle:
-          root: some-other-principle-root
+        principal:
+          root: some-other-principal-root
           service: core
           network: sustainers.network
       response:
@@ -158,20 +158,20 @@ testing:
             type: challenge
             value:
       code: 202
-      # Should return 400 if the principle in the context belongs to a different identity.
+      # Should return 400 if the principal in the context belongs to a different identity.
     - pre:
-        - domain: principle
+        - domain: principal
           service: core
-          root: some-principle-root_1
+          root: some-principal-root_1
           action: add-roles
           payload:
             roles:
               - id: some-role
                 service: some-service
                 network: some.network
-        - domain: principle
+        - domain: principal
           service: core
-          root: some-other-principle-root_1
+          root: some-other-principal-root_1
           action: add-roles
           payload:
             roles:
@@ -185,8 +185,8 @@ testing:
           payload:
             id: yet-another-identity-id_1
             phone: "#+19195551177"
-            principle:
-              root: some-principle-root_1
+            principal:
+              root: some-principal-root_1
               service: some-service
               network: some.network
         - domain: identity
@@ -196,8 +196,8 @@ testing:
           payload:
             id: doesnt-matter
             phone: "#+19195551177"
-            principle:
-              root: some-other-principle-root_1
+            principal:
+              root: some-other-principal-root_1
               service: some-service
               network: some.network
       payload:
@@ -205,8 +205,8 @@ testing:
         phone: "+19195551177"
       claims:
       context:
-        principle:
-          root: some-other-principle-root_1
+        principal:
+          root: some-other-principal-root_1
           service: some-service
           network: some.network
       code: 400

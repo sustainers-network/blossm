@@ -8,7 +8,7 @@ schema:
     root: String
     service: String
     network: String
-  principle:
+  principal:
     root: String
     service: String
     network: String
@@ -25,10 +25,10 @@ testing:
           root: some-scene-root
           service: some-scene-service
           network: some.scene-network
-        principle:
-          root: some-principle-root
-          service: some-principle-service
-          network: some.principle-network
+        principal:
+          root: some-principal-root
+          service: some-principal-service
+          network: some.principal-network
         secret: some-secret
     second:
       action: create
@@ -39,10 +39,10 @@ testing:
           root: some-other-scene-root
           service: some-other-scene-service
           network: some.other-scene-network
-        principle:
-          root: some-other-principle-root
-          service: some-other-principle-service
-          network: some.other-principle-network
+        principal:
+          root: some-other-principal-root
+          service: some-other-principal-service
+          network: some.other-principal-network
         secret: some-other-secret
 
   handlers:
@@ -55,10 +55,10 @@ testing:
               root: some-scene-root
               service: some-scene-service
               network: some.scene-network
-            principle:
-              root: some-principle-root
-              service: some-principle-service
-              network: some.principle-network
+            principal:
+              root: some-principal-root
+              service: some-principal-service
+              network: some.principal-network
             secret: some-secret
           payload:
             name: some-other-name
@@ -67,10 +67,10 @@ testing:
               root: some-other-scene-root
               service: some-other-scene-service
               network: some.other-scene-network
-            principle:
-              root: some-other-principle-root
-              service: some-other-principle-service
-              network: some.other-principle-network
+            principal:
+              root: some-other-principal-root
+              service: some-other-principal-service
+              network: some.other-principal-network
             secret: some-other-secret
           result:
             name: some-other-name
@@ -79,10 +79,10 @@ testing:
               root: some-other-scene-root
               service: some-other-scene-service
               network: some.other-scene-network
-            principle:
-              root: some-other-principle-root
-              service: some-other-principle-service
-              network: some.other-principle-network
+            principal:
+              root: some-other-principal-root
+              service: some-other-principal-service
+              network: some.other-principal-network
             secret: some-other-secret
 
 #don't change

@@ -118,7 +118,7 @@ describe("Command handler unit tests", () => {
       response: { tokens: [{ network, type: "access", value: token }] },
     });
     expect(aggregateFake).to.have.been.calledWith(sub, {
-      domain: "principle",
+      domain: "principal",
     });
     expect(aggregateFake).to.have.been.calledWith(sessionRoot);
     expect(aggregateFake).to.have.been.calledWith(newSceneRoot, {

@@ -49,7 +49,7 @@ testing:
       domain: session
       procedure: command
       service: core
-    - domain: principle
+    - domain: principal
       procedure: event-store
       service: core
 
@@ -82,7 +82,7 @@ testing:
             type: access
             value:
         references:
-          principle:
+          principal:
             root:
             service:
             network:
@@ -110,8 +110,8 @@ testing:
           root: some-other-session-root
           service: some-session-service
           network: some.session-network
-        principle:
-          root: some-principle-root
+        principal:
+          root: some-principal-root
           service: core
           network: some.network
       claims:
@@ -120,8 +120,8 @@ testing:
         exp: 9999-12-31T00:00:00.000
       response:
         references:
-          principle:
-            root: some-principle-root
+          principal:
+            root: some-principal-root
             service: core
             network: some.network
           scene:

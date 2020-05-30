@@ -1,5 +1,5 @@
 name: dashboard
-context: principle
+context: principal
 
 dependencies:
   "@blossm/view-store-rpc": "*"
@@ -15,28 +15,28 @@ devDependencies:
 testing:
   dependencies:
     - name: nodes
-      context: principle
+      context: principal
       procedure: view-store
 
   steps:
     - pre:
         - name: nodes
-          context: principle
+          context: principal
           root: some-node-root
           view:
             headers:
-              principle:
-                root: some-principle-root
-                service: some-principle-service
-                network: some-principle-network
+              principal:
+                root: some-principal-root
+                service: some-principal-service
+                network: some-principal-network
             body:
               network: some.network
               scene: some-scene-root
       context:
-        principle:
-          root: some-principle-root
-          service: some-principle-service
-          network: some-principle-network
+        principal:
+          root: some-principal-root
+          service: some-principal-service
+          network: some-principal-network
       response:
         nodes:
           - root: some-node-root

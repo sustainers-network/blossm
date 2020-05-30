@@ -35,7 +35,7 @@ testing:
       domain: scene
       service: core
       procedure: command
-    - domain: principle
+    - domain: principal
       service: core
       procedure: event-store
 
@@ -90,8 +90,8 @@ testing:
           root: some-other-session-root
           service: some-other-session-service
           network: some.other-session-network
-        principle:
-          root: some-principle-root
+        principal:
+          root: some-principal-root
           service: core
           network: local.network
       claims:

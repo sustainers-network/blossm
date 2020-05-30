@@ -36,7 +36,7 @@ testing:
     - domain: scene
       procedure: event-store
       service: core
-    - domain: principle
+    - domain: principal
       procedure: event-store
       service: core
 
@@ -54,9 +54,9 @@ testing:
           payload:
             domain: some-scene-domain
             root: some-scene-root
-        - domain: principle
+        - domain: principal
           service: core
-          root: some-principle-root
+          root: some-principal-root
           action: add-scenes
           payload:
             scenes:
@@ -68,7 +68,7 @@ testing:
       claims:
         iss: some-iss
         aud: some-aud
-        sub: some-principle-root
+        sub: some-principal-root
         exp: 20000
       context:
         session:
@@ -80,9 +80,9 @@ testing:
             value:
       code: 202
     - pre:
-        - domain: principle
+        - domain: principal
           service: core
-          root: some-other-principle-root
+          root: some-other-principal-root
           action: add-scenes
           payload:
             scenes:
@@ -94,7 +94,7 @@ testing:
       claims:
         iss: some-iss
         aud: some-aud
-        sub: some-other-principle-root
+        sub: some-other-principal-root
         exp: 20000
       context:
         session:
@@ -115,7 +115,7 @@ testing:
       claims:
         iss: some-iss
         aud: some-aud
-        sub: some-principle-root
+        sub: some-principal-root
         exp: 20000
       code: 400
 

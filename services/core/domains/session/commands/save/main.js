@@ -1,25 +1,25 @@
 const deps = require("./deps");
 
 const getEventsForPermissionsMerge = async ({
-  principle,
+  principal,
   context,
   identityRoot,
   aggregateFn,
 }) => {
-  // Get the aggregates of the principle of the identity and the current principle of the session.
+  // Get the aggregates of the principal of the identity and the current principal of the session.
   const [
-    { aggregate: principleAggregate },
-    { aggregate: sessionPrincipleAggregate } = {},
+    { aggregate: principalAggregate },
+    { aggregate: sessionprincipalAggregate } = {},
   ] = await Promise.all([
-    aggregateFn(principle.root, {
-      domain: "principle",
+    aggregateFn(principal.root, {
+      domain: "principal",
     }),
-    ...(context.principle
+    ...(context.principal
       ? [
-          aggregateFn(context.principle.root, {
-            domain: "principle",
-            service: context.principle.service,
-            network: context.principle.network,
+          aggregateFn(context.principal.root, {
+            domain: "principal",
+            service: context.principal.service,
+            network: context.principal.network,
           }),
         ]
       : []),
@@ -28,23 +28,23 @@ const getEventsForPermissionsMerge = async ({
   return {
     identityRoot,
     events: [
-      ...(sessionPrincipleAggregate &&
-      deps.difference(principleAggregate.roles, sessionPrincipleAggregate.roles)
+      ...(sessionprincipalAggregate &&
+      deps.difference(principalAggregate.roles, sessionprincipalAggregate.roles)
         .length > 0
         ? [
             {
-              domain: "principle",
+              domain: "principal",
               service: process.env.SERVICE,
               action: "add-roles",
-              root: principle.root,
+              root: principal.root,
               payload: {
-                roles: sessionPrincipleAggregate.roles,
+                roles: sessionprincipalAggregate.roles,
               },
             },
           ]
         : []),
     ],
-    principle,
+    principal,
   };
 };
 
@@ -52,8 +52,8 @@ const getEventsForIdentityRegistering = async ({ context, payload }) => {
   const identityRoot = deps.uuid();
   const hashedPhone = await deps.hash(payload.phone);
 
-  const principle = context.principle
-    ? context.principle
+  const principal = context.principal
+    ? context.principal
     : {
         root: deps.uuid(),
         service: process.env.SERVICE,
@@ -71,14 +71,14 @@ const getEventsForIdentityRegistering = async ({ context, payload }) => {
         payload: {
           phone: hashedPhone,
           id: payload.id,
-          principle,
+          principal,
         },
       },
       {
         action: "add-roles",
-        domain: "principle",
+        domain: "principal",
         service: process.env.SERVICE,
-        root: principle.root,
+        root: principal.root,
         payload: {
           roles: [
             {
@@ -91,7 +91,7 @@ const getEventsForIdentityRegistering = async ({ context, payload }) => {
         },
       },
     ],
-    principle,
+    principal,
   };
 };
 
@@ -108,13 +108,13 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
     if (!(await deps.compare(payload.phone, identity.state.phone)))
       throw deps.invalidArgumentError.message("This phone number isn't right.");
 
-    if (context.principle) {
+    if (context.principal) {
       // Don't log an event or issue a challange if
-      // the context already has the identity's principle.
+      // the context already has the identity's principal.
       if (
-        identity.state.principle.root == context.principle.root &&
-        identity.state.principle.service == context.principle.service &&
-        identity.state.principle.network == context.principle.network
+        identity.state.principal.root == context.principal.root &&
+        identity.state.principal.service == context.principal.service &&
+        identity.state.principal.network == context.principal.network
       )
         return {};
 
@@ -123,7 +123,7 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
           domain: "identity",
         })
         .set({ context, claims, tokenFns: { internal: deps.gcpToken } })
-        .query({ key: "principle.root", value: context.principle.root });
+        .query({ key: "principal.root", value: context.principal.root });
 
       if (subjectIdentity)
         throw deps.badRequestError.message(
@@ -132,12 +132,12 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
     }
   }
 
-  // If an identity is found, merge the roles given to the principle already in the context;
-  // to the identity's principle.
-  // If not found, register a new identity and set the principle to be the principle in the context.
-  const { events, principle, identityRoot } = identity
+  // If an identity is found, merge the roles given to the principal already in the context;
+  // to the identity's principal.
+  // If not found, register a new identity and set the principal to be the principal in the context.
+  const { events, principal, identityRoot } = identity
     ? await getEventsForPermissionsMerge({
-        principle: identity.state.principle,
+        principal: identity.state.principal,
         identityRoot: identity.headers.root,
         context,
         aggregateFn,
@@ -174,8 +174,8 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
               service: process.env.SERVICE,
               network: process.env.NETWORK,
             },
-            ...(!context.principle && {
-              principle,
+            ...(!context.principal && {
+              principal,
             }),
           },
         },

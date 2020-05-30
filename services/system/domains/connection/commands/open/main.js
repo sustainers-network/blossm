@@ -9,7 +9,7 @@ module.exports = async ({ context }) => {
 
   const token = await deps.createJwt({
     options: {
-      subject: context.principle.root,
+      subject: context.principal.root,
       issuer: `${process.env.DOMAIN}.${process.env.SERVICE}.${process.env.NETWORK}/open`,
       audience: process.env.NETWORK,
       expiresIn: NINETY_DAYS,

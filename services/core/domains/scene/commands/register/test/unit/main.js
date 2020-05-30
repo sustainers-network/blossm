@@ -12,9 +12,9 @@ const contextSessionRoot = "some-context-session-root";
 const contextSession = {
   root: contextSessionRoot,
 };
-const principleRoot = "some-principle-root";
-const principleService = "some-principle-service";
-const principleNetwork = "some-principle-network";
+const principalRoot = "some-principal-root";
+const principalService = "some-principal-service";
+const principalNetwork = "some-principal-network";
 
 const context = {
   session: contextSession,
@@ -59,7 +59,7 @@ describe("Command handler unit tests", () => {
     expect(result).to.deep.equal({
       events: [
         {
-          domain: "principle",
+          domain: "principal",
           service,
           network,
           action: "add-roles",
@@ -69,7 +69,7 @@ describe("Command handler unit tests", () => {
           },
         },
         {
-          domain: "principle",
+          domain: "principal",
           service,
           network,
           action: "add-scenes",
@@ -84,7 +84,7 @@ describe("Command handler unit tests", () => {
         tokens,
         context: newContext,
         references: {
-          principle: {
+          principal: {
             root: uuid,
             service,
             network,
@@ -107,14 +107,14 @@ describe("Command handler unit tests", () => {
       tokenFns: { internal: deps.gcpToken },
     });
     expect(issueFake).to.have.been.calledWith({
-      principle: {
+      principal: {
         root: uuid,
         service,
         network,
       },
     });
   });
-  it("should return successfully if there's a context principle", async () => {
+  it("should return successfully if there's a context principal", async () => {
     const uuid = "some-uuid";
     const uuidFake = stub()
       .onFirstCall()
@@ -133,37 +133,37 @@ describe("Command handler unit tests", () => {
     });
     replace(deps, "command", commandFake);
 
-    const principleContext = {
+    const principalContext = {
       session: contextSession,
-      principle: {
-        root: principleRoot,
-        service: principleService,
-        network: principleNetwork,
+      principal: {
+        root: principalRoot,
+        service: principalService,
+        network: principalNetwork,
       },
     };
     const result = await main({
       payload,
-      context: principleContext,
+      context: principalContext,
       claims,
     });
     expect(result).to.deep.equal({
       events: [
         {
-          domain: "principle",
-          service: principleService,
-          network: principleNetwork,
+          domain: "principal",
+          service: principalService,
+          network: principalNetwork,
           action: "add-roles",
-          root: principleRoot,
+          root: principalRoot,
           payload: {
             roles: [{ id: "SceneAdmin", root, service, network }],
           },
         },
         {
-          domain: "principle",
-          service: principleService,
-          network: principleNetwork,
+          domain: "principal",
+          service: principalService,
+          network: principalNetwork,
           action: "add-scenes",
-          root: principleRoot,
+          root: principalRoot,
           payload: {
             scenes: [{ root, service, network }],
           },
@@ -172,10 +172,10 @@ describe("Command handler unit tests", () => {
       ],
       response: {
         references: {
-          principle: {
-            root: principleRoot,
-            service: principleService,
-            network: principleNetwork,
+          principal: {
+            root: principalRoot,
+            service: principalService,
+            network: principalNetwork,
           },
           scene: {
             root,

@@ -9,7 +9,7 @@ const deps = require("../../deps");
 let clock;
 const now = new Date();
 
-const principleRoot = "some-principle-root";
+const principalRoot = "some-principal-root";
 
 const service = "some-service";
 const network = "some-network";
@@ -48,7 +48,7 @@ describe("Command handler unit tests", () => {
       .onFirstCall()
       .returns(keyRoot)
       .onSecondCall()
-      .returns(principleRoot);
+      .returns(principalRoot);
 
     replace(deps, "uuid", uuidFake);
 
@@ -102,7 +102,7 @@ describe("Command handler unit tests", () => {
     expect(result).to.deep.equal({
       events: [
         {
-          domain: "principle",
+          domain: "principal",
           service: "core",
           action: "add-roles",
           payload: {
@@ -121,7 +121,7 @@ describe("Command handler unit tests", () => {
               },
             ],
           },
-          root: principleRoot,
+          root: principalRoot,
         },
         {
           action: "create",
@@ -129,8 +129,8 @@ describe("Command handler unit tests", () => {
             name: payload.name,
             network: nodeStateNetwork,
             scene,
-            principle: {
-              root: principleRoot,
+            principal: {
+              root: principalRoot,
               service: "core",
               network,
             },

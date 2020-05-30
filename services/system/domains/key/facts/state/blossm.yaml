@@ -26,10 +26,10 @@ testing:
           root: some-key-root
           action: create
           payload:
-            principle:
-              root: some-principle-root
-              service: some-principle-service
-              network: some-principle-network
+            principal:
+              root: some-principal-root
+              service: some-principal-service
+              network: some-principal-network
             secret: some-secret
             node:
               root: some-node-root
@@ -39,10 +39,10 @@ testing:
       root: some-key-root
       response:
         root: some-key-root
-        principle:
-          root: some-principle-root
-          service: some-principle-service
-          network: some-principle-network
+        principal:
+          root: some-principal-root
+          service: some-principal-service
+          network: some-principal-network
         secret: some-secret
         node:
           root: some-node-root

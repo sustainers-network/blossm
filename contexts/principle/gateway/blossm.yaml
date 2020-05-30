@@ -1,4 +1,4 @@
-context: principle
+context: principal
 
 views:
   - name: nodes

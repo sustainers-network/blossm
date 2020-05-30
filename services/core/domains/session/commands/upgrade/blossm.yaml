@@ -21,36 +21,36 @@ devDependencies:
 testing:
   validate:
     ok:
-      - principle:
-          root: some-principle-root
-          service: some-principle-root
-          network: some.principle-network
+      - principal:
+          root: some-principal-root
+          service: some-principal-root
+          network: some.principal-network
     bad:
-      - principle: 1
-      - principle:
+      - principal: 1
+      - principal:
           root: 1
-      - principle:
+      - principal:
           network: some-string
-      - principle:
+      - principal:
           service: 1
-      - principle:
+      - principal:
           network: 1
 
   normalize:
     - payload:
-        principle:
-          root: some-principle-root
-          service: some-principle-service
-          network: some.principle-network
+        principal:
+          root: some-principal-root
+          service: some-principal-service
+          network: some.principal-network
           bogus: some-bogus
       normalized:
-        principle:
-          root: some-principle-root
-          service: some-principle-service
-          network: some.principle-network
+        principal:
+          root: some-principal-root
+          service: some-principal-service
+          network: some.principal-network
 
   dependencies:
-    - domain: principle
+    - domain: principal
       procedure: event-store
       service: core
 
@@ -64,10 +64,10 @@ testing:
           action: start
           payload: {}
       payload:
-        principle:
-          root: some-principle-root
-          service: some-principle-service
-          network: some.principle-network
+        principal:
+          root: some-principal-root
+          service: some-principal-service
+          network: some.principal-network
       claims:
         iss: some-iss
         aud: some-aud
@@ -85,10 +85,10 @@ testing:
             value:
         context:
           some: context
-          principle:
-            root: some-principle-root
-            service: some-principle-service
-            network: some.principle-network
+          principal:
+            root: some-principal-root
+            service: some-principal-service
+            network: some.principal-network
       code: 202
     - pre:
         - domain: session
@@ -98,10 +98,10 @@ testing:
           payload:
             terminated: 2019-12-31T00:00:00.000Z
       payload:
-        principle:
-          root: some-principle-root
-          service: some-principle-service
-          network: some.principle-network
+        principal:
+          root: some-principal-root
+          service: some-principal-service
+          network: some.principal-network
       context:
         session:
           root: yet-another-root

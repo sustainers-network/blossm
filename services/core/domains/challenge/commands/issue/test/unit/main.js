@@ -8,9 +8,9 @@ const deps = require("../../deps");
 let clock;
 const now = new Date();
 const root = "some-root";
-const principleRoot = "some-identity-principle";
-const principleService = "some-priciple-service";
-const principleNetwork = "some-priciple-network";
+const principalRoot = "some-identity-principal";
+const principalService = "some-priciple-service";
+const principalNetwork = "some-priciple-network";
 const identityRoot = "some-identity-root";
 const phone = "some-identity-phone";
 const identity = {
@@ -18,10 +18,10 @@ const identity = {
     root: identityRoot,
   },
   state: {
-    principle: {
-      root: principleRoot,
-      service: principleService,
-      network: principleNetwork,
+    principal: {
+      root: principalRoot,
+      service: principalService,
+      network: principalNetwork,
     },
     phone,
   },
@@ -173,7 +173,7 @@ describe("Command handler unit tests", () => {
       message: `${code} is your verification code. Enter it in the app to let us know it's really you.`,
     });
   });
-  it("should return successfully without identity in context, but with a principle in context", async () => {
+  it("should return successfully without identity in context, but with a principal in context", async () => {
     const issueFake = fake();
     const commandSetFake = fake.returns({
       issue: issueFake,
@@ -208,7 +208,7 @@ describe("Command handler unit tests", () => {
     const randomIntFake = fake.returns(code);
     replace(deps, "randomIntOfLength", randomIntFake);
 
-    const context = { principle: { root: principleRoot } };
+    const context = { principal: { root: principalRoot } };
     const result = await main({
       payload,
       context,
@@ -298,7 +298,7 @@ describe("Command handler unit tests", () => {
       message: `${code} is your verification code. Enter it in the app to let us know it's really you.`,
     });
   });
-  it("should return successfully without identity or principle in context, with events in options", async () => {
+  it("should return successfully without identity or principal in context, with events in options", async () => {
     const issueFake = fake();
     const commandSetFake = fake.returns({
       issue: issueFake,
@@ -357,10 +357,10 @@ describe("Command handler unit tests", () => {
                 service,
                 network,
               },
-              principle: {
-                root: principleRoot,
-                service: principleService,
-                network: principleNetwork,
+              principal: {
+                root: principalRoot,
+                service: principalService,
+                network: principalNetwork,
               },
             },
             claims,
@@ -605,7 +605,7 @@ describe("Command handler unit tests", () => {
       expect(e).to.equal(error);
     }
   });
-  it("should throw correctly if context.principle doesn't match the identity's principle", async () => {
+  it("should throw correctly if context.principal doesn't match the identity's principal", async () => {
     const uuidFake = fake.returns(root);
     replace(deps, "uuid", uuidFake);
 
@@ -629,14 +629,14 @@ describe("Command handler unit tests", () => {
     try {
       await main({
         payload,
-        context: { principle: { root: "some-bogus " } },
+        context: { principal: { root: "some-bogus " } },
       });
 
       //shouldn't get called
       expect(2).to.equal(3);
     } catch (e) {
       expect(messageFake).to.have.been.calledWith(
-        "This principle can't be challenged during the current session."
+        "This principal can't be challenged during the current session."
       );
       expect(e).to.equal(error);
     }

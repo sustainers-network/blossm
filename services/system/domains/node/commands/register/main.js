@@ -9,7 +9,7 @@ module.exports = async ({ payload, context, claims }) => {
     body: {
       tokens,
       context: newContext,
-      references: { principle, scene },
+      references: { principal, scene },
     },
   } = await deps
     .command({
@@ -28,11 +28,11 @@ module.exports = async ({ payload, context, claims }) => {
   return {
     events: [
       {
-        domain: "principle",
-        service: principle.service,
-        network: principle.network,
+        domain: "principal",
+        service: principal.service,
+        network: principal.network,
         action: "add-roles",
-        root: principle.root,
+        root: principal.root,
         context: newContext,
         payload: {
           roles: [

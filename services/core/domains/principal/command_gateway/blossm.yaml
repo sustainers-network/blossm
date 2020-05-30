@@ -1,8 +1,8 @@
-domain: principle
+domain: principal
 service: core
 
-facts:
-  - name: roles
+commands:
+  - name: add-roles
     privileges: none
 
 whitelist:
@@ -13,4 +13,4 @@ devDependencies:
   "chai": "^4.2.0"
 
 #don't change
-procedure: fact-gateway
+procedure: command-gateway

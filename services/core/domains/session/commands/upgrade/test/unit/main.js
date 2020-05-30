@@ -9,15 +9,15 @@ const deps = require("../../deps");
 let clock;
 const now = new Date();
 
-const principleRoot = "some-principle-root";
-const principleService = "some-principle-service";
-const principleNetwork = "some-principle-network";
+const principalRoot = "some-principal-root";
+const principalService = "some-principal-service";
+const principalNetwork = "some-principal-network";
 
 const payload = {
-  principle: {
-    root: principleRoot,
-    service: principleService,
-    network: principleNetwork,
+  principal: {
+    root: principalRoot,
+    service: principalService,
+    network: principalNetwork,
   },
 };
 
@@ -59,7 +59,7 @@ describe("Command handler unit tests", () => {
     clock.restore();
     restore();
   });
-  it("should return successfully with sub in claims and principle in payload", async () => {
+  it("should return successfully with sub in claims and principal in payload", async () => {
     const signature = "some-signature";
     const signFake = fake.returns(signature);
     replace(deps, "sign", signFake);
@@ -83,17 +83,17 @@ describe("Command handler unit tests", () => {
         {
           action: "upgrade",
           payload: {
-            principle: {
-              root: principleRoot,
-              service: principleService,
-              network: principleNetwork,
+            principal: {
+              root: principalRoot,
+              service: principalService,
+              network: principalNetwork,
             },
           },
           root,
         },
         {
-          root: principleRoot,
-          domain: "principle",
+          root: principalRoot,
+          domain: "principal",
           action: "add-roles",
           payload: {
             roles: [
@@ -111,10 +111,10 @@ describe("Command handler unit tests", () => {
         tokens: [{ network, type: "access", value: token }],
         context: {
           ...context,
-          principle: {
-            root: principleRoot,
-            service: principleService,
-            network: principleNetwork,
+          principal: {
+            root: principalRoot,
+            service: principalService,
+            network: principalNetwork,
           },
         },
       },
@@ -137,17 +137,17 @@ describe("Command handler unit tests", () => {
       payload: {
         context: {
           ...context,
-          principle: {
-            root: principleRoot,
-            service: principleService,
-            network: principleNetwork,
+          principal: {
+            root: principalRoot,
+            service: principalService,
+            network: principalNetwork,
           },
         },
       },
       signFn: signature,
     });
   });
-  it("should return successfully with sub in claims, no principle in payload", async () => {
+  it("should return successfully with sub in claims, no principal in payload", async () => {
     const signature = "some-signature";
     const signFake = fake.returns(signature);
     replace(deps, "sign", signFake);
@@ -236,17 +236,17 @@ describe("Command handler unit tests", () => {
         {
           action: "upgrade",
           payload: {
-            principle: {
-              root: principleRoot,
-              service: principleService,
-              network: principleNetwork,
+            principal: {
+              root: principalRoot,
+              service: principalService,
+              network: principalNetwork,
             },
           },
           root,
         },
         {
-          root: principleRoot,
-          domain: "principle",
+          root: principalRoot,
+          domain: "principal",
           action: "add-roles",
           payload: {
             roles: [
@@ -264,10 +264,10 @@ describe("Command handler unit tests", () => {
         tokens: [{ network, type: "access", value: token }],
         context: {
           ...context,
-          principle: {
-            root: principleRoot,
-            service: principleService,
-            network: principleNetwork,
+          principal: {
+            root: principalRoot,
+            service: principalService,
+            network: principalNetwork,
           },
         },
       },
@@ -283,17 +283,17 @@ describe("Command handler unit tests", () => {
     expect(createJwtFake).to.have.been.calledWith({
       options: {
         issuer: iss,
-        subject: principleRoot,
+        subject: principalRoot,
         audience: aud,
         expiresIn: Date.parse(exp) - deps.fineTimestamp(),
       },
       payload: {
         context: {
           ...context,
-          principle: {
-            root: principleRoot,
-            service: principleService,
-            network: principleNetwork,
+          principal: {
+            root: principalRoot,
+            service: principalService,
+            network: principalNetwork,
           },
         },
       },

@@ -45,7 +45,7 @@ describe("Fact unit tests", () => {
     const result = await main({ context, root });
 
     expect(eventStoreFake).to.have.been.calledWith({
-      domain: "principle",
+      domain: "principal",
       service: "core",
     });
     expect(setFake).to.have.been.calledWith({

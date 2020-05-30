@@ -3,21 +3,21 @@ const deps = require("./deps");
 module.exports = async ({ payload, context, claims }) => {
   const sceneRoot = deps.uuid();
 
-  // Determine what root should be used for the principle.
-  const principle = context.principle || {
+  // Determine what root should be used for the principal.
+  const principal = context.principal || {
     root: deps.uuid(),
     service: process.env.SERVICE,
     network: process.env.NETWORK,
   };
 
-  // Give the principle admin privileges to this context.
+  // Give the principal admin privileges to this context.
   const events = [
     {
-      domain: "principle",
-      service: principle.service,
-      network: principle.network,
+      domain: "principal",
+      service: principal.service,
+      network: principal.network,
       action: "add-roles",
-      root: principle.root,
+      root: principal.root,
       payload: {
         roles: [
           {
@@ -30,11 +30,11 @@ module.exports = async ({ payload, context, claims }) => {
       },
     },
     {
-      domain: "principle",
-      service: principle.service,
-      network: principle.network,
+      domain: "principal",
+      service: principal.service,
+      network: principal.network,
       action: "add-scenes",
-      root: principle.root,
+      root: principal.root,
       payload: {
         scenes: [
           {
@@ -55,7 +55,7 @@ module.exports = async ({ payload, context, claims }) => {
 
   const response = {
     references: {
-      principle,
+      principal,
       scene: {
         root: sceneRoot,
         service: process.env.SERVICE,
@@ -64,10 +64,10 @@ module.exports = async ({ payload, context, claims }) => {
     },
   };
 
-  // If the session already has a principle, no need to upgrade it.
-  if (context.principle) return { events, response };
+  // If the session already has a principal, no need to upgrade it.
+  if (context.principal) return { events, response };
 
-  // Upgrade the session for the principle.
+  // Upgrade the session for the principal.
   const {
     body: { tokens, context: newContext },
   } = await deps
@@ -76,7 +76,7 @@ module.exports = async ({ payload, context, claims }) => {
       name: "upgrade",
     })
     .set({ context, claims, tokenFns: { internal: deps.gcpToken } })
-    .issue({ principle });
+    .issue({ principal });
 
   return { events, response: { ...response, tokens, context: newContext } };
 };

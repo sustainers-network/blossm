@@ -39,9 +39,9 @@ describe("Command handler unit tests", () => {
     replace(deps, "uuid", uuidFake);
 
     const tokens = "some-tokens";
-    const principleRoot = "some-principle-root";
-    const principleService = "some-principle-service";
-    const principleNetwork = "some-principle-network";
+    const principalRoot = "some-principal-root";
+    const principalService = "some-principal-service";
+    const principalNetwork = "some-principal-network";
 
     const newContext = "some-new-context";
     const issueFake = fake.returns({
@@ -49,10 +49,10 @@ describe("Command handler unit tests", () => {
         tokens,
         context: newContext,
         references: {
-          principle: {
-            root: principleRoot,
-            service: principleService,
-            network: principleNetwork,
+          principal: {
+            root: principalRoot,
+            service: principalService,
+            network: principalNetwork,
           },
           scene: {
             root: sceneRoot,
@@ -74,12 +74,12 @@ describe("Command handler unit tests", () => {
     expect(result).to.deep.equal({
       events: [
         {
-          domain: "principle",
-          service: principleService,
-          network: principleNetwork,
+          domain: "principal",
+          service: principalService,
+          network: principalNetwork,
           action: "add-roles",
           context: newContext,
-          root: principleRoot,
+          root: principalRoot,
           payload: {
             roles: [{ id: "NodeAdmin", root: nodeRoot, service, network }],
           },

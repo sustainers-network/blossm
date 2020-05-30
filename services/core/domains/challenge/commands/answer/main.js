@@ -36,7 +36,7 @@ module.exports = async ({ payload, context, aggregateFn }) => {
   // If there isn't a need to upgrade the context, no need to return a token.
   if (!challengeAggregate.upgrade) return { events };
 
-  // Upgrade the session with the principle specified in the challenge.
+  // Upgrade the session with the principal specified in the challenge.
   const {
     body: { tokens, context: newContext },
   } = await deps

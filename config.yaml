@@ -75,14 +75,7 @@ vendors:
         staging:
         development: event-handler-b8xbj.mongodb.net
       protocol: mongodb+srv
-  fanout:
-    realmId:
-      production:
-      sandbox:
-      staging:
-      development: 53b46805
 defaults:
   viewStore: mongodb
   eventStore: mongodb
   cloud: gcp
-  updates: fanout

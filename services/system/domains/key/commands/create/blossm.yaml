@@ -43,7 +43,7 @@ testing:
           - some-id
 
   dependencies:
-    - domain: principle
+    - domain: principal
       service: core
       procedure: event-store
     - domain: node

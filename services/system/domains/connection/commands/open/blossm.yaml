@@ -33,10 +33,10 @@ testing:
     - payload: {}
       context:
         network: some-context-network
-        principle:
-          root: some-principle-root
-          service: some-principle-service
-          network: some.principle-network
+        principal:
+          root: some-principal-root
+          service: some-principal-service
+          network: some.principal-network
         node:
           root: some-node-root
           service: some-node-service

@@ -6,10 +6,10 @@ module.exports = {
     };
   },
   upgrade: (state = {}, payload) => {
-    const principle = payload.principle || state.principle;
+    const principal = payload.principal || state.principal;
     return {
       ...state,
-      ...(principle && { principle }),
+      ...(principal && { principal }),
     };
   },
   terminate: (state, payload) => {

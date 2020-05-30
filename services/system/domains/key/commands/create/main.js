@@ -18,12 +18,12 @@ module.exports = async ({ payload, context, aggregateFn }) => {
   ]);
 
   const keyRoot = deps.uuid();
-  const principleRoot = deps.uuid();
+  const principalRoot = deps.uuid();
 
   return {
     events: [
       {
-        domain: "principle",
+        domain: "principal",
         service: "core",
         action: "add-roles",
         payload: {
@@ -36,7 +36,7 @@ module.exports = async ({ payload, context, aggregateFn }) => {
             };
           }),
         },
-        root: principleRoot,
+        root: principalRoot,
       },
       {
         action: "create",
@@ -44,8 +44,8 @@ module.exports = async ({ payload, context, aggregateFn }) => {
           name: payload.name,
           network: nodeAggregate.network,
           scene: context.scene,
-          principle: {
-            root: principleRoot,
+          principal: {
+            root: principalRoot,
             service: "core",
             network: process.env.NETWORK,
           },

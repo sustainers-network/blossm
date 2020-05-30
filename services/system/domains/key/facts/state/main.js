@@ -10,7 +10,7 @@ module.exports = async ({ root }) => {
     root,
     secret: aggregate.state.secret,
     node: aggregate.state.node,
-    principle: aggregate.state.principle,
+    principal: aggregate.state.principal,
     network: aggregate.state.network,
   };
 };

@@ -12,7 +12,7 @@ const CODE_LENGTH = 6;
 
 const determineUpgrade = async (payload, context) => {
   // Check to see if the phone is recognized.
-  // If the principle is being upgraded, use a placeholder identity with it instead.
+  // If the principal is being upgraded, use a placeholder identity with it instead.
   const { body: [identity] = [] } = await deps
     .eventStore({ domain: "identity" })
     .set({ context, tokenFns: { internal: deps.gcpToken } })
@@ -28,13 +28,13 @@ const determineUpgrade = async (payload, context) => {
       "This phone number can't be used to challenge."
     );
 
-  // If the context already has a principle, don't allow another principle to be challenged.
+  // If the context already has a principal, don't allow another principal to be challenged.
   if (
-    context.principle &&
-    context.principle.root != identity.state.principle.root
+    context.principal &&
+    context.principal.root != identity.state.principal.root
   )
     throw deps.badRequestError.message(
-      "This principle can't be challenged during the current session."
+      "This principal can't be challenged during the current session."
     );
 
   // No need to upgrade if the context already has an identity.
@@ -46,7 +46,7 @@ const determineUpgrade = async (payload, context) => {
       service: process.env.SERVICE,
       network: process.env.NETWORK,
     },
-    ...(!context.principle && { principle: identity.state.principle }),
+    ...(!context.principal && { principal: identity.state.principal }),
   };
 };
 

@@ -1,5 +1,5 @@
 name: add-roles
-domain: principle
+domain: principal
 service: core
 
 payload:
