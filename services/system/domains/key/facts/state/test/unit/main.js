@@ -11,19 +11,19 @@ describe("Fact unit tests", () => {
   it("should return successfully", async () => {
     const root = "some-root";
     const secret = "some-secret";
-    const node = "some-node";
+    const scene = "some-scene";
     const principal = "some-principal";
     const network = "some-network";
 
     const aggregate = {
       state: {
         secret,
-        node,
+        scene,
         principal,
         network,
       },
     };
-    const aggregateFake = fake.returns(aggregate);
+    const aggregateFake = fake.returns({ body: aggregate });
     const setFake = fake.returns({
       aggregate: aggregateFake,
     });
@@ -41,11 +41,13 @@ describe("Fact unit tests", () => {
     });
     expect(aggregateFake).to.have.been.calledWith(root);
     expect(result).to.deep.equal({
-      root,
-      secret,
-      node,
-      principal,
-      network,
+      response: {
+        root,
+        secret,
+        scene,
+        principal,
+        network,
+      },
     });
   });
   it("should return an empty object if not found", async () => {

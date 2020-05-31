@@ -30,6 +30,8 @@ vendors:
         development: development-roles-271815
       defaults:
         region: us-central1
+        timeout: 60s
+        timeoutOverrides: {}
         memory: 128Mi
         memoryOverrides:
           event-store: 256Mi

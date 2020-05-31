@@ -1,10 +1,13 @@
 NodeAdmin:
   title: Node Admin
   permissions:
-    - system:node:create
     - system:node:update
     - system:node:delete
     - system:key:create
     - system:key:read
+
+NodeNetwork:
+  title: Node Network
+  permissions:
     - system:connection:create
     - system:updates:create

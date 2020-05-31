@@ -8,5 +8,5 @@ module.exports = async ({ context }) => {
     .set({ tokenFns: { internal: deps.gcpToken } })
     .aggregate(context.session.root);
 
-  return aggregate.state.terminated != undefined;
+  return { response: aggregate.state.terminated != undefined };
 };

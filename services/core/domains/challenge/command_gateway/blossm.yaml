@@ -12,11 +12,7 @@ whitelist:
   - "127.0.0.1"
 
 devDependencies:
-  "localenv": "^0.2.2"
-  "mocha": "^7.1.0"
-  "chai": "^4.2.0"
   "@blossm/datetime": "*"
-  "@blossm/request": "*"
   "@blossm/gcp-pubsub": "*"
   "@blossm/get-token": "*"
   "@blossm/twilio-sms": "*"

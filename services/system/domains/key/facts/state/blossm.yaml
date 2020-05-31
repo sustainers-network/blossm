@@ -6,13 +6,6 @@ dependencies:
   "@blossm/event-store-rpc": "*"
   "@blossm/gcp-token": "*"
 
-devDependencies:
-  "mocha": "^7.1.0"
-  "chai": "^4.2.0"
-  "sinon": "^7.3.2"
-  "sinon-chai": "^3.3.0"
-  "@blossm/request": "*"
-
 testing:
   dependencies:
     - procedure: event-store
@@ -31,10 +24,10 @@ testing:
               service: some-principal-service
               network: some-principal-network
             secret: some-secret
-            node:
-              root: some-node-root
-              service: some-node-service
-              network: some-node-network
+            scene:
+              root: some-scene-root
+              service: some-scene-service
+              network: some-scene-network
             network: some-network
       root: some-key-root
       response:
@@ -44,10 +37,10 @@ testing:
           service: some-principal-service
           network: some-principal-network
         secret: some-secret
-        node:
-          root: some-node-root
-          service: some-node-service
-          network: some-node-network
+        scene:
+          root: some-scene-root
+          service: some-scene-service
+          network: some-scene-network
         network: some-network
     - root: some-other-root
       code: 404

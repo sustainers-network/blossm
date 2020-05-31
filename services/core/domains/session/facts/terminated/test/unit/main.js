@@ -43,7 +43,7 @@ describe("Fact unit tests", () => {
       tokenFns: { internal: deps.gcpToken },
     });
     expect(aggregateFake).to.have.been.calledWith(sessionRoot);
-    expect(result).to.deep.equal(true);
+    expect(result).to.deep.equal({ response: true });
   });
   it("should return false successfully", async () => {
     const aggregateFake = fake.returns({
@@ -68,6 +68,6 @@ describe("Fact unit tests", () => {
       tokenFns: { internal: deps.gcpToken },
     });
     expect(aggregateFake).to.have.been.calledWith(sessionRoot);
-    expect(result).to.deep.equal(false);
+    expect(result).to.deep.equal({ response: false });
   });
 });

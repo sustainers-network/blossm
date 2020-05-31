@@ -7,10 +7,12 @@ module.exports = async ({ root }) => {
     .aggregate(root);
 
   return {
-    root,
-    secret: aggregate.state.secret,
-    node: aggregate.state.node,
-    principal: aggregate.state.principal,
-    network: aggregate.state.network,
+    response: {
+      root,
+      secret: aggregate.state.secret,
+      scene: aggregate.state.scene,
+      principal: aggregate.state.principal,
+      network: aggregate.state.network,
+    },
   };
 };
