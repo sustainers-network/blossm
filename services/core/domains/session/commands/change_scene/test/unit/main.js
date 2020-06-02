@@ -161,6 +161,113 @@ describe("Command handler unit tests", () => {
       signFn: signature,
     });
   });
+  it("should return successfully with network in context", async () => {
+    const signature = "some-signature";
+    const signFake = fake.returns(signature);
+    replace(deps, "sign", signFake);
+
+    const createJwtFake = fake.returns(token);
+    replace(deps, "createJwt", createJwtFake);
+
+    const aggregateFake = stub()
+      .onFirstCall()
+      .returns({
+        aggregate: {
+          scenes: [
+            {
+              root: newSceneRoot,
+              service: sceneService,
+              network: sceneNetwork,
+            },
+          ],
+        },
+      })
+      .onSecondCall()
+      .returns({ aggregate: {} })
+      .onThirdCall()
+      .returns({
+        aggregate: {
+          domain: sceneAggregateDomain,
+          service: sceneAggregateService,
+          network: sceneAggregateNetwork,
+          root: sceneAggregateRoot,
+        },
+      });
+
+    const contextNetwork = "some-context-network";
+    const result = await main({
+      payload,
+      context: {
+        ...context,
+        network: contextNetwork,
+      },
+      claims,
+      aggregateFn: aggregateFake,
+    });
+
+    expect(result).to.deep.equal({
+      events: [
+        {
+          action: "change-scene",
+          payload: {
+            scene: {
+              root: newSceneRoot,
+              service,
+              network,
+            },
+          },
+          root: sessionRoot,
+        },
+      ],
+      response: {
+        tokens: [{ network: contextNetwork, type: "access", value: token }],
+      },
+    });
+    expect(aggregateFake).to.have.been.calledWith(sub, {
+      domain: "principal",
+    });
+    expect(aggregateFake).to.have.been.calledWith(sessionRoot);
+    expect(aggregateFake).to.have.been.calledWith(newSceneRoot, {
+      domain: "scene",
+    });
+    expect(aggregateFake).to.have.callCount(3);
+    expect(signFake).to.have.been.calledWith({
+      ring: "jwt",
+      key: "access",
+      location: "global",
+      version: "1",
+      project,
+    });
+    expect(createJwtFake).to.have.been.calledWith({
+      options: {
+        issuer: iss,
+        subject: sub,
+        audience: aud,
+        expiresIn: Date.parse(exp) - deps.fineTimestamp(),
+      },
+      payload: {
+        context: {
+          network: contextNetwork,
+          identity,
+          session: {
+            root: sessionRoot,
+          },
+          scene: {
+            root: newSceneRoot,
+            service,
+            network,
+          },
+          domain: sceneAggregateDomain,
+          [sceneAggregateDomain]: {
+            root: sceneAggregateRoot,
+            service: sceneAggregateService,
+            network: sceneAggregateNetwork,
+          },
+        },
+      },
+      signFn: signature,
+    });
+  });
   it("should throw correctly if context isnt accessible", async () => {
     const signature = "some-signature";
     const signFake = fake.returns(signature);

@@ -6,7 +6,7 @@ module.exports = async ({ query, params, context }) => {
       name: "nodes",
       context: "principal",
     })
-    .set({ context, tokenFns: { internal: deps.gcpToken } })
+    .set({ context, token: { internalFn: deps.gcpToken } })
     .read();
 
   //eslint-disable-next-line no-console

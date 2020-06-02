@@ -17,7 +17,7 @@ module.exports = async ({ payload, context, claims }) => {
       domain: "scene",
       service: "core",
     })
-    .set({ context, claims, tokenFns: { internal: deps.gcpToken } })
+    .set({ context, claims, token: { internalFn: deps.gcpToken } })
     .issue({
       root: nodeRoot,
       domain: process.env.DOMAIN,

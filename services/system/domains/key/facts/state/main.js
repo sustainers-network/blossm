@@ -3,7 +3,7 @@ const deps = require("./deps");
 module.exports = async ({ root }) => {
   const { body: aggregate } = await deps
     .eventStore({ domain: "key", service: "system" })
-    .set({ tokenFns: { internal: deps.gcpToken } })
+    .set({ token: { internalFn: deps.gcpToken } })
     .aggregate(root);
 
   return {

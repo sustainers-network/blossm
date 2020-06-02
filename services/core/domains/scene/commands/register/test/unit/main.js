@@ -104,7 +104,7 @@ describe("Command handler unit tests", () => {
     expect(setFake).to.have.been.calledWith({
       context,
       claims,
-      tokenFns: { internal: deps.gcpToken },
+      token: { internalFn: deps.gcpToken },
     });
     expect(issueFake).to.have.been.calledWith({
       principal: {

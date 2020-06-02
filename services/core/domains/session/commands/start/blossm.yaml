@@ -6,10 +6,19 @@ payload:
   device:
     type: object
     properties:
-      os: string
-      version: string
-      hardware: string
-      manufacturer: string
+      type:
+        type: string
+        in:
+          - mobile
+          - desktop
+          - tablet 
+      platform:
+        type: string
+        in: 
+          - ios
+          - android
+          - browser
+      agent: string
 
 dependencies:
   "@blossm/jwt": "*"
@@ -28,45 +37,47 @@ testing:
   validate:
     ok:
       - device:
-          os: "iOS"
-          version: "10"
-          hardware: "iPhone"
-          manufacturer: "apple"
+          type: mobile
+          platform: ios
+          agent: some-agent
+      - device:
+          type: tablet
+          platform: android
+          agent: some-agent
+      - device:
+          type: desktop 
+          platform: browser
+          agent: some-agent
     bad:
       - device:
-          os:
+          type: some-bogus
+      - device:
+          platform: some-bogus
+      - device:
+          platform:
             a: 1
       - device:
-          version:
-            a: 1
-      - device:
-          hardware:
-            a: 1
-      - device:
-          manufacturer:
+          agent:
             a: 1
 
   normalize:
     - payload:
         device:
-          os: "iOS"
-          version: "10"
-          hardware: "iPhone"
-          manufacturer: "apple"
+          type: mobile
+          platform: ios
+          agent: some-agent
       normalized:
         device:
-          os: "iOS"
-          version: "10"
-          hardware: "iPhone"
-          manufacturer: "apple"
+          type: mobile
+          platform: ios
+          agent: some-agent
 
   steps:
     - payload:
         device:
-          os: "iOS"
-          version: "11"
-          hardware: "iPhone"
-          manufacturer: "apple"
+          type: mobile
+          platform: ios
+          agent: some-agent
       response:
         tokens:
           - network:
@@ -86,10 +97,9 @@ testing:
       code: 202
     - payload:
         device:
-          os: "iOS"
-          version: "11"
-          hardware: "iPhone"
-          manufacturer: "apple"
+          type: mobile
+          platform: ios
+          agent: some-agent
       context:
         node:
           network: some.network

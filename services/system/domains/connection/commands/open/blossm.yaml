@@ -2,7 +2,12 @@ name: open
 domain: connection
 service: system
 
-payload: {}
+payload:
+  key: 
+    type: string
+    in:
+      - access
+      - challenge
 
 dependencies:
   "@blossm/jwt": "*"
@@ -20,19 +25,25 @@ devDependencies:
 
 testing:
   validate:
-    ok: []
-    bad: []
+    ok:
+      - key: access
+      - key: challenge 
+    bad:
+      - key: 3
+      - key: some-bogus
 
   normalize:
-    - payload: {}
-      normalized: {}
+    - payload:
+        key: access
+      normalized:
+        key: access
 
   dependencies:
 
   steps:
-    - payload: {}
+    - payload:
+        key: access
       context:
-        network: some-context-network
         principal:
           root: some-principal-root
           service: some-principal-service
@@ -46,10 +57,10 @@ testing:
           service: some-key-service
           network: some.key-network
       response:
-        tokens:
-          - network: some-context-network
-            type: access
-            value:
+        token:
+          network:
+          key: access
+          value:
         references:
           connection:
             root:

@@ -32,7 +32,7 @@ describe("Composite unit tests", () => {
     const result = await main({ query, context });
     expect(setFake).to.have.been.calledWith({
       context,
-      tokenFns: { internal: deps.gcpToken },
+      token: { internalFn: deps.gcpToken },
     });
     expect(readFake).to.have.been.calledWith();
     expect(viewStoreFake).to.have.been.calledWith({

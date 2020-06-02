@@ -15,7 +15,7 @@ const determineUpgrade = async (payload, context) => {
   // If the principal is being upgraded, use a placeholder identity with it instead.
   const { body: [identity] = [] } = await deps
     .eventStore({ domain: "identity" })
-    .set({ context, tokenFns: { internal: deps.gcpToken } })
+    .set({ context, token: { internalFn: deps.gcpToken } })
     .query({ key: "id", value: payload.id });
 
   if (!identity)
@@ -102,7 +102,7 @@ module.exports = async ({
       service: "comms",
     })
     .set({
-      tokenFns: { internal: deps.gcpToken },
+      token: { internalFn: deps.gcpToken },
       context,
     })
     .issue({
@@ -129,7 +129,11 @@ module.exports = async ({
     ],
     response: {
       tokens: [
-        { network: process.env.NETWORK, type: "challenge", value: token },
+        {
+          network: context.network || process.env.NETWORK,
+          type: "challenge",
+          value: token,
+        },
       ],
       references: {
         challenge: {

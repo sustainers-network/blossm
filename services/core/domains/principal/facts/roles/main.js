@@ -6,7 +6,7 @@ module.exports = async ({ context, root }) => {
       domain: "principal",
       service: "core",
     })
-    .set({ tokenFns: { internal: deps.gcpToken } })
+    .set({ token: { internalFn: deps.gcpToken } })
     .aggregate(root);
 
   const roles = aggregate.state.roles.filter(

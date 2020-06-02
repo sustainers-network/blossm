@@ -49,7 +49,7 @@ describe("Fact unit tests", () => {
 
     expect(eventStoreFake).to.have.been.calledWith({ domain });
     expect(setFake).to.have.been.calledWith({
-      tokenFns: { internal: deps.gcpToken },
+      token: { internalFn: deps.gcpToken },
     });
     expect(queryFake).to.have.been.calledWith({
       key: "network",

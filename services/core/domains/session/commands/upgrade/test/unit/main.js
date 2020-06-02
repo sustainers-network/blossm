@@ -208,7 +208,7 @@ describe("Command handler unit tests", () => {
       signFn: signature,
     });
   });
-  it("should return successfully with no sub in claims", async () => {
+  it("should return successfully with no sub in claims, network in context", async () => {
     const signature = "some-signature";
     const signFake = fake.returns(signature);
     replace(deps, "sign", signFake);
@@ -220,9 +220,10 @@ describe("Command handler unit tests", () => {
       aggregate: { upgraded: false },
     });
 
+    const contextNetwork = "some-context-network";
     const result = await main({
       payload,
-      context,
+      context: { ...context, network: contextNetwork },
       claims: {
         iss,
         aud,
@@ -261,9 +262,10 @@ describe("Command handler unit tests", () => {
         },
       ],
       response: {
-        tokens: [{ network, type: "access", value: token }],
+        tokens: [{ network: contextNetwork, type: "access", value: token }],
         context: {
           ...context,
+          network: contextNetwork,
           principal: {
             root: principalRoot,
             service: principalService,
@@ -290,6 +292,7 @@ describe("Command handler unit tests", () => {
       payload: {
         context: {
           ...context,
+          network: contextNetwork,
           principal: {
             root: principalRoot,
             service: principalService,

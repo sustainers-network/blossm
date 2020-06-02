@@ -129,7 +129,7 @@ describe("Command handler unit tests", () => {
     });
     expect(setFake).to.have.been.calledWith({
       context,
-      tokenFns: { internal: deps.gcpToken },
+      token: { internalFn: deps.gcpToken },
     });
     expect(eventStoreFake).to.have.been.calledWith({
       domain: "identity",
@@ -166,14 +166,14 @@ describe("Command handler unit tests", () => {
     });
     expect(commandSetFake).to.have.been.calledWith({
       context,
-      tokenFns: { internal: deps.gcpToken },
+      token: { internalFn: deps.gcpToken },
     });
     expect(issueFake).to.have.been.calledWith({
       to: payloadPhone,
       message: `${code} is your verification code. Enter it in the app to let us know it's really you.`,
     });
   });
-  it("should return successfully without identity in context, but with a principal in context", async () => {
+  it("should return successfully without identity in context, with a principal and network in context", async () => {
     const issueFake = fake();
     const commandSetFake = fake.returns({
       issue: issueFake,
@@ -208,7 +208,11 @@ describe("Command handler unit tests", () => {
     const randomIntFake = fake.returns(code);
     replace(deps, "randomIntOfLength", randomIntFake);
 
-    const context = { principal: { root: principalRoot } };
+    const contextNetwork = "some-context-network";
+    const context = {
+      principal: { root: principalRoot },
+      network: contextNetwork,
+    };
     const result = await main({
       payload,
       context,
@@ -237,7 +241,7 @@ describe("Command handler unit tests", () => {
         },
       ],
       response: {
-        tokens: [{ network, type: "challenge", value: token }],
+        tokens: [{ network: contextNetwork, type: "challenge", value: token }],
         references: {
           challenge: {
             root,
@@ -254,7 +258,7 @@ describe("Command handler unit tests", () => {
     });
     expect(setFake).to.have.been.calledWith({
       context,
-      tokenFns: { internal: deps.gcpToken },
+      token: { internalFn: deps.gcpToken },
     });
     expect(eventStoreFake).to.have.been.calledWith({
       domain: "identity",
@@ -291,7 +295,7 @@ describe("Command handler unit tests", () => {
     });
     expect(commandSetFake).to.have.been.calledWith({
       context,
-      tokenFns: { internal: deps.gcpToken },
+      token: { internalFn: deps.gcpToken },
     });
     expect(issueFake).to.have.been.calledWith({
       to: payloadPhone,
@@ -388,7 +392,7 @@ describe("Command handler unit tests", () => {
     });
     expect(setFake).to.have.been.calledWith({
       context,
-      tokenFns: { internal: deps.gcpToken },
+      token: { internalFn: deps.gcpToken },
     });
     expect(eventStoreFake).to.have.been.calledWith({
       domain: "identity",
@@ -425,7 +429,7 @@ describe("Command handler unit tests", () => {
     });
     expect(commandSetFake).to.have.been.calledWith({
       context,
-      tokenFns: { internal: deps.gcpToken },
+      token: { internalFn: deps.gcpToken },
     });
     expect(issueFake).to.have.been.calledWith({
       to: payloadPhone,

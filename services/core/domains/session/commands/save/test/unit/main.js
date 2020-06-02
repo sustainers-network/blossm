@@ -128,7 +128,7 @@ describe("Command handler unit tests", () => {
     expect(setFake).to.have.been.calledWith({
       context,
       claims,
-      tokenFns: { internal: deps.gcpToken },
+      token: { internalFn: deps.gcpToken },
     });
     expect(queryFake).to.have.been.calledWith({ key: "id", value: id });
     expect(aggregateFake).to.have.been.calledWith(principalRoot, {
@@ -147,7 +147,7 @@ describe("Command handler unit tests", () => {
     expect(anotherSetFake).to.have.been.calledWith({
       context,
       claims,
-      tokenFns: { internal: deps.gcpToken },
+      token: { internalFn: deps.gcpToken },
     });
     expect(issueFake).to.have.been.calledWith(
       { id, phone },
@@ -238,7 +238,7 @@ describe("Command handler unit tests", () => {
     expect(setFake).to.have.been.calledWith({
       context,
       claims,
-      tokenFns: { internal: deps.gcpToken },
+      token: { internalFn: deps.gcpToken },
     });
     expect(queryFake).to.have.been.calledWith({ key: "id", value: id });
     expect(aggregateFake).to.have.been.calledWith(principalRoot, {
@@ -252,7 +252,7 @@ describe("Command handler unit tests", () => {
     expect(anotherSetFake).to.have.been.calledWith({
       context,
       claims,
-      tokenFns: { internal: deps.gcpToken },
+      token: { internalFn: deps.gcpToken },
     });
     expect(issueFake).to.have.been.calledWith(
       { id, phone },
@@ -330,7 +330,7 @@ describe("Command handler unit tests", () => {
     expect(setFake).to.have.been.calledWith({
       context,
       claims,
-      tokenFns: { internal: deps.gcpToken },
+      token: { internalFn: deps.gcpToken },
     });
     expect(queryFake).to.have.been.calledWith({ key: "id", value: id });
     expect(aggregateFake).to.have.been.calledWith(principalRoot, {
@@ -349,7 +349,7 @@ describe("Command handler unit tests", () => {
     expect(anotherSetFake).to.have.been.calledWith({
       context,
       claims,
-      tokenFns: { internal: deps.gcpToken },
+      token: { internalFn: deps.gcpToken },
     });
     expect(issueFake).to.have.been.calledWith(
       { phone, id },
@@ -418,7 +418,7 @@ describe("Command handler unit tests", () => {
     expect(setFake).to.have.been.calledWith({
       context,
       claims,
-      tokenFns: { internal: deps.gcpToken },
+      token: { internalFn: deps.gcpToken },
     });
     expect(queryFake).to.have.been.calledWith({ key: "id", value: id });
     expect(hashFake).to.have.been.calledWith(phone);
@@ -429,7 +429,7 @@ describe("Command handler unit tests", () => {
     expect(anotherSetFake).to.have.been.calledWith({
       context,
       claims,
-      tokenFns: { internal: deps.gcpToken },
+      token: { internalFn: deps.gcpToken },
     });
     expect(issueFake).to.have.been.calledWith(
       { id, phone },
@@ -519,7 +519,7 @@ describe("Command handler unit tests", () => {
     expect(setFake).to.have.been.calledWith({
       context,
       claims,
-      tokenFns: { internal: deps.gcpToken },
+      token: { internalFn: deps.gcpToken },
     });
     expect(queryFake).to.have.been.calledWith({ key: "id", value: id });
     expect(hashFake).to.have.been.calledWith(phone);
@@ -530,7 +530,7 @@ describe("Command handler unit tests", () => {
     expect(anotherSetFake).to.have.been.calledWith({
       context,
       claims,
-      tokenFns: { internal: deps.gcpToken },
+      token: { internalFn: deps.gcpToken },
     });
     expect(issueFake).to.have.been.calledWith(
       { id, phone },

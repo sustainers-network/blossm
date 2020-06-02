@@ -75,7 +75,7 @@ module.exports = async ({ payload, context, claims }) => {
       domain: "session",
       name: "upgrade",
     })
-    .set({ context, claims, tokenFns: { internal: deps.gcpToken } })
+    .set({ context, claims, token: { internalFn: deps.gcpToken } })
     .issue({ principal });
 
   return { events, response: { ...response, tokens, context: newContext } };

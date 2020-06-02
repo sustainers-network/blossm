@@ -47,7 +47,7 @@ module.exports = async ({ payload, context, aggregateFn }) => {
     .set({
       context,
       claims: challengeAggregate.claims,
-      tokenFns: { internal: deps.gcpToken },
+      token: { internalFn: deps.gcpToken },
     })
     .issue(challengeAggregate.upgrade);
 

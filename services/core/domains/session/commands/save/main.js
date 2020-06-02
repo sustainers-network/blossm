@@ -101,7 +101,7 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
     .eventStore({
       domain: "identity",
     })
-    .set({ context, claims, tokenFns: { internal: deps.gcpToken } })
+    .set({ context, claims, token: { internalFn: deps.gcpToken } })
     .query({ key: "id", value: payload.id });
 
   if (identity) {
@@ -122,7 +122,7 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
         .eventStore({
           domain: "identity",
         })
-        .set({ context, claims, tokenFns: { internal: deps.gcpToken } })
+        .set({ context, claims, token: { internalFn: deps.gcpToken } })
         .query({ key: "principal.root", value: context.principal.root });
 
       if (subjectIdentity)
@@ -158,7 +158,7 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
     .set({
       context,
       claims,
-      tokenFns: { internal: deps.gcpToken },
+      token: { internalFn: deps.gcpToken },
     })
     .issue(
       {

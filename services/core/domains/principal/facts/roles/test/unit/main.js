@@ -49,7 +49,7 @@ describe("Fact unit tests", () => {
       service: "core",
     });
     expect(setFake).to.have.been.calledWith({
-      tokenFns: { internal: deps.gcpToken },
+      token: { internalFn: deps.gcpToken },
     });
     expect(aggregateFake).to.have.been.calledWith(root);
     expect(result).to.deep.equal({ response: [role] });

@@ -5,7 +5,7 @@ module.exports = async ({ context }) => {
     .eventStore({
       domain: process.env.DOMAIN,
     })
-    .set({ tokenFns: { internal: deps.gcpToken } })
+    .set({ token: { internalFn: deps.gcpToken } })
     .aggregate(context.session.root);
 
   return { response: aggregate.state.terminated != undefined };
