@@ -1,4 +1,4 @@
-module.exports = async ({ payload, root, context }) => {
+module.exports = async ({ payload, root }) => {
   return {
     events: [
       {
@@ -10,7 +10,7 @@ module.exports = async ({ payload, root, context }) => {
                 id: role.id,
                 root: role.root,
                 service: role.service,
-                network: context.network,
+                network: role.network || process.env.NETWORK,
               };
             }),
           ],

@@ -7,7 +7,10 @@ payload:
     - id: string
       root: string
       service: string
-
+      network:
+        type: domain
+        in: $aud
+          
 devDependencies:
   "mocha": "^7.1.0"
   "chai": "^4.2.0"
@@ -17,11 +20,13 @@ devDependencies:
 
 testing:
   validate:
+    aud: some.network,some.other-network
     ok:
       - roles:
           - id: some-id
             root: some-root
             service: some-service
+            network: some.network
     bad:
       - roles:
           a: 1
@@ -31,6 +36,16 @@ testing:
           - root: 3
       - roles:
           - service: 3
+      - roles:
+          - id: some-id
+            root: some-root
+            service: some-service
+            network: some.whack-network
+      - roles:
+          - id: some-id
+            root: some-root
+            service: some-service
+            network: some-whack-network
 
   normalize:
     - payload:
@@ -52,8 +67,22 @@ testing:
           - id: some-role-id
             root: some-role-root
             service: some-role-service
+            network: some.role-network
+      claims:
+        aud: some.role-network
       context:
         network: some-network
+      root: some-root
+      code: 202
+    - payload:
+        roles:
+          - id: some-other-role-id
+            root: some-role-root
+            service: some-role-service
+            network: some.role-network
+      claims:
+        aud: some.role-network
+      context: {}
       root: some-root
       code: 202
 

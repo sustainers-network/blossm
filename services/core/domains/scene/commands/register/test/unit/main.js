@@ -171,12 +171,8 @@ describe("Command handler unit tests", () => {
         { action: "register", payload, root, correctNumber: 0 },
       ],
       response: {
+        context: principalContext,
         references: {
-          principal: {
-            root: principalRoot,
-            service: principalService,
-            network: principalNetwork,
-          },
           scene: {
             root,
             service,

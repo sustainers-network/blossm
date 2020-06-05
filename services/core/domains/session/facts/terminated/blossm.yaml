@@ -7,6 +7,10 @@ dependencies:
   "@blossm/gcp-token": "*"
 
 testing:
+  normalize:
+    - payload: {}
+      normalized: {}
+
   dependencies:
     - domain: session
       procedure: event-store

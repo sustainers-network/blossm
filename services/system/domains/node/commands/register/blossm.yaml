@@ -46,8 +46,7 @@ testing:
           root: some-session-root
           action: start
           payload:
-            device:
-              os: some-os
+            device: {}
       payload:
         network: some.network
       context:
@@ -57,7 +56,7 @@ testing:
           network: some.session-network
       claims:
         iss: some-iss
-        aud: some-aud
+        aud: local.network
         exp: 9999-12-31T00:00:00.000
       response:
         tokens:
@@ -66,24 +65,20 @@ testing:
             value:
         context:
         references:
+          principal:
+            root:
+            service:
+            network:
           node:
             root:
             service:
             network:
           scene:
             root:
-            service: "core"
+            service: core
             network:
       code: 202
-    - pre:
-        - domain: session
-          service: core
-          root: some-other-session-root
-          action: start
-          payload:
-            device:
-              os: some-os
-      payload:
+    - payload:
         network: some.network
       context:
         session:
@@ -96,7 +91,7 @@ testing:
           network: local.network
       claims:
         iss: some-iss
-        aud: some-aud
+        aud: local.network
         exp: 9999-12-31T00:00:00.000
       response:
         references:
@@ -106,7 +101,7 @@ testing:
             network:
           scene:
             root:
-            service: "core"
+            service: core
             network:
       code: 202
 

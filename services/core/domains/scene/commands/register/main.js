@@ -55,13 +55,13 @@ module.exports = async ({ payload, context, claims }) => {
 
   const response = {
     references: {
-      principal,
       scene: {
         root: sceneRoot,
         service: process.env.SERVICE,
         network: process.env.NETWORK,
       },
     },
+    context,
   };
 
   // If the session already has a principal, no need to upgrade it.
@@ -78,5 +78,13 @@ module.exports = async ({ payload, context, claims }) => {
     .set({ context, claims, token: { internalFn: deps.gcpToken } })
     .issue({ principal });
 
-  return { events, response: { ...response, tokens, context: newContext } };
+  return {
+    events,
+    response: {
+      ...response,
+      references: { ...response.references, principal },
+      tokens,
+      context: newContext,
+    },
+  };
 };

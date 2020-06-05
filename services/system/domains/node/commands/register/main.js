@@ -1,7 +1,7 @@
 const deps = require("./deps");
 
 module.exports = async ({ payload, context, claims }) => {
-  // Create new roots for the scene and the node.
+  // Create new roots for the node.
   const nodeRoot = deps.uuid();
 
   // Register the scene.
@@ -29,10 +29,10 @@ module.exports = async ({ payload, context, claims }) => {
     events: [
       {
         domain: "principal",
-        service: principal.service,
-        network: principal.network,
+        service: newContext.principal.service,
+        network: newContext.principal.network,
         action: "add-roles",
-        root: principal.root,
+        root: newContext.principal.root,
         context: newContext,
         payload: {
           roles: [
@@ -59,6 +59,7 @@ module.exports = async ({ payload, context, claims }) => {
       ...(tokens && { tokens }),
       ...(newContext && { context: newContext }),
       references: {
+        ...(principal && { principal }),
         node: {
           root: nodeRoot,
           service: process.env.SERVICE,

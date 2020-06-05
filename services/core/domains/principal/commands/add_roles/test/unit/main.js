@@ -4,6 +4,9 @@ const { restore } = require("sinon");
 const main = require("../../main");
 
 describe("Command handler unit tests", () => {
+  beforeEach(() => {
+    delete process.env.NETWORK;
+  });
   afterEach(() => {
     restore();
   });
@@ -14,21 +17,18 @@ describe("Command handler unit tests", () => {
 
     const network = "some-network";
 
-    const context = {
-      network,
-    };
-
     const payload = {
       roles: [
         {
           id,
           root,
           service,
+          network,
         },
       ],
     };
 
-    const result = await main({ payload, root, context });
+    const result = await main({ payload, root });
     expect(result).to.deep.equal({
       events: [
         {
@@ -40,6 +40,44 @@ describe("Command handler unit tests", () => {
                 root,
                 service,
                 network,
+              },
+            ],
+          },
+          root,
+        },
+      ],
+    });
+  });
+  it("should return successfully if no context network", async () => {
+    const id = "some-id";
+    const root = "some-root";
+    const service = "some-service";
+
+    const envNetwork = "some-env-network";
+    process.env.NETWORK = envNetwork;
+
+    const payload = {
+      roles: [
+        {
+          id,
+          root,
+          service,
+        },
+      ],
+    };
+
+    const result = await main({ payload, root });
+    expect(result).to.deep.equal({
+      events: [
+        {
+          action: "add-roles",
+          payload: {
+            roles: [
+              {
+                id,
+                root,
+                service,
+                network: envNetwork,
               },
             ],
           },
