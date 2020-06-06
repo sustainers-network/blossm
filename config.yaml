@@ -30,7 +30,7 @@ vendors:
         development: development-roles-271815
       defaults:
         region: us-central1
-        timeout: 60s
+        timeout: 120s
         timeoutOverrides: {}
         memory: 128Mi
         memoryOverrides:
