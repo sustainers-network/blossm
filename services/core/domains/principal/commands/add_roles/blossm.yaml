@@ -9,18 +9,12 @@ payload:
       service: string
       network:
         type: domain
-        in: $aud
-          
-devDependencies:
-  "mocha": "^7.1.0"
-  "chai": "^4.2.0"
-  "sinon": "^7.3.2"
-  "sinon-chai": "^3.3.0"
-  "chai-datetime": "^1.5.0"
+        is: $network
 
 testing:
   validate:
-    aud: some.network,some.other-network
+    context:
+      network: some.network
     ok:
       - roles:
           - id: some-id
@@ -68,10 +62,8 @@ testing:
             root: some-role-root
             service: some-role-service
             network: some.role-network
-      claims:
-        aud: some.role-network
       context:
-        network: some-network
+        network: some.role-network
       root: some-root
       code: 202
     - payload:
@@ -80,9 +72,8 @@ testing:
             root: some-role-root
             service: some-role-service
             network: some.role-network
-      claims:
-        aud: some.role-network
-      context: {}
+      context:
+        network: some.role-network
       root: some-root
       code: 202
 

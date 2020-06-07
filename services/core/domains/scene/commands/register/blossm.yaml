@@ -8,7 +8,7 @@ payload:
   service: string
   network:
     type: domain
-    in: $aud
+    is: $network
 
 dependencies:
   "@blossm/command-rpc": "*"
@@ -23,7 +23,8 @@ devDependencies:
 
 testing:
   validate:
-    aud: some.network,some.other-network
+    context:
+      network: some.network
     ok:
       - root: some-root
         domain: some-domain
@@ -73,13 +74,14 @@ testing:
         service: some-service
         network: some.network
       context:
+        network: some.network
         session:
           root: some-session-root
           service: some-session-service
           network: some.session-network
       claims:
         iss: some-iss
-        aud: some.network
+        aud: some-aud
         exp: 9999-12-31T00:00:00.000
       response:
         tokens:
@@ -111,6 +113,7 @@ testing:
         service: some-service
         network: some.network
       context:
+        network: some.network
         session:
           root: some-other-session-root
           service: some-session-service
@@ -121,7 +124,7 @@ testing:
           network: some.other-network
       claims:
         iss: some-iss
-        aud: some.network
+        aud: some-aud
         exp: 9999-12-31T00:00:00.000
       response:
         context:
