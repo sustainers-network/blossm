@@ -50,13 +50,14 @@ testing:
       payload:
         network: some.network
       context:
+        network: local.network
         session:
           root: some-session-root
           service: some-session-service
           network: some.session-network
       claims:
         iss: some-iss
-        aud: local.network
+        aud: some-aud
         exp: 9999-12-31T00:00:00.000
       response:
         tokens:
@@ -81,6 +82,7 @@ testing:
     - payload:
         network: some.network
       context:
+        network: local.network
         session:
           root: some-other-session-root
           service: some-other-session-service
@@ -91,7 +93,7 @@ testing:
           network: local.network
       claims:
         iss: some-iss
-        aud: local.network
+        aud: some-aud
         exp: 9999-12-31T00:00:00.000
       response:
         references:

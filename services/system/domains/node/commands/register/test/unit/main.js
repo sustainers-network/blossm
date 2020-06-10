@@ -140,7 +140,7 @@ describe("Command handler unit tests", () => {
       network,
     });
   });
-  it("should return successfully if principal not returned as a reference", async () => {
+  it("should return successfully if principal not returned as a reference, and no new context", async () => {
     const nodeRoot = "some-node-root";
     const sceneRoot = "some-scene-root";
     const sceneService = "some-scene-service";
@@ -154,7 +154,6 @@ describe("Command handler unit tests", () => {
     const issueFake = fake.returns({
       body: {
         tokens,
-        context: newContext,
         references: {
           scene: {
             root: sceneRoot,
@@ -172,16 +171,38 @@ describe("Command handler unit tests", () => {
     });
     replace(deps, "command", commandFake);
 
-    const result = await main({ payload, context, claims });
+    const contextPrincipalRoot = "some-context-principal-root";
+    const contextPrincipalService = "some-context-principal-service";
+    const contextPrincipalNetwork = "some-context-principal-network";
+
+    const result = await main({
+      payload,
+      context: {
+        ...context,
+        principal: {
+          root: contextPrincipalRoot,
+          service: contextPrincipalService,
+          network: contextPrincipalNetwork,
+        },
+      },
+      claims,
+    });
     expect(result).to.deep.equal({
       events: [
         {
           domain: "principal",
-          service: newContextPrincipalService,
-          network: newContextPrincipalNetwork,
+          service: contextPrincipalService,
+          network: contextPrincipalNetwork,
           action: "add-roles",
-          context: newContext,
-          root: newContextPrincipalRoot,
+          context: {
+            ...context,
+            principal: {
+              root: contextPrincipalRoot,
+              service: contextPrincipalService,
+              network: contextPrincipalNetwork,
+            },
+          },
+          root: contextPrincipalRoot,
           payload: {
             roles: [{ id: "NodeAdmin", root: nodeRoot, service, network }],
           },
@@ -189,7 +210,14 @@ describe("Command handler unit tests", () => {
         {
           action: "register",
           root: nodeRoot,
-          context: newContext,
+          context: {
+            ...context,
+            principal: {
+              root: contextPrincipalRoot,
+              service: contextPrincipalService,
+              network: contextPrincipalNetwork,
+            },
+          },
           payload: {
             network: payloadNetwork,
             scene: {
@@ -202,7 +230,6 @@ describe("Command handler unit tests", () => {
       ],
       response: {
         tokens,
-        context: newContext,
         references: {
           node: { root: nodeRoot, service, network },
           scene: {
@@ -219,7 +246,14 @@ describe("Command handler unit tests", () => {
       service: "core",
     });
     expect(setFake).to.have.been.calledWith({
-      context,
+      context: {
+        ...context,
+        principal: {
+          root: contextPrincipalRoot,
+          service: contextPrincipalService,
+          network: contextPrincipalNetwork,
+        },
+      },
       claims,
       token: { internalFn: deps.gcpToken },
     });

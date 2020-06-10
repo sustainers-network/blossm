@@ -29,11 +29,11 @@ module.exports = async ({ payload, context, claims }) => {
     events: [
       {
         domain: "principal",
-        service: newContext.principal.service,
-        network: newContext.principal.network,
+        service: (newContext || context).principal.service,
+        network: (newContext || context).principal.network,
         action: "add-roles",
-        root: newContext.principal.root,
-        context: newContext,
+        root: (newContext || context).principal.root,
+        context: newContext || context,
         payload: {
           roles: [
             {
@@ -48,7 +48,7 @@ module.exports = async ({ payload, context, claims }) => {
       {
         action: "register",
         root: nodeRoot,
-        context: newContext,
+        context: newContext || context,
         payload: {
           network: payload.network,
           scene,
