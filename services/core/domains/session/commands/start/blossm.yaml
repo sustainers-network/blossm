@@ -11,10 +11,10 @@ payload:
         in:
           - mobile
           - desktop
-          - tablet 
+          - tablet
       platform:
         type: string
-        in: 
+        in:
           - ios
           - android
           - browser
@@ -45,7 +45,7 @@ testing:
           platform: android
           agent: some-agent
       - device:
-          type: desktop 
+          type: desktop
           platform: browser
           agent: some-agent
     bad:

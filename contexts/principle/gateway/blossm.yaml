@@ -4,9 +4,9 @@ views:
   - name: nodes
     procedure: view-store
     priviledges: none
-  - name: dashboard
-    procedure: view-composite
-    priviledges: none
+  # - name: dashboard
+  #   procedure: view-composite
+  #   priviledges: none
 
 whitelist:
   - "127.0.0.1"
