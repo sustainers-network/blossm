@@ -22,9 +22,15 @@ devDependencies:
   "chai-datetime": "^1.5.0"
 
 env:
+  production:
+    FANOUT_REALM_ID: 874134c8
+  sandbox:
+    FANOUT_REALM_ID: 5b26a15b
+  staging:
+    FANOUT_REALM_ID: db0c81e3
   development:
     FANOUT_REALM_ID: 53b46805
-    
+
 testing:
   dependencies:
     - procedure: http

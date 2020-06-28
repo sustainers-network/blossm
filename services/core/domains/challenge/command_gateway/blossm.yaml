@@ -20,9 +20,12 @@ devDependencies:
 
 devEnv:
   production:
+    TWILIO_TEST_RECEIVING_PHONE_NUMBER: "+19189922993"
   sandbox:
+    TWILIO_TEST_RECEIVING_PHONE_NUMBER: "+18652642257"
   staging:
-  development: 
+    TWILIO_TEST_RECEIVING_PHONE_NUMBER: "+12164506104"
+  development:
     TWILIO_TEST_RECEIVING_PHONE_NUMBER: "+12018018796"
 
 #don't change

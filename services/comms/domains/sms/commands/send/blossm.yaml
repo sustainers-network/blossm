@@ -25,10 +25,13 @@ devDependencies:
 
 env:
   production:
+    TWILIO_SENDING_PHONE_NUMBER: "+12109707405"
   sandbox:
+    TWILIO_SENDING_PHONE_NUMBER: "+12156318395"
   staging:
-  development: 
-    TWILIO_SENDING_PHONE_NUMBER: "+16122237366" 
+    TWILIO_SENDING_PHONE_NUMBER: "+12055578571"
+  development:
+    TWILIO_SENDING_PHONE_NUMBER: "+16122237366"
 
 testing:
   validate:
