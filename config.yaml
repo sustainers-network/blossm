@@ -59,7 +59,7 @@ vendors:
         staging: blossm
         development: blossm
       hosts:
-        production: event-store-7iksa.gcp.mongodb.net
+        production: event-store-pri.7iksa.gcp.mongodb.net
         sandbox: event-store-pri.dyntm.gcp.mongodb.net
         staging: event-store-zhvxy.gcp.mongodb.net
         development: event-store.7kjnk.gcp.mongodb.net
