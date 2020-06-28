@@ -475,6 +475,119 @@ describe("Command handler unit tests", () => {
       }
     );
   });
+  it("should return successfully if identity not found with no principal in the context and email as id", async () => {
+    const queryFake = fake.returns({ body: [] });
+    const setFake = fake.returns({
+      query: queryFake,
+    });
+    const eventStoreFake = fake.returns({
+      set: setFake,
+    });
+    replace(deps, "eventStore", eventStoreFake);
+
+    const identityRoot = "some-new-identity-root";
+    const principalRoot = "some-new-principal-root";
+
+    const uuidFake = stub()
+      .onFirstCall()
+      .returns(identityRoot)
+      .onSecondCall()
+      .returns(principalRoot);
+    replace(deps, "uuid", uuidFake);
+
+    const phoneHash = "some-phone-hash";
+    const hashFake = fake.returns(phoneHash);
+    replace(deps, "hash", hashFake);
+
+    const issueFake = fake.returns({ body: { tokens }, statusCode });
+    const anotherSetFake = fake.returns({
+      issue: issueFake,
+    });
+    const commandFake = fake.returns({
+      set: anotherSetFake,
+    });
+
+    replace(deps, "command", commandFake);
+
+    replace(deps, "compare", fake.returns(true));
+
+    const context = {};
+    const email = "some@email.com";
+    const result = await main({
+      payload: {
+        ...payload,
+        id: email,
+      },
+      context,
+      claims,
+    });
+
+    expect(result).to.deep.equal({
+      response: { tokens },
+      statusCode,
+    });
+    expect(eventStoreFake).to.have.been.calledWith({ domain: "identity" });
+    expect(setFake).to.have.been.calledWith({
+      context,
+      claims,
+      token: { internalFn: deps.gcpToken },
+    });
+    expect(queryFake).to.have.been.calledWith({ key: "id", value: email });
+    expect(hashFake).to.have.been.calledWith(phone);
+    expect(commandFake).to.have.been.calledWith({
+      name: "issue",
+      domain: "challenge",
+    });
+    expect(anotherSetFake).to.have.been.calledWith({
+      context,
+      claims,
+      token: { internalFn: deps.gcpToken },
+    });
+    expect(issueFake).to.have.been.calledWith(
+      { id: email, phone },
+      {
+        options: {
+          upgrade: {
+            identity: {
+              root: identityRoot,
+              service,
+              network,
+            },
+            principal: {
+              root: principalRoot,
+              service,
+              network,
+            },
+          },
+          events: [
+            {
+              action: "register",
+              domain: "identity",
+              service,
+              root: identityRoot,
+              payload: {
+                phone: phoneHash,
+                email,
+                id: email,
+                principal: { root: principalRoot, service, network },
+              },
+            },
+            {
+              action: "add-roles",
+              domain: "principal",
+              service,
+              root: principalRoot,
+              payload: {
+                roles: [
+                  { id: `IdentityAdmin`, root: identityRoot, service, network },
+                ],
+              },
+            },
+          ],
+        },
+      }
+    );
+  });
   it("should return successfully if identity not found with principal in context", async () => {
     const queryFake = fake.returns({ body: [] });
     const setFake = fake.returns({

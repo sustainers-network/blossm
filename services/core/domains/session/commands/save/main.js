@@ -70,6 +70,7 @@ const getEventsForIdentityRegistering = async ({ context, payload }) => {
         root: identityRoot,
         payload: {
           phone: hashedPhone,
+          ...(deps.emailValidator(payload.id) && { email: payload.id }),
           id: payload.id,
           principal,
         },

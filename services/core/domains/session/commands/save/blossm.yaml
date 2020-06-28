@@ -10,6 +10,7 @@ dependencies:
   "@blossm/command-rpc": "*"
   "@blossm/event-store-rpc": "*"
   "@blossm/array-difference": "*"
+  "@blossm/email-validator": "*"
   "@blossm/crypt": "*"
   "@blossm/uuid": "*"
   "@blossm/phone-number": "*"

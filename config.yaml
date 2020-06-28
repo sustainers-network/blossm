@@ -13,69 +13,69 @@ vendors:
         staging: staging-271815
         development: development-271815
       computeUrlIds:
-        production:
-        sandbox:
-        staging:
+        production: 7d5greqv6q
+        sandbox: fvvz6qfa2a
+        staging: ki43cyps3a
         development: 75tpixyafq
       dnsZone: network
       secretsBuckets:
-        production:
-        sandbox:
-        staging:
+        production: production-secrets-271815
+        sandbox: sandbox-secrets-271815
+        staging: staging-secrets-271815
         development: development-secrets-271815
       rolesBuckets:
-        production:
-        sandbox:
-        staging:
+        production: production-secrets-271815
+        sandbox: sandbox-secrets-271815
+        staging: staging-secrets-271815
         development: development-roles-271815
       defaults:
         region: us-central1
-        timeout: 120s
+        timeout: 900s
         timeoutOverrides: {}
-        memory: 256Mi
+        memory: 512Mi
         memoryOverrides:
-          event-store: 256Mi
-          event-handler: 256Mi
-          projection: 256Mi
-          view-store: 256Mi
+          event-store: 512Mi
+          event-handler: 512Mi
+          projection: 512Mi
+          view-store: 512Mi
   viewStore:
     mongodb:
       users:
-        production:
-        sandbox:
-        staging:
+        production: blossm
+        sandbox: blossm
+        staging: blossm
         development: blossm
       hosts:
-        production:
-        sandbox:
-        staging:
-        development: view-store-sebjf.gcp.mongodb.net
+        production: view-store-xpbhz.gcp.mongodb.net
+        sandbox: view-store-fzyij.gcp.mongodb.net
+        staging: view-store-ahi18.gcp.mongodb.net
+        development: view-store.sebjf.gcp.mongodb.net
       protocol: mongodb+srv
   eventStore:
     mongodb:
       users:
-        production:
-        sandbox:
-        staging:
+        production: blossm
+        sandbox: blossm
+        staging: blossm
         development: blossm
       hosts:
-        production:
-        sandbox:
-        staging:
-        development: event-store-7kjnk.gcp.mongodb.net
+        production: event-store-7iksa.gcp.mongodb.net
+        sandbox: event-store-dyntm.gcp.mongodb.net
+        staging: event-store-zhvxy.gcp.mongodb.net
+        development: event-store.7kjnk.gcp.mongodb.net
       protocol: mongodb+srv
   eventHandler:
     mongodb:
       users:
-        production:
-        sandbox:
-        staging:
+        production: blossm
+        sandbox: blossm
+        staging: blossm
         development: blossm
       hosts:
-        production:
-        sandbox:
-        staging:
-        development: event-handler-b8xbj.mongodb.net
+        production: event-handler-u076u.gcp.mongodb.net
+        sandbox: event-handler-shiyl.gcp.mongodb.net
+        staging: event-handler-gn5o1.gcp.mongodb.net
+        development: event-handler-b8xbj.gcp.mongodb.net
       protocol: mongodb+srv
 defaults:
   viewStore: mongodb
