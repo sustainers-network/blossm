@@ -24,9 +24,9 @@ vendors:
         staging: staging-secrets-271815
         development: development-secrets-271815
       rolesBuckets:
-        production: production-secrets-271815
-        sandbox: sandbox-secrets-271815
-        staging: staging-secrets-271815
+        production: production-roles-271815
+        sandbox: sandbox-roles-271815
+        staging: staging-roles-271815
         development: development-roles-271815
       defaults:
         region: us-central1
