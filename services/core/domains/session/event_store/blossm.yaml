@@ -12,11 +12,10 @@ schema:
     service: String
     network: String
   device:
-    os: String
-    version: String
-    hardware: String
-    manufacturer: String
-    id: String
+    type:
+      type: String
+    platform: String
+    agent: String
 
 testing:
   examples:
@@ -24,11 +23,9 @@ testing:
       action: start
       payload:
         device:
-          os: iOS
-          version: "10"
-          hardware: "iPhone 8"
-          manufacturer: Apple
-          id: some-device-id
+          type: mobile
+          platform: ios
+          agent: some-agent
     second:
       action: start
       payload:
@@ -38,11 +35,9 @@ testing:
           service: some-scene-service
           domain: some-scene-domain
         device:
-          os: Android
-          version: "10"
-          hardware: "Pixel 3"
-          manufacturer: Google
-          id: some-other-device-id
+          type: desktop
+          platform: browser
+          agent: some-other-agent
     more:
       - action: terminate
         payload:
@@ -59,11 +54,9 @@ testing:
       examples:
         - payload:
             device:
-              os: Android
-              version: "10"
-              hardware: "Pixel 3"
-              manufacturer: Google
-              id: some-device-id
+              type: mobile
+              platform: ios
+              agent: some-agent
         - state: {}
           payload:
             context:
@@ -80,11 +73,9 @@ testing:
               service: some-scene-service
               domain: some-scene-domain
             device:
-              os: Android
-              version: "10"
-              hardware: "Pixel 3"
-              manufacturer: Google
-              id: some-device-id
+              type: mobile
+              platform: ios
+              agent: some-agent
           result:
             context:
               principal:
@@ -100,11 +91,9 @@ testing:
               service: some-scene-service
               domain: some-scene-domain
             device:
-              os: Android
-              version: "10"
-              hardware: "Pixel 3"
-              manufacturer: Google
-              id: some-device-id
+              type: mobile
+              platform: ios
+              agent: some-agent
     - action: upgrade
       examples:
         - payload:
