@@ -4,14 +4,14 @@ service: core
 commands:
   - name: start
     protection: context
-  # - name: save
-  #   privileges: none
-  # - name: terminate
-  #   privileges:
-  #     - update
-  # - name: change-scene
-  #   privileges:
-  #     - update
+  - name: save
+    privileges: none
+  - name: terminate
+    privileges:
+      - update
+  - name: change-scene
+    privileges:
+      - update
 
 whitelist:
   - "127.0.0.1"

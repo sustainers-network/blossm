@@ -2,7 +2,7 @@ domain: updates
 service: system
 
 commands:
-  - name: subscribe-to
+  - name: push
     context: node
     privileges:
       - create
