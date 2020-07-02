@@ -1,9 +1,4 @@
 network: sustainers.network
-publicKeyUrls:
-  production: https://f.sustainers.network/public-key
-  sandbox: https://f.snd.sustainers.network/public-key
-  staging: https://f.stg.sustainers.network/public-key
-  development: https://f.dev.sustainers.network/public-key
 vendors:
   cloud:
     gcp:

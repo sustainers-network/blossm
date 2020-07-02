@@ -61,7 +61,6 @@ module.exports = async ({ payload, context, claims }) => {
         network: process.env.NETWORK,
       },
     },
-    context,
   };
 
   // If the session already has a principal, no need to upgrade it.

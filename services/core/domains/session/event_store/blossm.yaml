@@ -11,21 +11,22 @@ schema:
     root: String
     service: String
     network: String
-  device:
-    type:
-      type: String
-    platform: String
-    agent: String
+  # device:
+  #   type:
+  #     type: String
+  #   platform: String
+  #   agent: String
 
 testing:
   examples:
     first:
       action: start
       payload:
-        device:
-          type: mobile
-          platform: ios
-          agent: some-agent
+        {}
+        # device:
+        #   type: mobile
+        #   platform: ios
+        #   agent: some-agent
     second:
       action: start
       payload:
@@ -34,10 +35,10 @@ testing:
           root: some-scene-root
           service: some-scene-service
           domain: some-scene-domain
-        device:
-          type: desktop
-          platform: browser
-          agent: some-other-agent
+        # device:
+        #   type: desktop
+        #   platform: browser
+        #   agent: some-other-agent
     more:
       - action: terminate
         payload:
@@ -52,11 +53,11 @@ testing:
   handlers:
     - action: start
       examples:
-        - payload:
-            device:
-              type: mobile
-              platform: ios
-              agent: some-agent
+        - payload: {}
+        # device:
+        #   type: mobile
+        #   platform: ios
+        #   agent: some-agent
         - state: {}
           payload:
             context:
@@ -72,10 +73,10 @@ testing:
               root: some-scene-root
               service: some-scene-service
               domain: some-scene-domain
-            device:
-              type: mobile
-              platform: ios
-              agent: some-agent
+            # device:
+            #   type: mobile
+            #   platform: ios
+            #   agent: some-agent
           result:
             context:
               principal:
@@ -90,10 +91,10 @@ testing:
               root: some-scene-root
               service: some-scene-service
               domain: some-scene-domain
-            device:
-              type: mobile
-              platform: ios
-              agent: some-agent
+            # device:
+            #   type: mobile
+            #   platform: ios
+            #   agent: some-agent
     - action: upgrade
       examples:
         - payload:

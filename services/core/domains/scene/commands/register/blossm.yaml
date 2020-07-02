@@ -127,15 +127,6 @@ testing:
         aud: some-aud
         exp: 9999-12-31T00:00:00.000
       response:
-        context:
-          session:
-            root: some-other-session-root
-            service: some-session-service
-            network: some.session-network
-          principal:
-            root: some-principal-root
-            service: core
-            network: some.other-network
         references:
           scene:
             root:
