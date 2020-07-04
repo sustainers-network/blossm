@@ -1,6 +1,6 @@
 const deps = require("./deps");
 
-module.exports = async ({ payload, context, claims }) => {
+module.exports = async ({ payload, context, commandFn }) => {
   const sceneRoot = deps.uuid();
 
   // Determine what root should be used for the principal.
@@ -69,13 +69,13 @@ module.exports = async ({ payload, context, claims }) => {
   // Upgrade the session for the principal.
   const {
     body: { tokens, context: newContext },
-  } = await deps
-    .command({
-      domain: "session",
-      name: "upgrade",
-    })
-    .set({ context, claims, token: { internalFn: deps.gcpToken } })
-    .issue({ principal });
+  } = await commandFn({
+    domain: "session",
+    name: "upgrade",
+    payload: {
+      principal,
+    },
+  });
 
   return {
     events,

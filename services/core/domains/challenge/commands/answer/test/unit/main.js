@@ -59,19 +59,15 @@ describe("Command handler unit tests", () => {
       },
     });
 
-    const issueFake = fake.returns({ body: { tokens, context: newContext } });
-    const setFake = fake.returns({
-      issue: issueFake,
+    const commandFnFake = fake.returns({
+      body: { tokens, context: newContext },
     });
-    const commandFake = fake.returns({
-      set: setFake,
-    });
-    replace(deps, "command", commandFake);
 
     const result = await main({
       payload,
       context,
       aggregateFn: aggregateFake,
+      commandFn: commandFnFake,
     });
 
     expect(result).to.deep.equal({
@@ -88,20 +84,16 @@ describe("Command handler unit tests", () => {
       response: { tokens, context: newContext },
     });
     expect(aggregateFake).to.have.been.calledWith(contextChallenge);
-    expect(commandFake).to.have.been.calledWith({
+    expect(commandFnFake).to.have.been.calledWith({
       domain: "session",
       name: "upgrade",
-    });
-    expect(setFake).to.have.been.calledWith({
-      context,
       claims: {
         iss,
         exp,
         aud,
       },
-      token: { internalFn: deps.gcpToken },
+      payload: challengeUpgrade,
     });
-    expect(issueFake).to.have.been.calledWith(challengeUpgrade);
   });
   it("should return successfully if upgrade is not provided.", async () => {
     const aggregateFake = fake.returns({

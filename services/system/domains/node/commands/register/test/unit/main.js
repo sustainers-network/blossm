@@ -8,9 +8,6 @@ const payloadNetwork = "some-payload-network";
 const payload = { network: payloadNetwork };
 const identity = "some-identity";
 const context = { identity };
-const claims = {
-  a: 1,
-};
 
 const newContextPrincipalRoot = "some-new-context-principal-root";
 const newContextPrincipalService = "some-new-context-principal-service";
@@ -51,7 +48,7 @@ describe("Command handler unit tests", () => {
     const principalService = "some-principal-service";
     const principalNetwork = "some-principal-network";
 
-    const issueFake = fake.returns({
+    const commandFnFake = fake.returns({
       body: {
         tokens,
         context: newContext,
@@ -69,15 +66,9 @@ describe("Command handler unit tests", () => {
         },
       },
     });
-    const setFake = fake.returns({
-      issue: issueFake,
-    });
-    const commandFake = fake.returns({
-      set: setFake,
-    });
-    replace(deps, "command", commandFake);
 
-    const result = await main({ payload, context, claims });
+    const result = await main({ payload, context, commandFn: commandFnFake });
+
     expect(result).to.deep.equal({
       events: [
         {
@@ -123,21 +114,16 @@ describe("Command handler unit tests", () => {
         },
       },
     });
-    expect(commandFake).to.have.been.calledWith({
+    expect(commandFnFake).to.have.been.calledWith({
       name: "register",
       domain: "scene",
       service: "core",
-    });
-    expect(setFake).to.have.been.calledWith({
-      context,
-      claims,
-      token: { internalFn: deps.gcpToken },
-    });
-    expect(issueFake).to.have.been.calledWith({
-      root: nodeRoot,
-      domain,
-      service,
-      network,
+      payload: {
+        root: nodeRoot,
+        domain,
+        service,
+        network,
+      },
     });
   });
   it("should return successfully if principal not returned as a reference, and no new context", async () => {
@@ -151,7 +137,7 @@ describe("Command handler unit tests", () => {
     replace(deps, "uuid", uuidFake);
 
     const tokens = "some-tokens";
-    const issueFake = fake.returns({
+    const commandFnFake = fake.returns({
       body: {
         tokens,
         references: {
@@ -163,13 +149,6 @@ describe("Command handler unit tests", () => {
         },
       },
     });
-    const setFake = fake.returns({
-      issue: issueFake,
-    });
-    const commandFake = fake.returns({
-      set: setFake,
-    });
-    replace(deps, "command", commandFake);
 
     const contextPrincipalRoot = "some-context-principal-root";
     const contextPrincipalService = "some-context-principal-service";
@@ -185,7 +164,7 @@ describe("Command handler unit tests", () => {
           network: contextPrincipalNetwork,
         },
       },
-      claims,
+      commandFn: commandFnFake,
     });
     expect(result).to.deep.equal({
       events: [
@@ -240,28 +219,16 @@ describe("Command handler unit tests", () => {
         },
       },
     });
-    expect(commandFake).to.have.been.calledWith({
+    expect(commandFnFake).to.have.been.calledWith({
       name: "register",
       domain: "scene",
       service: "core",
-    });
-    expect(setFake).to.have.been.calledWith({
-      context: {
-        ...context,
-        principal: {
-          root: contextPrincipalRoot,
-          service: contextPrincipalService,
-          network: contextPrincipalNetwork,
-        },
+      payload: {
+        root: nodeRoot,
+        domain,
+        service,
+        network,
       },
-      claims,
-      token: { internalFn: deps.gcpToken },
-    });
-    expect(issueFake).to.have.been.calledWith({
-      root: nodeRoot,
-      domain,
-      service,
-      network,
     });
   });
   it("should throw correctly", async () => {

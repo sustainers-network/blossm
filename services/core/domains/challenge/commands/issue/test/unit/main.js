@@ -14,9 +14,7 @@ const principalNetwork = "some-priciple-network";
 const identityRoot = "some-identity-root";
 const phone = "some-identity-phone";
 const identity = {
-  headers: {
-    root: identityRoot,
-  },
+  root: identityRoot,
   state: {
     principal: {
       root: principalRoot,
@@ -61,14 +59,7 @@ describe("Command handler unit tests", () => {
     restore();
   });
   it("should return successfully", async () => {
-    const issueFake = fake();
-    const commandSetFake = fake.returns({
-      issue: issueFake,
-    });
-    const commandFake = fake.returns({
-      set: commandSetFake,
-    });
-    replace(deps, "command", commandFake);
+    const commandFnFake = fake();
 
     const uuidFake = fake.returns(root);
     replace(deps, "uuid", uuidFake);
@@ -76,14 +67,7 @@ describe("Command handler unit tests", () => {
     const compareFake = fake.returns(true);
     replace(deps, "compare", compareFake);
 
-    const queryFake = fake.returns({ body: [identity] });
-    const setFake = fake.returns({
-      query: queryFake,
-    });
-    const eventStoreFake = fake.returns({
-      set: setFake,
-    });
-    replace(deps, "eventStore", eventStoreFake);
+    const queryAggregatesFnFake = fake.returns({ body: [identity] });
 
     const signature = "some-signature";
     const signFake = fake.returns(signature);
@@ -95,7 +79,13 @@ describe("Command handler unit tests", () => {
     const randomIntFake = fake.returns(code);
     replace(deps, "randomIntOfLength", randomIntFake);
 
-    const result = await main({ payload, context, claims });
+    const result = await main({
+      payload,
+      context,
+      claims,
+      commandFn: commandFnFake,
+      queryAggregatesFn: queryAggregatesFnFake,
+    });
 
     expect(result).to.deep.equal({
       events: [
@@ -123,16 +113,10 @@ describe("Command handler unit tests", () => {
       },
     });
     expect(compareFake).to.have.been.calledWith(payloadPhone, phone);
-    expect(queryFake).to.have.been.calledWith({
+    expect(queryAggregatesFnFake).to.have.been.calledWith({
+      domain: "identity",
       key: "id",
       value: id,
-    });
-    expect(setFake).to.have.been.calledWith({
-      context,
-      token: { internalFn: deps.gcpToken },
-    });
-    expect(eventStoreFake).to.have.been.calledWith({
-      domain: "identity",
     });
     expect(signFake).to.have.been.calledWith({
       ring: "jwt",
@@ -159,29 +143,18 @@ describe("Command handler unit tests", () => {
     expect(Math.abs(deps.moment().add(3, "m").toDate() - new Date())).to.equal(
       180000
     );
-    expect(commandFake).to.have.been.calledWith({
+    expect(commandFnFake).to.have.been.calledWith({
       name: "send",
       domain: "sms",
       service: "comms",
-    });
-    expect(commandSetFake).to.have.been.calledWith({
-      context,
-      token: { internalFn: deps.gcpToken },
-    });
-    expect(issueFake).to.have.been.calledWith({
-      to: payloadPhone,
-      message: `${code} is your verification code. Enter it in the app to let us know it's really you.`,
+      payload: {
+        to: payloadPhone,
+        message: `${code} is your verification code. Enter it in the app to let us know it's really you.`,
+      },
     });
   });
   it("should return successfully without identity in context, with a principal and network in context", async () => {
-    const issueFake = fake();
-    const commandSetFake = fake.returns({
-      issue: issueFake,
-    });
-    const commandFake = fake.returns({
-      set: commandSetFake,
-    });
-    replace(deps, "command", commandFake);
+    const commandFnFake = fake();
 
     const uuidFake = fake.returns(root);
     replace(deps, "uuid", uuidFake);
@@ -189,14 +162,7 @@ describe("Command handler unit tests", () => {
     const compareFake = fake.returns(true);
     replace(deps, "compare", compareFake);
 
-    const queryFake = fake.returns({ body: [identity] });
-    const setFake = fake.returns({
-      query: queryFake,
-    });
-    const eventStoreFake = fake.returns({
-      set: setFake,
-    });
-    replace(deps, "eventStore", eventStoreFake);
+    const queryAggregatesFnFake = fake.returns({ body: [identity] });
 
     const signature = "some-signature";
     const signFake = fake.returns(signature);
@@ -217,6 +183,8 @@ describe("Command handler unit tests", () => {
       payload,
       context,
       claims,
+      commandFn: commandFnFake,
+      queryAggregatesFn: queryAggregatesFnFake,
     });
 
     expect(result).to.deep.equal({
@@ -252,16 +220,10 @@ describe("Command handler unit tests", () => {
       },
     });
     expect(compareFake).to.have.been.calledWith(payloadPhone, phone);
-    expect(queryFake).to.have.been.calledWith({
+    expect(queryAggregatesFnFake).to.have.been.calledWith({
+      domain: "identity",
       key: "id",
       value: id,
-    });
-    expect(setFake).to.have.been.calledWith({
-      context,
-      token: { internalFn: deps.gcpToken },
-    });
-    expect(eventStoreFake).to.have.been.calledWith({
-      domain: "identity",
     });
     expect(signFake).to.have.been.calledWith({
       ring: "jwt",
@@ -288,29 +250,18 @@ describe("Command handler unit tests", () => {
     expect(Math.abs(deps.moment().add(3, "m").toDate() - new Date())).to.equal(
       180000
     );
-    expect(commandFake).to.have.been.calledWith({
+    expect(commandFnFake).to.have.been.calledWith({
       name: "send",
       domain: "sms",
       service: "comms",
-    });
-    expect(commandSetFake).to.have.been.calledWith({
-      context,
-      token: { internalFn: deps.gcpToken },
-    });
-    expect(issueFake).to.have.been.calledWith({
-      to: payloadPhone,
-      message: `${code} is your verification code. Enter it in the app to let us know it's really you.`,
+      payload: {
+        to: payloadPhone,
+        message: `${code} is your verification code. Enter it in the app to let us know it's really you.`,
+      },
     });
   });
   it("should return successfully without identity or principal in context, with events in options", async () => {
-    const issueFake = fake();
-    const commandSetFake = fake.returns({
-      issue: issueFake,
-    });
-    const commandFake = fake.returns({
-      set: commandSetFake,
-    });
-    replace(deps, "command", commandFake);
+    const commandFnFake = fake();
 
     const uuidFake = fake.returns(root);
     replace(deps, "uuid", uuidFake);
@@ -318,14 +269,7 @@ describe("Command handler unit tests", () => {
     const compareFake = fake.returns(true);
     replace(deps, "compare", compareFake);
 
-    const queryFake = fake.returns({ body: [identity] });
-    const setFake = fake.returns({
-      query: queryFake,
-    });
-    const eventStoreFake = fake.returns({
-      set: setFake,
-    });
-    replace(deps, "eventStore", eventStoreFake);
+    const queryAggregatesFnFake = fake.returns({ body: [identity] });
 
     const signature = "some-signature";
     const signFake = fake.returns(signature);
@@ -345,6 +289,8 @@ describe("Command handler unit tests", () => {
       context,
       claims,
       options: { events },
+      commandFn: commandFnFake,
+      queryAggregatesFn: queryAggregatesFnFake,
     });
 
     expect(result).to.deep.equal({
@@ -386,16 +332,10 @@ describe("Command handler unit tests", () => {
       },
     });
     expect(compareFake).to.have.been.calledWith(payloadPhone, phone);
-    expect(queryFake).to.have.been.calledWith({
+    expect(queryAggregatesFnFake).to.have.been.calledWith({
+      domain: "identity",
       key: "id",
       value: id,
-    });
-    expect(setFake).to.have.been.calledWith({
-      context,
-      token: { internalFn: deps.gcpToken },
-    });
-    expect(eventStoreFake).to.have.been.calledWith({
-      domain: "identity",
     });
     expect(signFake).to.have.been.calledWith({
       ring: "jwt",
@@ -422,29 +362,18 @@ describe("Command handler unit tests", () => {
     expect(Math.abs(deps.moment().add(3, "m").toDate() - new Date())).to.equal(
       180000
     );
-    expect(commandFake).to.have.been.calledWith({
+    expect(commandFnFake).to.have.been.calledWith({
       name: "send",
       domain: "sms",
       service: "comms",
-    });
-    expect(commandSetFake).to.have.been.calledWith({
-      context,
-      token: { internalFn: deps.gcpToken },
-    });
-    expect(issueFake).to.have.been.calledWith({
-      to: payloadPhone,
-      message: `${code} is your verification code. Enter it in the app to let us know it's really you.`,
+      payload: {
+        to: payloadPhone,
+        message: `${code} is your verification code. Enter it in the app to let us know it's really you.`,
+      },
     });
   });
   it("should return successfully if an upgrade option is passed", async () => {
-    const issueFake = fake();
-    const commandSetFake = fake.returns({
-      issue: issueFake,
-    });
-    const commandFake = fake.returns({
-      set: commandSetFake,
-    });
-    replace(deps, "command", commandFake);
+    const commandFnFake = fake();
 
     const uuidFake = fake.returns(root);
     replace(deps, "uuid", uuidFake);
@@ -468,6 +397,7 @@ describe("Command handler unit tests", () => {
       context,
       claims,
       options: { upgrade },
+      commandFn: commandFnFake,
     });
 
     expect(compareFake).to.not.have.been.called;
@@ -525,17 +455,15 @@ describe("Command handler unit tests", () => {
   });
   it("should throw correctly", async () => {
     const errorMessage = "some-error";
-    const queryFake = fake.rejects(new Error(errorMessage));
-    const setFake = fake.returns({
-      query: queryFake,
-    });
-    const eventStoreFake = fake.returns({
-      set: setFake,
-    });
-    replace(deps, "eventStore", eventStoreFake);
+    const queryAggregatesFnFake = fake.rejects(new Error(errorMessage));
 
     try {
-      await main({ payload, context, claims });
+      await main({
+        payload,
+        context,
+        claims,
+        queryAggregatesFn: queryAggregatesFnFake,
+      });
 
       //shouldn't get called
       expect(2).to.equal(3);
@@ -544,14 +472,7 @@ describe("Command handler unit tests", () => {
     }
   });
   it("should throw correctly if no phones found", async () => {
-    const queryFake = fake.returns({ body: [] });
-    const setFake = fake.returns({
-      query: queryFake,
-    });
-    const eventStoreFake = fake.returns({
-      set: setFake,
-    });
-    replace(deps, "eventStore", eventStoreFake);
+    const queryAggregatesFnFake = fake.returns({ body: [] });
 
     const error = "some-error";
     const messageFake = fake.returns(error);
@@ -564,6 +485,7 @@ describe("Command handler unit tests", () => {
         payload,
         claims,
         context,
+        queryAggregatesFn: queryAggregatesFnFake,
       });
 
       //shouldn't get called
@@ -577,14 +499,7 @@ describe("Command handler unit tests", () => {
     const uuidFake = fake.returns(root);
     replace(deps, "uuid", uuidFake);
 
-    const queryFake = fake.returns({ body: [identity] });
-    const setFake = fake.returns({
-      query: queryFake,
-    });
-    const eventStoreFake = fake.returns({
-      set: setFake,
-    });
-    replace(deps, "eventStore", eventStoreFake);
+    const queryAggregatesFnFake = fake.returns({ body: [identity] });
 
     const compareFake = fake.returns(false);
     replace(deps, "compare", compareFake);
@@ -598,6 +513,7 @@ describe("Command handler unit tests", () => {
       await main({
         payload,
         context,
+        queryAggregatesFn: queryAggregatesFnFake,
       });
 
       //shouldn't get called
@@ -613,14 +529,7 @@ describe("Command handler unit tests", () => {
     const uuidFake = fake.returns(root);
     replace(deps, "uuid", uuidFake);
 
-    const queryFake = fake.returns({ body: [identity] });
-    const setFake = fake.returns({
-      query: queryFake,
-    });
-    const eventStoreFake = fake.returns({
-      set: setFake,
-    });
-    replace(deps, "eventStore", eventStoreFake);
+    const queryAggregatesFnFake = fake.returns({ body: [identity] });
 
     const compareFake = fake.returns(true);
     replace(deps, "compare", compareFake);
@@ -634,6 +543,7 @@ describe("Command handler unit tests", () => {
       await main({
         payload,
         context: { principal: { root: "some-bogus " } },
+        queryAggregatesFn: queryAggregatesFnFake,
       });
 
       //shouldn't get called

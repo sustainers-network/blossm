@@ -10,13 +10,14 @@ const THREE_MINUTES = 3 * SECONDS_IN_MINUTE;
 
 const CODE_LENGTH = 6;
 
-const determineUpgrade = async (payload, context) => {
+const determineUpgrade = async (payload, context, queryAggregatesFn) => {
   // Check to see if the phone is recognized.
   // If the principal is being upgraded, use a placeholder identity with it instead.
-  const { body: [identity] = [] } = await deps
-    .eventStore({ domain: "identity" })
-    .set({ context, token: { internalFn: deps.gcpToken } })
-    .query({ key: "id", value: payload.id });
+  const { body: [identity] = [] } = await queryAggregatesFn({
+    domain: "identity",
+    key: "id",
+    value: payload.id,
+  });
 
   if (!identity)
     throw deps.invalidArgumentError.message("This id isn't recognized.", {
@@ -42,7 +43,7 @@ const determineUpgrade = async (payload, context) => {
 
   return {
     identity: {
-      root: identity.headers.root,
+      root: identity.root,
       service: process.env.SERVICE,
       network: process.env.NETWORK,
     },
@@ -58,8 +59,11 @@ module.exports = async ({
   // `upgrade` is an object of properties to add to the context of the
   // access token returned by answering this issued challenge.
   options: { events, upgrade } = {},
+  commandFn,
+  queryAggregatesFn,
 }) => {
-  upgrade = upgrade || (await determineUpgrade(payload, context));
+  upgrade =
+    upgrade || (await determineUpgrade(payload, context, queryAggregatesFn));
 
   // Create the root for this challenge.
   const root = deps.uuid();
@@ -95,20 +99,15 @@ module.exports = async ({
   const code = deps.randomIntOfLength(CODE_LENGTH);
 
   // Send the code.
-  await deps
-    .command({
-      name: "send",
-      domain: "sms",
-      service: "comms",
-    })
-    .set({
-      token: { internalFn: deps.gcpToken },
-      context,
-    })
-    .issue({
+  await commandFn({
+    name: "send",
+    domain: "sms",
+    service: "comms",
+    payload: {
       to: payload.phone,
       message: `${code} is your verification code. Enter it in the app to let us know it's really you.`,
-    });
+    },
+  });
 
   // Send the token to the requester so they can access the answer command.
   return {

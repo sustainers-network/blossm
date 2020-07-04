@@ -1,10 +1,11 @@
 const deps = require("./deps");
 
-module.exports = async ({ context, query }) => {
-  const { body: networkRoles } = await deps
-    .eventStore({ domain: process.env.DOMAIN })
-    .set({ token: { internalFn: deps.gcpToken } })
-    .query({ key: "network", value: context.network });
+module.exports = async ({ context, query, queryAggregatesFn }) => {
+  const { body: networkRoles } = await queryAggregatesFn({
+    domain: process.env.DOMAIN,
+    key: "network",
+    value: context.network,
+  });
 
   const role = networkRoles.find((role) => role.state.id == query.id);
 

@@ -5,9 +5,8 @@ const main = require("../../main");
 const deps = require("../../deps");
 
 const name = "some-name";
-const domain = "some-domain";
-const service = "some-service";
 const context = "some-context";
+const source = "some-source";
 const network = "some-network";
 
 const queryContext = "some-query-context";
@@ -50,10 +49,7 @@ describe("Fact unit tests", () => {
   it("should return successfully with domain", async () => {
     const query = {
       name,
-      domain,
-      [domain]: {
-        service,
-      },
+      source,
       context: queryContext,
       network,
     };
@@ -68,18 +64,13 @@ describe("Fact unit tests", () => {
     const padding = new Array(2048);
     const body = `:${padding.join(" ")}\n\n`;
     expect(response).to.deep.equal(body);
-    expect(getFake).to.have.been.calledWith(
-      `v.${domain}.${service}.${queryContext}.${network}`,
-      {
-        query: {
-          context,
-          name: query.name,
-          [domain]: {
-            service,
-          },
-        },
-      }
-    );
+    expect(getFake).to.have.been.calledWith(`v.${queryContext}.${network}`, {
+      query: {
+        context,
+        name: query.name,
+        source,
+      },
+    });
     expect(headers).to.deep.equal({
       "Content-Type": "text/event-stream",
       "Cache-Control": "no-cache",

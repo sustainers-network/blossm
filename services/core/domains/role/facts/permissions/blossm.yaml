@@ -3,8 +3,6 @@ domain: role
 service: core
 
 dependencies:
-  "@blossm/event-store-rpc": "*"
-  "@blossm/gcp-token": "*"
   "@blossm/errors": "*"
 
 testing:

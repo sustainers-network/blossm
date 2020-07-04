@@ -1,6 +1,3 @@
-const eventStore = require("@blossm/event-store-rpc");
-const command = require("@blossm/command-rpc");
-const gcpToken = require("@blossm/gcp-token");
 const { create: createJwt } = require("@blossm/jwt");
 const { sign } = require("@blossm/gcp-kms");
 const uuid = require("@blossm/uuid");
@@ -10,9 +7,6 @@ const { compare } = require("@blossm/crypt");
 
 const { moment, string: stringDate } = require("@blossm/datetime");
 
-exports.eventStore = eventStore;
-exports.command = command;
-exports.gcpToken = gcpToken;
 exports.createJwt = createJwt;
 exports.sign = sign;
 exports.uuid = uuid;

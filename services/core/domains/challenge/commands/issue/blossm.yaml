@@ -14,13 +14,10 @@ dependencies:
   "@blossm/phone-number": "*"
   "@blossm/jwt": "*"
   "@blossm/gcp-kms": "*"
-  "@blossm/gcp-token": "*"
   "@blossm/duration-consts": "*"
   "@blossm/uuid": "*"
   "@blossm/datetime": "*"
   "@blossm/random-int-of-length": "*"
-  "@blossm/event-store-rpc": "*"
-  "@blossm/command-rpc": "*"
   "@blossm/errors": "*"
   "@blossm/crypt": "*"
 

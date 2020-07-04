@@ -1,6 +1,6 @@
 const deps = require("./deps");
 
-module.exports = async ({ payload, context, claims }) => {
+module.exports = async ({ payload, context, commandFn }) => {
   // Create new roots for the node.
   const nodeRoot = deps.uuid();
 
@@ -11,19 +11,17 @@ module.exports = async ({ payload, context, claims }) => {
       context: newContext,
       references: { principal, scene },
     },
-  } = await deps
-    .command({
-      name: "register",
-      domain: "scene",
-      service: "core",
-    })
-    .set({ context, claims, token: { internalFn: deps.gcpToken } })
-    .issue({
+  } = await commandFn({
+    name: "register",
+    domain: "scene",
+    service: "core",
+    payload: {
       root: nodeRoot,
       domain: process.env.DOMAIN,
       service: process.env.SERVICE,
       network: process.env.NETWORK,
-    });
+    },
+  });
 
   return {
     events: [

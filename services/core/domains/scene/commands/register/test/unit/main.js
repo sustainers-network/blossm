@@ -20,10 +20,6 @@ const context = {
   session: contextSession,
 };
 
-const claims = {
-  a: 1,
-};
-
 process.env.SERVICE = service;
 process.env.NETWORK = network;
 
@@ -42,19 +38,14 @@ describe("Command handler unit tests", () => {
 
     const tokens = "some-tokens";
     const newContext = "some-new-context";
-    const issueFake = fake.returns({ body: { tokens, context: newContext } });
-    const setFake = fake.returns({
-      issue: issueFake,
+    const commandFnFake = fake.returns({
+      body: { tokens, context: newContext },
     });
-    const commandFake = fake.returns({
-      set: setFake,
-    });
-    replace(deps, "command", commandFake);
 
     const result = await main({
       payload,
       context,
-      claims,
+      commandFn: commandFnFake,
     });
     expect(result).to.deep.equal({
       events: [
@@ -97,20 +88,15 @@ describe("Command handler unit tests", () => {
         },
       },
     });
-    expect(commandFake).to.have.been.calledWith({
+    expect(commandFnFake).to.have.been.calledWith({
       domain: "session",
       name: "upgrade",
-    });
-    expect(setFake).to.have.been.calledWith({
-      context,
-      claims,
-      token: { internalFn: deps.gcpToken },
-    });
-    expect(issueFake).to.have.been.calledWith({
-      principal: {
-        root: uuid,
-        service,
-        network,
+      payload: {
+        principal: {
+          root: uuid,
+          service,
+          network,
+        },
       },
     });
   });
@@ -124,14 +110,7 @@ describe("Command handler unit tests", () => {
     replace(deps, "uuid", uuidFake);
 
     const token = "some-token";
-    const issueFake = fake.returns({ body: { token } });
-    const setFake = fake.returns({
-      issue: issueFake,
-    });
-    const commandFake = fake.returns({
-      set: setFake,
-    });
-    replace(deps, "command", commandFake);
+    const commandFnFake = fake.returns({ body: { token } });
 
     const principalContext = {
       session: contextSession,
@@ -144,7 +123,7 @@ describe("Command handler unit tests", () => {
     const result = await main({
       payload,
       context: principalContext,
-      claims,
+      commandFn: commandFnFake,
     });
     expect(result).to.deep.equal({
       events: [

@@ -14,13 +14,6 @@ testing:
           path: /
           code: 200
           response: some-channel
-    - procedure: http
-      host: v.some-domain.some-service.some-context.some-network
-      mocks:
-        - method: get
-          path: /
-          code: 200
-          response: some-channel
 
   steps:
     - query:
@@ -32,9 +25,7 @@ testing:
       code: 200
     - query:
         name: some-name
-        domain: some-domain
-        some-domain:
-          service: some-service
+        source: some-source
         context: some-context
         network: some-network
       context:

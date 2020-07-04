@@ -18,7 +18,7 @@ describe("Fact unit tests", () => {
     const id = "some-id";
     const permissions = "some-permissions";
 
-    const queryFake = fake.returns({
+    const queryAggregatesFnFake = fake.returns({
       body: [
         {
           state: {
@@ -34,24 +34,18 @@ describe("Fact unit tests", () => {
         },
       ],
     });
-    const setFake = fake.returns({
-      query: queryFake,
-    });
-    const eventStoreFake = fake.returns({
-      set: setFake,
-    });
-    replace(deps, "eventStore", eventStoreFake);
 
     const context = { network };
     const query = { id };
 
-    const result = await main({ context, query });
-
-    expect(eventStoreFake).to.have.been.calledWith({ domain });
-    expect(setFake).to.have.been.calledWith({
-      token: { internalFn: deps.gcpToken },
+    const result = await main({
+      context,
+      query,
+      queryAggregatesFn: queryAggregatesFnFake,
     });
-    expect(queryFake).to.have.been.calledWith({
+
+    expect(queryAggregatesFnFake).to.have.been.calledWith({
+      domain,
       key: "network",
       value: network,
     });
@@ -61,7 +55,7 @@ describe("Fact unit tests", () => {
     const network = "some-network";
     const id = "some-id";
 
-    const queryFake = fake.returns({
+    const queryAggregatesFnFake = fake.returns({
       body: [
         {
           state: {
@@ -72,14 +66,6 @@ describe("Fact unit tests", () => {
       ],
     });
 
-    const setFake = fake.returns({
-      query: queryFake,
-    });
-    const eventStoreFake = fake.returns({
-      set: setFake,
-    });
-    replace(deps, "eventStore", eventStoreFake);
-
     const context = { network };
     const query = { id };
 
@@ -89,7 +75,7 @@ describe("Fact unit tests", () => {
       message: messageFake,
     });
     try {
-      await main({ context, query });
+      await main({ context, query, queryAggregatesFn: queryAggregatesFnFake });
 
       //shouldn't get called
       expect(1).to.equal(2);

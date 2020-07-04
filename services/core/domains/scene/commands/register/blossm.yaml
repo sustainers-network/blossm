@@ -11,9 +11,7 @@ payload:
     is: $network
 
 dependencies:
-  "@blossm/command-rpc": "*"
   "@blossm/uuid": "*"
-  "@blossm/gcp-token": "*"
 
 devDependencies:
   "mocha": "^7.1.0"

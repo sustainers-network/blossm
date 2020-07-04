@@ -1,6 +1,6 @@
 const deps = require("./deps");
 
-module.exports = async ({ payload, context, aggregateFn }) => {
+module.exports = async ({ payload, context, aggregateFn, commandFn }) => {
   const root = context.challenge.root;
 
   // Look for the challenge being answered.
@@ -39,17 +39,12 @@ module.exports = async ({ payload, context, aggregateFn }) => {
   // Upgrade the session with the principal specified in the challenge.
   const {
     body: { tokens, context: newContext },
-  } = await deps
-    .command({
-      domain: "session",
-      name: "upgrade",
-    })
-    .set({
-      context,
-      claims: challengeAggregate.claims,
-      token: { internalFn: deps.gcpToken },
-    })
-    .issue(challengeAggregate.upgrade);
+  } = await commandFn({
+    domain: "session",
+    name: "upgrade",
+    claims: challengeAggregate.claims,
+    payload: challengeAggregate.upgrade,
+  });
 
   return { events, response: { tokens, context: newContext } };
 };

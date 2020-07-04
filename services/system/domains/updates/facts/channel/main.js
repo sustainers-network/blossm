@@ -6,15 +6,13 @@ module.exports = async ({ query, context }) => {
   const body = `:${padding.join(" ")}\n\n`;
 
   const { body: channel } = await deps.get(
-    `v${
-      query.domain ? `.${query.domain}.${query[query.domain].service}` : ""
-    }.${query.context}.${query.network}`,
+    `v.${query.context}.${query.network}`,
     {
       query: {
         context,
         name: query.name,
-        ...(query.domain && {
-          [query.domain]: query[query.domain],
+        ...(query.source && {
+          source: query.source,
         }),
       },
     }

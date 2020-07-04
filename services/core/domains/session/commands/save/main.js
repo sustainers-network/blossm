@@ -96,14 +96,19 @@ const getEventsForIdentityRegistering = async ({ context, payload }) => {
   };
 };
 
-module.exports = async ({ payload, context, claims, aggregateFn }) => {
+module.exports = async ({
+  payload,
+  context,
+  commandFn,
+  aggregateFn,
+  queryAggregatesFn,
+}) => {
   // Check to see if there is an identity with the provided id.
-  const { body: [identity] = [] } = await deps
-    .eventStore({
-      domain: "identity",
-    })
-    .set({ context, claims, token: { internalFn: deps.gcpToken } })
-    .query({ key: "id", value: payload.id });
+  const { body: [identity] = [] } = await queryAggregatesFn({
+    domain: "identity",
+    key: "id",
+    value: payload.id,
+  });
 
   if (identity) {
     if (!(await deps.compare(payload.phone, identity.state.phone)))
@@ -119,12 +124,11 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
       )
         return {};
 
-      const { body: [subjectIdentity] = [] } = await deps
-        .eventStore({
-          domain: "identity",
-        })
-        .set({ context, claims, token: { internalFn: deps.gcpToken } })
-        .query({ key: "principal.root", value: context.principal.root });
+      const { body: [subjectIdentity] = [] } = await queryAggregatesFn({
+        domain: "identity",
+        key: "principal.root",
+        value: context.principal.root,
+      });
 
       if (subjectIdentity)
         throw deps.badRequestError.message(
@@ -139,7 +143,7 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
   const { events, principal, identityRoot } = identity
     ? await getEventsForPermissionsMerge({
         principal: identity.state.principal,
-        identityRoot: identity.headers.root,
+        identityRoot: identity.root,
         context,
         aggregateFn,
       })
@@ -151,37 +155,27 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
   const {
     body: { tokens },
     statusCode,
-  } = await deps
-    .command({
-      name: "issue",
-      domain: "challenge",
-    })
-    .set({
-      context,
-      claims,
-      token: { internalFn: deps.gcpToken },
-    })
-    .issue(
-      {
-        id: payload.id,
-        phone: payload.phone,
-      },
-      {
-        options: {
-          events,
-          upgrade: {
-            identity: {
-              root: identityRoot,
-              service: process.env.SERVICE,
-              network: process.env.NETWORK,
-            },
-            ...(!context.principal && {
-              principal,
-            }),
-          },
+  } = await commandFn({
+    name: "issue",
+    domain: "challenge",
+    payload: {
+      id: payload.id,
+      phone: payload.phone,
+    },
+    options: {
+      events,
+      upgrade: {
+        identity: {
+          root: identityRoot,
+          service: process.env.SERVICE,
+          network: process.env.NETWORK,
         },
-      }
-    );
+        ...(!context.principal && {
+          principal,
+        }),
+      },
+    },
+  });
 
   return { response: { tokens }, statusCode };
 };
