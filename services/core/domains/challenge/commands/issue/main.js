@@ -86,13 +86,15 @@ module.exports = async ({
         },
       },
     },
-    signFn: deps.sign({
-      ring: "jwt",
-      key: "challenge",
-      location: "global",
-      version: "1",
-      project: process.env.GCP_PROJECT,
-    }),
+    signFn: (message) =>
+      deps.sign({
+        message,
+        ring: "jwt",
+        key: "challenge",
+        location: "global",
+        version: "1",
+        project: process.env.GCP_PROJECT,
+      }),
   });
 
   // Create a challenge code.
@@ -105,7 +107,7 @@ module.exports = async ({
     service: "comms",
     payload: {
       to: payload.phone,
-      message: `${code} is your verification code. Enter it in the app to let us know it's really you.`,
+      message: `${code} is your verification code.`,
     },
   });
 

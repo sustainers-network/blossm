@@ -1,7 +1,7 @@
 const { expect } = require("chai")
   .use(require("chai-datetime"))
   .use(require("sinon-chai"));
-const { restore, replace, fake, useFakeTimers } = require("sinon");
+const { restore, replace, fake, match, useFakeTimers } = require("sinon");
 
 const deps = require("../../deps");
 
@@ -118,13 +118,6 @@ describe("Command handler unit tests", () => {
       key: "id",
       value: id,
     });
-    expect(signFake).to.have.been.calledWith({
-      ring: "jwt",
-      key: "challenge",
-      location: "global",
-      version: "1",
-      project,
-    });
     expect(createJwtFake).to.have.been.calledWith({
       options: {
         issuer: `${domain}.${service}.${network}/issue`,
@@ -137,7 +130,21 @@ describe("Command handler unit tests", () => {
           challenge: { root, service, network },
         },
       },
-      signFn: signature,
+      signFn: match((fn) => {
+        const message = "some-message";
+        const response = fn(message);
+        return (
+          response == signature &&
+          signFake.calledWith({
+            message,
+            ring: "jwt",
+            key: "challenge",
+            location: "global",
+            version: "1",
+            project,
+          })
+        );
+      }),
     });
     expect(randomIntFake).to.have.been.calledWith(6);
     expect(Math.abs(deps.moment().add(3, "m").toDate() - new Date())).to.equal(
@@ -149,7 +156,7 @@ describe("Command handler unit tests", () => {
       service: "comms",
       payload: {
         to: payloadPhone,
-        message: `${code} is your verification code. Enter it in the app to let us know it's really you.`,
+        message: `${code} is your verification code.`,
       },
     });
   });
@@ -225,13 +232,6 @@ describe("Command handler unit tests", () => {
       key: "id",
       value: id,
     });
-    expect(signFake).to.have.been.calledWith({
-      ring: "jwt",
-      key: "challenge",
-      location: "global",
-      version: "1",
-      project,
-    });
     expect(createJwtFake).to.have.been.calledWith({
       options: {
         issuer: `${domain}.${service}.${network}/issue`,
@@ -244,7 +244,21 @@ describe("Command handler unit tests", () => {
           challenge: { root, service, network },
         },
       },
-      signFn: signature,
+      signFn: match((fn) => {
+        const message = "some-message";
+        const response = fn(message);
+        return (
+          response == signature &&
+          signFake.calledWith({
+            message,
+            ring: "jwt",
+            key: "challenge",
+            location: "global",
+            version: "1",
+            project,
+          })
+        );
+      }),
     });
     expect(randomIntFake).to.have.been.calledWith(6);
     expect(Math.abs(deps.moment().add(3, "m").toDate() - new Date())).to.equal(
@@ -256,7 +270,7 @@ describe("Command handler unit tests", () => {
       service: "comms",
       payload: {
         to: payloadPhone,
-        message: `${code} is your verification code. Enter it in the app to let us know it's really you.`,
+        message: `${code} is your verification code.`,
       },
     });
   });
@@ -337,13 +351,6 @@ describe("Command handler unit tests", () => {
       key: "id",
       value: id,
     });
-    expect(signFake).to.have.been.calledWith({
-      ring: "jwt",
-      key: "challenge",
-      location: "global",
-      version: "1",
-      project,
-    });
     expect(createJwtFake).to.have.been.calledWith({
       options: {
         issuer: `${domain}.${service}.${network}/issue`,
@@ -356,7 +363,21 @@ describe("Command handler unit tests", () => {
           challenge: { root, service, network },
         },
       },
-      signFn: signature,
+      signFn: match((fn) => {
+        const message = "some-message";
+        const response = fn(message);
+        return (
+          response == signature &&
+          signFake.calledWith({
+            message,
+            ring: "jwt",
+            key: "challenge",
+            location: "global",
+            version: "1",
+            project,
+          })
+        );
+      }),
     });
     expect(randomIntFake).to.have.been.calledWith(6);
     expect(Math.abs(deps.moment().add(3, "m").toDate() - new Date())).to.equal(
@@ -368,7 +389,7 @@ describe("Command handler unit tests", () => {
       service: "comms",
       payload: {
         to: payloadPhone,
-        message: `${code} is your verification code. Enter it in the app to let us know it's really you.`,
+        message: `${code} is your verification code.`,
       },
     });
   });
@@ -427,13 +448,6 @@ describe("Command handler unit tests", () => {
         },
       },
     });
-    expect(signFake).to.have.been.calledWith({
-      ring: "jwt",
-      key: "challenge",
-      location: "global",
-      version: "1",
-      project,
-    });
     expect(createJwtFake).to.have.been.calledWith({
       options: {
         issuer: `${domain}.${service}.${network}/issue`,
@@ -446,7 +460,21 @@ describe("Command handler unit tests", () => {
           challenge: { root, service, network },
         },
       },
-      signFn: signature,
+      signFn: match((fn) => {
+        const message = "some-message";
+        const response = fn(message);
+        return (
+          response == signature &&
+          signFake.calledWith({
+            message,
+            ring: "jwt",
+            key: "challenge",
+            location: "global",
+            version: "1",
+            project,
+          })
+        );
+      }),
     });
     expect(randomIntFake).to.have.been.calledWith(6);
     expect(Math.abs(deps.moment().add(3, "m").toDate() - new Date())).to.equal(

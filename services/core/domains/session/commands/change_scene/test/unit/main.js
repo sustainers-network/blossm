@@ -1,7 +1,7 @@
 const { expect } = require("chai")
   .use(require("chai-datetime"))
   .use(require("sinon-chai"));
-const { restore, replace, fake, stub, useFakeTimers } = require("sinon");
+const { restore, replace, fake, stub, match, useFakeTimers } = require("sinon");
 
 const main = require("../../main");
 const deps = require("../../deps");
@@ -125,13 +125,6 @@ describe("Command handler unit tests", () => {
       domain: "scene",
     });
     expect(aggregateFake).to.have.callCount(3);
-    expect(signFake).to.have.been.calledWith({
-      ring: "jwt",
-      key: "access",
-      location: "global",
-      version: "1",
-      project,
-    });
     expect(createJwtFake).to.have.been.calledWith({
       options: {
         issuer: iss,
@@ -158,7 +151,21 @@ describe("Command handler unit tests", () => {
           },
         },
       },
-      signFn: signature,
+      signFn: match((fn) => {
+        const message = "some-message";
+        const response = fn(message);
+        return (
+          response == signature &&
+          signFake.calledWith({
+            message,
+            ring: "jwt",
+            key: "access",
+            location: "global",
+            version: "1",
+            project,
+          })
+        );
+      }),
     });
   });
   it("should return successfully with network in context", async () => {
@@ -231,13 +238,6 @@ describe("Command handler unit tests", () => {
       domain: "scene",
     });
     expect(aggregateFake).to.have.callCount(3);
-    expect(signFake).to.have.been.calledWith({
-      ring: "jwt",
-      key: "access",
-      location: "global",
-      version: "1",
-      project,
-    });
     expect(createJwtFake).to.have.been.calledWith({
       options: {
         issuer: iss,
@@ -265,7 +265,21 @@ describe("Command handler unit tests", () => {
           },
         },
       },
-      signFn: signature,
+      signFn: match((fn) => {
+        const message = "some-message";
+        const response = fn(message);
+        return (
+          response == signature &&
+          signFake.calledWith({
+            message,
+            ring: "jwt",
+            key: "access",
+            location: "global",
+            version: "1",
+            project,
+          })
+        );
+      }),
     });
   });
   it("should throw correctly if context isnt accessible", async () => {

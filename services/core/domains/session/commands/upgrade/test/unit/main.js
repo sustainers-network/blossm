@@ -1,7 +1,7 @@
 const { expect } = require("chai")
   .use(require("chai-datetime"))
   .use(require("sinon-chai"));
-const { restore, replace, fake, useFakeTimers } = require("sinon");
+const { restore, replace, fake, match, useFakeTimers } = require("sinon");
 
 const main = require("../../main");
 const deps = require("../../deps");
@@ -120,13 +120,6 @@ describe("Command handler unit tests", () => {
       },
     });
     expect(aggregateFake).to.have.been.calledWith(root);
-    expect(signFake).to.have.been.calledWith({
-      ring: "jwt",
-      key: "access",
-      location: "global",
-      version: "1",
-      project,
-    });
     expect(createJwtFake).to.have.been.calledWith({
       options: {
         issuer: iss,
@@ -144,7 +137,21 @@ describe("Command handler unit tests", () => {
           },
         },
       },
-      signFn: signature,
+      signFn: match((fn) => {
+        const message = "some-message";
+        const response = fn(message);
+        return (
+          response == signature &&
+          signFake.calledWith({
+            message,
+            ring: "jwt",
+            key: "access",
+            location: "global",
+            version: "1",
+            project,
+          })
+        );
+      }),
     });
   });
   it("should return successfully with sub in claims, no principal in payload", async () => {
@@ -185,13 +192,6 @@ describe("Command handler unit tests", () => {
       },
     });
     expect(aggregateFake).to.have.been.calledWith(root);
-    expect(signFake).to.have.been.calledWith({
-      ring: "jwt",
-      key: "access",
-      location: "global",
-      version: "1",
-      project,
-    });
     expect(createJwtFake).to.have.been.calledWith({
       options: {
         issuer: iss,
@@ -205,7 +205,21 @@ describe("Command handler unit tests", () => {
           a: 1,
         },
       },
-      signFn: signature,
+      signFn: match((fn) => {
+        const message = "some-message";
+        const response = fn(message);
+        return (
+          response == signature &&
+          signFake.calledWith({
+            message,
+            ring: "jwt",
+            key: "access",
+            location: "global",
+            version: "1",
+            project,
+          })
+        );
+      }),
     });
   });
   it("should return successfully with no sub in claims, network in context", async () => {
@@ -275,13 +289,6 @@ describe("Command handler unit tests", () => {
       },
     });
     expect(aggregateFake).to.have.been.calledWith(root);
-    expect(signFake).to.have.been.calledWith({
-      ring: "jwt",
-      key: "access",
-      location: "global",
-      version: "1",
-      project,
-    });
     expect(createJwtFake).to.have.been.calledWith({
       options: {
         issuer: iss,
@@ -300,7 +307,21 @@ describe("Command handler unit tests", () => {
           },
         },
       },
-      signFn: signature,
+      signFn: match((fn) => {
+        const message = "some-message";
+        const response = fn(message);
+        return (
+          response == signature &&
+          signFake.calledWith({
+            message,
+            ring: "jwt",
+            key: "access",
+            location: "global",
+            version: "1",
+            project,
+          })
+        );
+      }),
     });
   });
   it("should return empty if payload is empty", async () => {

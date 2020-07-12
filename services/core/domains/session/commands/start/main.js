@@ -33,13 +33,15 @@ module.exports = async ({ payload, context = {} }) => {
     payload: {
       context: newContext,
     },
-    signFn: deps.sign({
-      ring: "jwt",
-      key: "access",
-      location: "global",
-      version: "1",
-      project: process.env.GCP_PROJECT,
-    }),
+    signFn: (message) =>
+      deps.sign({
+        message,
+        ring: "jwt",
+        key: "access",
+        location: "global",
+        version: "1",
+        project: process.env.GCP_PROJECT,
+      }),
   });
 
   return {
