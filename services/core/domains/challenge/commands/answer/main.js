@@ -28,7 +28,6 @@ module.exports = async ({ payload, context, aggregateFn, commandFn }) => {
       payload: {
         answered: deps.stringDate(),
       },
-      correctNumber: 1,
     },
     ...(challengeAggregate.events || []),
   ];

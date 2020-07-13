@@ -109,6 +109,7 @@ module.exports = async ({
       to: payload.phone,
       message: `${code} is your verification code.`,
     },
+    async: true,
   });
 
   // Send the token to the requester so they can access the answer command.
@@ -124,7 +125,6 @@ module.exports = async ({
           expires: deps.moment().add(THREE_MINUTES, "s").toDate().toISOString(),
           ...(events && { events }),
         },
-        correctNumber: 0,
         root,
       },
     ],

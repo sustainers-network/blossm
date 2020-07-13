@@ -92,7 +92,6 @@ describe("Command handler unit tests", () => {
         {
           action: "issue",
           root,
-          correctNumber: 0,
           payload: {
             code,
             claims,
@@ -158,6 +157,7 @@ describe("Command handler unit tests", () => {
         to: payloadPhone,
         message: `${code} is your verification code.`,
       },
+      async: true,
     });
   });
   it("should return successfully without identity in context, with a principal and network in context", async () => {
@@ -199,7 +199,6 @@ describe("Command handler unit tests", () => {
         {
           action: "issue",
           root,
-          correctNumber: 0,
           payload: {
             code,
             upgrade: {
@@ -272,6 +271,7 @@ describe("Command handler unit tests", () => {
         to: payloadPhone,
         message: `${code} is your verification code.`,
       },
+      async: true,
     });
   });
   it("should return successfully without identity or principal in context, with events in options", async () => {
@@ -312,7 +312,6 @@ describe("Command handler unit tests", () => {
         {
           action: "issue",
           root,
-          correctNumber: 0,
           payload: {
             code,
             upgrade: {
@@ -391,6 +390,7 @@ describe("Command handler unit tests", () => {
         to: payloadPhone,
         message: `${code} is your verification code.`,
       },
+      async: true,
     });
   });
   it("should return successfully if an upgrade option is passed", async () => {
@@ -427,7 +427,6 @@ describe("Command handler unit tests", () => {
         {
           action: "issue",
           root,
-          correctNumber: 0,
           payload: {
             code,
             upgrade,

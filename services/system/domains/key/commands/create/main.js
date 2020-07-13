@@ -52,7 +52,6 @@ module.exports = async ({ payload, context, aggregateFn }) => {
           secret: hash,
         },
         root: keyRoot,
-        correctNumber: 0,
       },
     ],
     response: {

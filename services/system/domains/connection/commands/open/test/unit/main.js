@@ -71,7 +71,6 @@ describe("Command handler unit tests", () => {
           },
           action: "open",
           root,
-          correctNumber: 0,
         },
       ],
       response: {

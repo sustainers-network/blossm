@@ -45,7 +45,6 @@ module.exports = async ({ payload, context }) => {
           opened: deps.stringDate(),
         },
         root,
-        correctNumber: 0,
       },
     ],
     response: {

@@ -43,7 +43,6 @@ describe("Command handler unit tests", () => {
           payload,
           action: "start",
           root,
-          correctNumber: 0,
         },
       ],
       response: {
@@ -127,7 +126,6 @@ describe("Command handler unit tests", () => {
           payload,
           action: "start",
           root,
-          correctNumber: 0,
         },
       ],
       response: {
@@ -209,7 +207,6 @@ describe("Command handler unit tests", () => {
           payload,
           action: "start",
           root,
-          correctNumber: 0,
         },
       ],
       response: {

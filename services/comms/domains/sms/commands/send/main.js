@@ -25,7 +25,6 @@ module.exports = async ({ payload }) => {
       {
         action: "send",
         payload,
-        correctNumber: 0,
         root,
       },
     ],

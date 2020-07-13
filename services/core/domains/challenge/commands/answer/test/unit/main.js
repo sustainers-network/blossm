@@ -78,7 +78,6 @@ describe("Command handler unit tests", () => {
             answered: deps.stringDate(),
           },
           root: contextChallenge,
-          correctNumber: 1,
         },
       ],
       response: { tokens, context: newContext },
@@ -117,7 +116,6 @@ describe("Command handler unit tests", () => {
             answered: deps.stringDate(),
           },
           root: contextChallenge,
-          correctNumber: 1,
         },
       ],
     });

@@ -137,7 +137,6 @@ describe("Command handler unit tests", () => {
             secret: hash,
           },
           root: keyRoot,
-          correctNumber: 0,
         },
       ],
       response: {

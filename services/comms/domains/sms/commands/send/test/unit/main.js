@@ -47,7 +47,6 @@ describe("Command handler unit tests", () => {
         {
           action: "send",
           root,
-          correctNumber: 0,
           payload: {
             to,
             message,
