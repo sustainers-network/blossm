@@ -1,6 +1,12 @@
 domain: principal
 service: core
 
+actions:
+  - add-roles
+  - remove-roles
+  - add-scenes
+  - remove-scenes
+
 schema:
   roles:
     - id: String
@@ -17,8 +23,7 @@ dependencies:
 
 testing:
   examples:
-    first:
-      action: add-roles
+    - action: add-roles
       payload:
         roles:
           - id: some-role
@@ -29,27 +34,25 @@ testing:
             root: some-other-role-root
             service: some-other-role-service
             network: some.other-role-network
-    second:
-      action: remove-roles
+    - action: remove-roles
       payload:
         roles:
           - id: some-role
             root: some-role-root
             service: some-role-service
             network: some.role-network
-    more:
-      - action: add-scenes
-        payload:
-          scenes:
-            - root: some-scene
-              service: some-scene-service
-              network: some.scene-network
-      - action: remove-scenes
-        payload:
-          scenes:
-            - root: some-scene
-              service: some-scene-service
-              network: some.scene-network
+    - action: add-scenes
+      payload:
+        scenes:
+          - root: some-scene
+            service: some-scene-service
+            network: some.scene-network
+    - action: remove-scenes
+      payload:
+        scenes:
+          - root: some-scene
+            service: some-scene-service
+            network: some.scene-network
 
   handlers:
     - action: add-roles

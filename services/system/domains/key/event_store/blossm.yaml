@@ -1,6 +1,9 @@
 domain: key
 service: system
 
+actions:
+  - create
+
 schema:
   name: String
   network: String
@@ -16,8 +19,7 @@ schema:
 
 testing:
   examples:
-    first:
-      action: create
+    - action: create
       payload:
         name: some-name
         network: some.network
@@ -30,8 +32,7 @@ testing:
           service: some-principal-service
           network: some.principal-network
         secret: some-secret
-    second:
-      action: create
+    - action: create
       payload:
         name: some-other-name
         network: some.other-network

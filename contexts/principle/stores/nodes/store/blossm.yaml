@@ -7,15 +7,13 @@ schema:
 
 testing:
   examples:
-    first:
-      put:
+    - put:
         scene: some-scene
         network: some.network
       get:
         scene: some-scene
         network: some.network
-    second:
-      put:
+    - put:
         scene: some-other-scene
         network: some.other-network
       get:

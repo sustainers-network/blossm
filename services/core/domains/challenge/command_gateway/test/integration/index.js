@@ -51,9 +51,7 @@ describe("Command gateway integration tests", () => {
     });
 
     expect(response.statusCode).to.equal(202);
-    const {
-      tokens: [{ value: token }],
-    } = JSON.parse(response.body);
+    const token = response.headers["set-cookie"][0].split("=")[1].split(";")[0];
 
     const [message] = await sms(
       await secret("twilio-account-sid"),

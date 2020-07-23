@@ -1,6 +1,9 @@
 domain: node
 service: system
 
+actions:
+  - register
+
 schema:
   network: String
   scene:
@@ -10,16 +13,14 @@ schema:
 
 testing:
   examples:
-    first:
-      action: register
+    - action: register
       payload:
         network: some.network
         scene:
           root: some-scene
           service: some-scene-service
           network: some.scene-network
-    second:
-      action: register
+    - action: register
       payload:
         network: some.network
         scene:

@@ -1,6 +1,9 @@
 domain: role
 service: core
 
+actions:
+  - create
+
 schema:
   name: String
   description: String
@@ -24,8 +27,7 @@ dependencies:
 
 testing:
   examples:
-    first:
-      action: create
+    - action: create
       payload:
         name: Some name
         network: some.network
@@ -35,21 +37,19 @@ testing:
           - privilege: some-privilege
             domain: some-permission-domain
             service: some-permission-service
-    second:
-      action: add-permissions
+    - action: add-permissions
       payload:
         description: "Some description"
         permissions:
           - privilege: some-other-privilege
             domain: some-other-permission-domain
             service: some-other-permission-service
-    more:
-      - action: remove-permissions
-        payload:
-          permissions:
-            - privilege: some-other-privilege
-              domain: some-permission-domain
-              service: some-permission-service
+    - action: remove-permissions
+      payload:
+        permissions:
+          - privilege: some-other-privilege
+            domain: some-permission-domain
+            service: some-permission-service
 
   handlers:
     - action: create

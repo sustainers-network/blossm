@@ -1,0 +1,42 @@
+name: device
+context: session
+
+stores:
+  - domain: session
+    service: core
+    actions:
+      - start
+
+testing:
+  handlers:
+    - action:
+        name: start
+        domain: session
+        service: core
+      examples:
+        - payload:
+            device:
+              type: some-type
+              agent: some-agent
+              platform: some-platform
+          result:
+            update:
+              name: some-type
+  examples:
+    - action:
+        name: start
+        domain: session
+        service: core
+      root: some-root
+      payload:
+        device:
+          type: some-type
+          agent: some-agent
+          platform: some-platform
+      result:
+        query: {}
+        values:
+          - name: some-type
+
+#don't change
+procedure: projection

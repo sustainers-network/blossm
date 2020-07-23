@@ -1,6 +1,9 @@
 domain: connection
 service: system
 
+actions:
+  - open
+
 schema:
   opened: Date
   terminated: Date
@@ -15,8 +18,7 @@ schema:
 
 testing:
   examples:
-    first:
-      action: open
+    - action: open
       payload:
         opened: 2020-12-31T00:00:00.000Z
         key:
@@ -27,8 +29,7 @@ testing:
           root: some-scene-root
           service: some-scene-service
           network: some.scene-network
-    second:
-      action: open
+    - action: open
       payload:
         opened: 2020-11-31T00:00:00.000Z
         key:
@@ -39,7 +40,6 @@ testing:
           root: some-other-scene-root
           service: some-other-scene-service
           network: some.other-scene-network
-    more: []
 
   handlers:
     - action: open

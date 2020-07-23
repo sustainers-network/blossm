@@ -1,6 +1,9 @@
 domain: scene
 service: core
 
+actions:
+  - register
+
 schema:
   root: String
   domain: String
@@ -9,15 +12,13 @@ schema:
 
 testing:
   examples:
-    first:
-      action: register
+    - action: register
       payload:
         root: some-scene-root
         domain: some-domain
         service: some-service
         network: some.network
-    second:
-      action: register
+    - action: register
       payload:
         root: some-other-scene-root
         domain: some-other-domain

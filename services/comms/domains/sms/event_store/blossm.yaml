@@ -1,23 +1,23 @@
 domain: sms
 service: comms
 
+actions:
+  - send
+
 schema:
   to: String
   message: String
 
 testing:
   examples:
-    first:
-      action: send
+    - action: send
       payload:
         to: some-to
         message: some-message
-    second:
-      action: send
+    - action: send
       payload:
         to: some-to
         message: some-message
-    more: []
 
   handlers:
     - action: send

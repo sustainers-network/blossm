@@ -1,6 +1,13 @@
 domain: session
 service: core
 
+actions:
+  - start
+  - save
+  - upgrade
+  - change-scene
+  - terminate
+
 schema:
   terminated: Date
   scene:
@@ -15,6 +22,7 @@ schema:
     root: String
     service: String
     network: String
+  #TODO add ip address
   device:
     type:
       type: String
@@ -23,15 +31,13 @@ schema:
 
 testing:
   examples:
-    first:
-      action: start
+    - action: start
       payload:
         device:
           type: mobile
           platform: ios
           agent: some-agent
-    second:
-      action: start
+    - action: start
       payload:
         previous: some-previous-session-root
         scene:
@@ -42,16 +48,15 @@ testing:
           type: desktop
           platform: browser
           agent: some-other-agent
-    more:
-      - action: terminate
-        payload:
-          terminated: 2020-12-31T00:00:00.000Z
-      - action: change-scene
-        payload:
-          context:
-            root: some-scene-root
-            service: some-scene-service
-            domain: some-scene-domain
+    - action: terminate
+      payload:
+        terminated: 2020-12-31T00:00:00.000Z
+    - action: change-scene
+      payload:
+        context:
+          root: some-scene-root
+          service: some-scene-service
+          domain: some-scene-domain
 
   handlers:
     - action: start

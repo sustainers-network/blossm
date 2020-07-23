@@ -1,6 +1,9 @@
 domain: updates
 service: system
 
+actions:
+  - push
+
 schema:
   channel: String
   node:
@@ -18,8 +21,7 @@ schema:
 
 testing:
   examples:
-    first:
-      action: push
+    - action: push
       payload:
         channel: some-channel
         node:
@@ -34,8 +36,7 @@ testing:
           root: some-connection-root
           service: some-connection-service
           network: some.connection-network
-    second:
-      action: push
+    - action: push
       payload:
         channel: some-other-channel
         node:
@@ -50,7 +51,6 @@ testing:
           root: some-other-connection-root
           service: some-other-connection-service
           network: some.other-connection-network
-    more: []
 
   handlers:
     - action: push

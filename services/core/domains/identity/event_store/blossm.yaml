@@ -1,6 +1,9 @@
 domain: identity
 service: core
 
+actions:
+  - register
+
 schema:
   phone: String
   email: String
@@ -20,8 +23,7 @@ indexes:
 
 testing:
   examples:
-    first:
-      action: register
+    - action: register
       payload:
         phone: "+19195551155"
         principal:
@@ -30,8 +32,7 @@ testing:
           network: some.principal-network
         email: some-email
         id: some-id
-    second:
-      action: register
+    - action: register
       payload:
         phone: "+19195551133"
         principal:

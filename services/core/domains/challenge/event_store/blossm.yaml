@@ -1,6 +1,10 @@
 domain: challenge
 service: core
 
+actions:
+  - issue
+  - answer
+
 schema:
   code: String
   upgrade: Object
@@ -24,8 +28,7 @@ devDependencies:
 
 testing:
   examples:
-    first:
-      action: issue
+    - action: issue
       payload:
         issued: 2020-01-03T00:02:12.000Z
         upgrade:
@@ -41,8 +44,7 @@ testing:
           aud: some-audience
           sub: some-subject
           iss: 2020-01-03T00:02:15.000Z
-    second:
-      action: answer
+    - action: answer
       payload:
         code: "234567"
 

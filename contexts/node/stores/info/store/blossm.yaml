@@ -7,13 +7,11 @@ schema:
 
 testing:
   examples:
-    first:
-      put:
+    - put:
         network: some.network
       get:
         network: some.network
-    second:
-      put:
+    - put:
         network: some.other-network
       get:
         network: some.other-network

@@ -1,0 +1,30 @@
+name: device
+context: session
+
+schema:
+  name: String
+
+indexes:
+  - - name: 1
+
+testing:
+  examples:
+    - update:
+        name: arnold
+      get:
+        name: arnold
+    - update:
+        name: bjorke
+      get:
+        name: bjorke
+
+  sorts:
+    # The index of this item in the indexes array above.
+    - index: 0
+      # the resulting order of the examples.
+      order:
+        - 0
+        - 1
+
+#don't change
+procedure: view-store
