@@ -1,6 +1,7 @@
 const { findError, string, object, domain } = require("@blossm/validator");
 
 module.exports = (payload) => {
+  console.log({ payload });
   for (const key in payload) {
     const error = findError([
       object(payload[key], { title: [key], path: `payload.${key}` }),

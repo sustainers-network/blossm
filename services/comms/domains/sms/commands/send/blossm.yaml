@@ -61,7 +61,7 @@ testing:
         message: some message
         to: "(919) 555 1144"
       response:
-        references:
+        receipt:
           sms:
             root:
             service:

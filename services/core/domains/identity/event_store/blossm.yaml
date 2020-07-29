@@ -7,9 +7,7 @@ actions:
 schema:
   phone: String
   email: String
-  id:
-    type: String
-    unique: true
+  id: String
   principal:
     root: String
     service: String

@@ -29,7 +29,7 @@ module.exports = async ({ payload }) => {
       },
     ],
     response: {
-      references: {
+      receipt: {
         sms: {
           root,
           service: process.env.SERVICE,

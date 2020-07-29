@@ -7,10 +7,7 @@ const getEventsForPermissionsMerge = async ({
   aggregateFn,
 }) => {
   // Get the aggregates of the principal of the identity and the current principal of the session.
-  const [
-    { aggregate: principalAggregate },
-    { aggregate: sessionprincipalAggregate } = {},
-  ] = await Promise.all([
+  const [principalAggregate, sessionPrincipalAggregate] = await Promise.all([
     aggregateFn(principal.root, {
       domain: "principal",
     }),
@@ -28,9 +25,11 @@ const getEventsForPermissionsMerge = async ({
   return {
     identityRoot,
     events: [
-      ...(sessionprincipalAggregate &&
-      deps.difference(principalAggregate.roles, sessionprincipalAggregate.roles)
-        .length > 0
+      ...(sessionPrincipalAggregate &&
+      deps.difference(
+        principalAggregate.state.roles,
+        sessionPrincipalAggregate.state.roles
+      ).length > 0
         ? [
             {
               domain: "principal",
@@ -38,7 +37,7 @@ const getEventsForPermissionsMerge = async ({
               action: "add-roles",
               root: principal.root,
               payload: {
-                roles: sessionprincipalAggregate.roles,
+                roles: sessionPrincipalAggregate.state.roles,
               },
             },
           ]
@@ -104,7 +103,7 @@ module.exports = async ({
   queryAggregatesFn,
 }) => {
   // Check to see if there is an identity with the provided id.
-  const { body: [identity] = [] } = await queryAggregatesFn({
+  const [identity] = await queryAggregatesFn({
     domain: "identity",
     key: "id",
     value: payload.id,
@@ -124,7 +123,7 @@ module.exports = async ({
       )
         return {};
 
-      const { body: [subjectIdentity] = [] } = await queryAggregatesFn({
+      const [subjectIdentity] = await queryAggregatesFn({
         domain: "identity",
         key: "principal.root",
         value: context.principal.root,

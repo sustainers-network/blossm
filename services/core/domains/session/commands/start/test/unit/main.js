@@ -4,13 +4,14 @@ const { restore, replace, fake, match } = require("sinon");
 const main = require("../../main");
 const deps = require("../../deps");
 
-const device = "some-device";
+const device = { some: "device" };
 const payload = { device };
 const domain = "some-domain";
 const service = "some-service";
 const network = "some-network";
 const token = "some-token";
 const project = "some-projectl";
+const ip = "some-ip";
 
 process.env.DOMAIN = domain;
 process.env.SERVICE = service;
@@ -35,12 +36,19 @@ describe("Command handler unit tests", () => {
 
     const result = await main({
       payload,
+      ip,
     });
 
     expect(result).to.deep.equal({
       events: [
         {
-          payload,
+          payload: {
+            ...payload,
+            device: {
+              ...device,
+              ip,
+            },
+          },
           action: "start",
           root,
         },
@@ -54,9 +62,12 @@ describe("Command handler unit tests", () => {
             service,
             network,
           },
-          device,
+          device: {
+            ...device,
+            ip,
+          },
         },
-        references: {
+        receipt: {
           session: {
             root,
             service,
@@ -79,7 +90,10 @@ describe("Command handler unit tests", () => {
             service,
             network,
           },
-          device,
+          device: {
+            ...device,
+            ip,
+          },
         },
       },
       signFn: match((fn) => {
@@ -118,12 +132,18 @@ describe("Command handler unit tests", () => {
     const result = await main({
       payload,
       context,
+      ip,
     });
 
     expect(result).to.deep.equal({
       events: [
         {
-          payload,
+          payload: {
+            device: {
+              ...device,
+              ip,
+            },
+          },
           action: "start",
           root,
         },
@@ -137,9 +157,12 @@ describe("Command handler unit tests", () => {
             service,
             network,
           },
-          device,
+          device: {
+            ...device,
+            ip,
+          },
         },
-        references: {
+        receipt: {
           session: {
             root,
             service,
@@ -162,7 +185,10 @@ describe("Command handler unit tests", () => {
             service,
             network,
           },
-          device,
+          device: {
+            ...device,
+            ip,
+          },
         },
       },
       signFn: match((fn) => {
@@ -198,20 +224,25 @@ describe("Command handler unit tests", () => {
     const result = await main({
       payload,
       context,
-      device,
+      ip,
     });
 
     expect(result).to.deep.equal({
       events: [
         {
-          payload,
+          payload: {
+            device: {
+              ...device,
+              ip,
+            },
+          },
           action: "start",
           root,
         },
       ],
       response: {
         tokens: [{ network, type: "access", value: token }],
-        references: {
+        receipt: {
           session: {
             root,
             service,
@@ -225,7 +256,10 @@ describe("Command handler unit tests", () => {
             service,
             network,
           },
-          device,
+          device: {
+            ...device,
+            ip,
+          },
         },
       },
     });
@@ -243,7 +277,10 @@ describe("Command handler unit tests", () => {
             service,
             network,
           },
-          device,
+          device: {
+            ...device,
+            ip,
+          },
         },
       },
       signFn: match((fn) => {

@@ -65,7 +65,7 @@ testing:
             type: access
             value:
         context:
-        references:
+        receipt:
           principal:
             root:
             service:
@@ -96,7 +96,7 @@ testing:
         aud: some-aud
         exp: 9999-12-31T00:00:00.000
       response:
-        references:
+        receipt:
           node:
             root:
             service:

@@ -67,7 +67,7 @@ describe("Command handler unit tests", () => {
     const compareFake = fake.returns(true);
     replace(deps, "compare", compareFake);
 
-    const queryAggregatesFnFake = fake.returns({ body: [identity] });
+    const queryAggregatesFnFake = fake.returns([identity]);
 
     const signature = "some-signature";
     const signFake = fake.returns(signature);
@@ -102,7 +102,7 @@ describe("Command handler unit tests", () => {
       ],
       response: {
         tokens: [{ network, type: "challenge", value: token }],
-        references: {
+        receipt: {
           challenge: {
             root,
             service,
@@ -169,7 +169,7 @@ describe("Command handler unit tests", () => {
     const compareFake = fake.returns(true);
     replace(deps, "compare", compareFake);
 
-    const queryAggregatesFnFake = fake.returns({ body: [identity] });
+    const queryAggregatesFnFake = fake.returns([identity]);
 
     const signature = "some-signature";
     const signFake = fake.returns(signature);
@@ -216,7 +216,7 @@ describe("Command handler unit tests", () => {
       ],
       response: {
         tokens: [{ network: contextNetwork, type: "challenge", value: token }],
-        references: {
+        receipt: {
           challenge: {
             root,
             service,
@@ -283,7 +283,7 @@ describe("Command handler unit tests", () => {
     const compareFake = fake.returns(true);
     replace(deps, "compare", compareFake);
 
-    const queryAggregatesFnFake = fake.returns({ body: [identity] });
+    const queryAggregatesFnFake = fake.returns([identity]);
 
     const signature = "some-signature";
     const signFake = fake.returns(signature);
@@ -335,7 +335,7 @@ describe("Command handler unit tests", () => {
       ],
       response: {
         tokens: [{ network, type: "challenge", value: token }],
-        references: {
+        receipt: {
           challenge: {
             root,
             service,
@@ -438,7 +438,7 @@ describe("Command handler unit tests", () => {
       ],
       response: {
         tokens: [{ network, type: "challenge", value: token }],
-        references: {
+        receipt: {
           challenge: {
             root,
             service,
@@ -499,7 +499,7 @@ describe("Command handler unit tests", () => {
     }
   });
   it("should throw correctly if no phones found", async () => {
-    const queryAggregatesFnFake = fake.returns({ body: [] });
+    const queryAggregatesFnFake = fake.returns([]);
 
     const error = "some-error";
     const messageFake = fake.returns(error);
@@ -526,7 +526,7 @@ describe("Command handler unit tests", () => {
     const uuidFake = fake.returns(root);
     replace(deps, "uuid", uuidFake);
 
-    const queryAggregatesFnFake = fake.returns({ body: [identity] });
+    const queryAggregatesFnFake = fake.returns([identity]);
 
     const compareFake = fake.returns(false);
     replace(deps, "compare", compareFake);
@@ -556,7 +556,7 @@ describe("Command handler unit tests", () => {
     const uuidFake = fake.returns(root);
     replace(deps, "uuid", uuidFake);
 
-    const queryAggregatesFnFake = fake.returns({ body: [identity] });
+    const queryAggregatesFnFake = fake.returns([identity]);
 
     const compareFake = fake.returns(true);
     replace(deps, "compare", compareFake);

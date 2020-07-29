@@ -52,7 +52,7 @@ describe("Command handler unit tests", () => {
   });
   it("should return successfully", async () => {
     const aggregateFake = fake.returns({
-      aggregate: {
+      state: {
         ...challenge,
         upgrade: challengeUpgrade,
         expires: deps.stringDate(),
@@ -96,7 +96,7 @@ describe("Command handler unit tests", () => {
   });
   it("should return successfully if upgrade is not provided.", async () => {
     const aggregateFake = fake.returns({
-      aggregate: {
+      state: {
         ...challenge,
         expires: deps.stringDate(),
       },
@@ -133,7 +133,7 @@ describe("Command handler unit tests", () => {
   });
   it("should throw correctly if a challenge is with the wrong code", async () => {
     const aggregateFake = fake.returns({
-      aggregate: {
+      state: {
         ...challenge,
         code: "bogus",
         expires: deps.stringDate(),
@@ -159,7 +159,7 @@ describe("Command handler unit tests", () => {
   });
   it("should throw correctly if a challenge is expired", async () => {
     const aggregateFake = fake.returns({
-      aggregate: {
+      state: {
         ...challenge,
         expires: deps.moment().subtract(1, "s").toDate().toISOString(),
       },

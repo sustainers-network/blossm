@@ -32,19 +32,19 @@
     find-up "^4.1.0"
     yaml "^1.7.0"
 
-"@blossm/cli@^0.0.1120":
-  version "0.0.1120"
-  resolved "https://registry.yarnpkg.com/@blossm/cli/-/cli-0.0.1120.tgz#e052b5a6ae9f4d9172b2fdc2947c1cc79683d2c2"
-  integrity sha512-o1loTL5Ht7oN/8xTt03kt12nOvgGBplMMAt2RDRcZoZL3suWUT8YPFMCm5hGdfyUbt2AM7tMkIwik3kOJcK3iw==
+"@blossm/cli@^0.0.1200":
+  version "0.0.1200"
+  resolved "https://registry.yarnpkg.com/@blossm/cli/-/cli-0.0.1200.tgz#de54dcc87cf13c45d3e9d9d1c9354c06d504a6ac"
+  integrity sha512-sJuO7Yyhkh5A598xYDqDhZbnvRzFxRpXIxyVO7FmShFm+x5XAY9xQVwgArD2jzTPRlzATQi2frzfYYGr+1AFag==
   dependencies:
     "@blossm/cli-root-dir" "^0.0.9"
-    "@blossm/deploy-cli-template" "^0.0.485"
-    "@blossm/execute-cli-template" "^0.0.39"
+    "@blossm/deploy-cli-template" "^0.0.501"
+    "@blossm/execute-cli-template" "^0.0.40"
     "@blossm/gcp-queue" "^0.0.24"
-    "@blossm/gcp-secret" "^0.0.52"
+    "@blossm/gcp-secret" "^0.0.53"
     "@blossm/gcp-storage" "^0.0.11"
-    "@blossm/init-cli-template" "^0.0.21"
-    "@blossm/normalize-cli" "^0.0.14"
+    "@blossm/init-cli-template" "^0.0.22"
+    "@blossm/normalize-cli" "^0.0.15"
     "@blossm/operation-hash" "^0.0.10"
     "@blossm/robo-say" "^0.0.7"
     "@blossm/service-name-consts" "^0.0.2"
@@ -53,35 +53,35 @@
     esm "^3.2.25"
     yaml "^1.7.0"
 
-"@blossm/deploy-cli-template@^0.0.485":
-  version "0.0.485"
-  resolved "https://registry.yarnpkg.com/@blossm/deploy-cli-template/-/deploy-cli-template-0.0.485.tgz#b2ea9294cfbca91135e64d7e89290e31fc5e08d5"
-  integrity sha512-DHokYKK0MYyI7G7lOMvtsbpPnETQY7FmUaWsfw7W6yWaUN75ZfLm6PZwlqt7f+JoSjhRdC5AXf3mWZ3dcxCFpg==
+"@blossm/deploy-cli-template@^0.0.501":
+  version "0.0.501"
+  resolved "https://registry.yarnpkg.com/@blossm/deploy-cli-template/-/deploy-cli-template-0.0.501.tgz#6094a258c346d33fad3f728a53c29729074f6d59"
+  integrity sha512-iLd3WWwH03i3GJa2fMc6YCITiiSov+QaUDcEAk319cau//24XtHIvKxPSpALVHYpBXF+RPkhAAnx4JdE6mW8zw==
   dependencies:
-    "@blossm/merge-cli-template" "^0.0.457"
-    "@blossm/normalize-cli" "^0.0.14"
+    "@blossm/merge-cli-template" "^0.0.472"
+    "@blossm/normalize-cli" "^0.0.15"
     "@blossm/robo-say" "^0.0.7"
     "@blossm/test-cli-template" "^0.0.19"
     chalk "^2.4.2"
     fs-extra "^8.1.0"
     yaml "^1.7.0"
 
-"@blossm/execute-cli-template@^0.0.39":
-  version "0.0.39"
-  resolved "https://registry.yarnpkg.com/@blossm/execute-cli-template/-/execute-cli-template-0.0.39.tgz#dc243a378ac1211e42ad5562794f6f0b61079a2a"
-  integrity sha512-rPYxahteywGkjmD/FPf2T6ECL0Nbvd/Lqbiz++aOPMszzsyTq4tf7cIvqNSok15GjdNYvKgQtk+t+QItUUoFUw==
+"@blossm/execute-cli-template@^0.0.40":
+  version "0.0.40"
+  resolved "https://registry.yarnpkg.com/@blossm/execute-cli-template/-/execute-cli-template-0.0.40.tgz#06e332f035a07735513d893b71428b9d7752dcbb"
+  integrity sha512-VaGnzrOIqIA6wxMEbOWP+QV3B1LOvFSzZYC5c8l/X0pKOGJCtZPrUFO/sUQUlvxJBENze7JOCdqSxagdyDevNw==
   dependencies:
     "@blossm/gcp-queue" "^0.0.24"
-    "@blossm/normalize-cli" "^0.0.14"
+    "@blossm/normalize-cli" "^0.0.15"
     "@blossm/robo-say" "^0.0.7"
     chalk "^2.4.2"
     fs-extra "^8.1.0"
     yaml "^1.7.0"
 
-"@blossm/gcp-kms@^0.0.35":
-  version "0.0.35"
-  resolved "https://registry.yarnpkg.com/@blossm/gcp-kms/-/gcp-kms-0.0.35.tgz#92cdf36ad9e247c592501ab8dab6ab073c98c201"
-  integrity sha512-I734VNC3x2sM9EkVIwLSueyYTF4XwGS5IODWBP7Lgi0p0zIzrsJVpkd94TxxlKO2bt4wSdeUR2BYdbEKlpWKkg==
+"@blossm/gcp-kms@^0.0.36":
+  version "0.0.36"
+  resolved "https://registry.yarnpkg.com/@blossm/gcp-kms/-/gcp-kms-0.0.36.tgz#4de9eaeda02717690c7fc030ed52d2dcac9d647f"
+  integrity sha512-kb5gt1yqvea59GKOe52++4uq/CyTc9SX9ndv4n/80Yy9f9DsdSH+qj4JkDPdR2FV51HCqrD0x1lA0c8vMntUAw==
   dependencies:
     "@google-cloud/kms" "^1.3.2"
 
@@ -92,12 +92,12 @@
   dependencies:
     "@google-cloud/tasks" "^2.0.0"
 
-"@blossm/gcp-secret@^0.0.52":
-  version "0.0.52"
-  resolved "https://registry.yarnpkg.com/@blossm/gcp-secret/-/gcp-secret-0.0.52.tgz#9be8aa5177ac5df575ae33abaf82b4db152c716d"
-  integrity sha512-RUzXj1BAipWIQQ/PaiQTsiw7ROe8div/VlYrEjVG/TIeBhHah8QKA+0FGwZpvXwipsMXTiKhIwJn1mSIioNt/w==
+"@blossm/gcp-secret@^0.0.53":
+  version "0.0.53"
+  resolved "https://registry.yarnpkg.com/@blossm/gcp-secret/-/gcp-secret-0.0.53.tgz#a742afbf5555856016246f24be47e0798d7c79d3"
+  integrity sha512-FD/o+NS367pZ5SLJ3736wESUeXoBnaFZm6I2teUUuLZkKjXLlP9PJo4tuCFTvZTByXYwbN2X3Zzw21KlKt3kDw==
   dependencies:
-    "@blossm/gcp-kms" "^0.0.35"
+    "@blossm/gcp-kms" "^0.0.36"
     "@blossm/gcp-storage" "^0.0.11"
     "@blossm/uuid" "^0.0.5"
 
@@ -115,20 +115,20 @@
   dependencies:
     string-hash "^1.1.3"
 
-"@blossm/init-cli-template@^0.0.21":
-  version "0.0.21"
-  resolved "https://registry.yarnpkg.com/@blossm/init-cli-template/-/init-cli-template-0.0.21.tgz#c83b96b43cdaf07e393a3a3f425fb7c28431c997"
-  integrity sha512-XLhrWTEsfZsx1RFMsCRN5eBHRqA/Kz+t7KPOrQkJlag070LtqXAcAjMdDJ2b4Zhp5t3v7NiPBb86bMGYJ01xHA==
+"@blossm/init-cli-template@^0.0.22":
+  version "0.0.22"
+  resolved "https://registry.yarnpkg.com/@blossm/init-cli-template/-/init-cli-template-0.0.22.tgz#9b312004cbe745fbca6796305eda4f14ede5a8f1"
+  integrity sha512-dF9EyRXePJeoKAkCzydEPYWSyD5G+fY0LJzPbPgoH65QdaAuzSjihF7gu6AdMdTwJa/ydfJtEUXOwXO7spDrbw==
   dependencies:
-    "@blossm/normalize-cli" "^0.0.14"
+    "@blossm/normalize-cli" "^0.0.15"
     "@blossm/robo-say" "^0.0.7"
     chalk "^2.4.2"
     fs-extra "^8.1.0"
 
-"@blossm/merge-cli-template@^0.0.457":
-  version "0.0.457"
-  resolved "https://registry.yarnpkg.com/@blossm/merge-cli-template/-/merge-cli-template-0.0.457.tgz#918d484d77ef552d10ff21538a261b51bff178b4"
-  integrity sha512-BJ2DtSAztMkcvdiGaSD1o9uV+D9I8LJZzOrGzdZTKH+aMwXDLbtPNSXaKbbOYOZ/JqUC9S2JswORO759fYzVJA==
+"@blossm/merge-cli-template@^0.0.472":
+  version "0.0.472"
+  resolved "https://registry.yarnpkg.com/@blossm/merge-cli-template/-/merge-cli-template-0.0.472.tgz#e3e3d470c61b7edf7fcc03fd1a6f3578341dbf4f"
+  integrity sha512-XuTblruEjT/773Pk8Qm0XAvSFRSEqGhFcE8FyHHdAjTSMZLVmrAquX9zNtZ3WVIAu33jcWhNd544GoRwz+cx5g==
   dependencies:
     "@blossm/cli-root-dir" "^0.0.9"
     "@blossm/operation-hash" "^0.0.10"
@@ -138,15 +138,15 @@
     fs-extra "^8.1.0"
     yaml "^1.7.0"
 
-"@blossm/normalize-cli@^0.0.14":
-  version "0.0.14"
-  resolved "https://registry.yarnpkg.com/@blossm/normalize-cli/-/normalize-cli-0.0.14.tgz#27ccaec6ddcce9af237af11f7382c7083f2fa67b"
-  integrity sha512-FcYR36Gli2leWtNPY2RkEHRCCcxbQakXKrWco+/gjDbG/UFxyD+GPyNRHBS2bjP15aFjJQ5RYDisuvtVnhvMAg==
+"@blossm/normalize-cli@^0.0.15":
+  version "0.0.15"
+  resolved "https://registry.yarnpkg.com/@blossm/normalize-cli/-/normalize-cli-0.0.15.tgz#b0b822adca184d504c93fc2291ee3831a4948e93"
+  integrity sha512-8tDMDYXfAhwIqnj4Q8nmxXyYnq10yIwyxZ7GZROJdQWbiIcpftAUVyMdImgiaV4lxeqCKHuoFGvt6B4W9FHEKw==
   dependencies:
     "@blossm/robo-say" "^0.0.7"
     arg "^4.1.1"
     chalk "^2.4.2"
-    inquirer "^7.0.0"
+    inquirer "^7.3.3"
 
 "@blossm/operation-hash@^0.0.10":
   version "0.0.10"
@@ -1958,6 +1958,25 @@ inquirer@^7.0.0:
     strip-ansi "^6.0.0"
     through "^2.3.6"
 
+inquirer@^7.3.3:
+  version "7.3.3"
+  resolved "https://registry.yarnpkg.com/inquirer/-/inquirer-7.3.3.tgz#04d176b2af04afc157a83fd7c100e98ee0aad003"
+  integrity sha512-JG3eIAj5V9CwcGvuOmoo6LB9kbAYT8HXffUl6memuszlwDC/qvFAJw49XJ5NROSFNPxp3iQg1GqkFhaY/CR0IA==
+  dependencies:
+    ansi-escapes "^4.2.1"
+    chalk "^4.1.0"
+    cli-cursor "^3.1.0"
+    cli-width "^3.0.0"
+    external-editor "^3.0.3"
+    figures "^3.0.0"
+    lodash "^4.17.19"
+    mute-stream "0.0.8"
+    run-async "^2.4.0"
+    rxjs "^6.6.0"
+    string-width "^4.1.0"
+    strip-ansi "^6.0.0"
+    through "^2.3.6"
+
 is-arrayish@^0.2.1:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/is-arrayish/-/is-arrayish-0.2.1.tgz#77c99840527aa8ecb1a8ba697b80645a7a926a9d"
@@ -2275,7 +2294,7 @@ lodash.has@^4.5.2:
   resolved "https://registry.yarnpkg.com/lodash.has/-/lodash.has-4.5.2.tgz#d19f4dc1095058cccbe2b0cdf4ee0fe4aa37c862"
   integrity sha1-0Z9NwQlQWMzL4rDN9O4P5Ko3yGI=
 
-lodash@^4.0.0, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.16:
+lodash@^4.0.0, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.16, lodash@^4.17.19:
   version "4.17.19"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.19.tgz#e48ddedbe30b3321783c5b4301fbd353bc1e4a4b"
   integrity sha512-JNvd8XER9GQX0v2qJgsaN/mzFCNA5BRe/j8JN9d+tWyGLSodKQHKFicdwNYzWwI3wjRnaKPsGj1XkBjx/F96DQ==

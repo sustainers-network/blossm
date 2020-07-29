@@ -2,10 +2,6 @@ name: state
 domain: key
 service: system
 
-dependencies:
-  "@blossm/event-store-rpc": "*"
-  "@blossm/gcp-token": "*"
-
 testing:
   dependencies:
     - procedure: event-store

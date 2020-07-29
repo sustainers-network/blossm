@@ -68,7 +68,7 @@ describe("Command handler unit tests", () => {
     replace(deps, "createJwt", createJwtFake);
 
     const aggregateFake = fake.returns({
-      aggregate: { upgraded: false },
+      state: { upgraded: false },
     });
 
     const result = await main({
@@ -163,7 +163,7 @@ describe("Command handler unit tests", () => {
     replace(deps, "createJwt", createJwtFake);
 
     const aggregateFake = fake.returns({
-      aggregate: { upgraded: false },
+      state: { upgraded: false },
     });
 
     const result = await main({
@@ -231,7 +231,7 @@ describe("Command handler unit tests", () => {
     replace(deps, "createJwt", createJwtFake);
 
     const aggregateFake = fake.returns({
-      aggregate: { upgraded: false },
+      state: { upgraded: false },
     });
 
     const contextNetwork = "some-context-network";
@@ -333,7 +333,7 @@ describe("Command handler unit tests", () => {
     replace(deps, "createJwt", createJwtFake);
 
     const aggregateFake = fake.returns({
-      aggregate: { terminated: deps.stringDate() },
+      state: { terminated: deps.stringDate() },
     });
 
     const response = await main({
@@ -352,7 +352,7 @@ describe("Command handler unit tests", () => {
     replace(deps, "createJwt", createJwtFake);
 
     const aggregateFake = fake.returns({
-      aggregate: { terminated: deps.stringDate() },
+      state: { terminated: deps.stringDate() },
     });
 
     const error = "some-error";
@@ -387,7 +387,7 @@ describe("Command handler unit tests", () => {
     replace(deps, "createJwt", createJwtFake);
 
     const aggregateFake = fake.returns({
-      aggregate: { upgraded: false },
+      state: { upgraded: false },
     });
 
     try {

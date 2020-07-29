@@ -142,6 +142,15 @@ testing:
                 root: some-other-role-root
                 service: some-other-role-service
                 network: some.other-role-network
+        - state: {}
+          payload:
+            roles:
+              - id: some-role
+                root: some-role-root
+                service: some-role-service
+                network: some.role-network
+          result:
+            roles: []
     - action: add-scenes
       examples:
         - state:
@@ -185,6 +194,14 @@ testing:
               - root: some-other-scene
                 service: some-other-scene-service
                 network: some.other-scene-network
+        - state: {}
+          payload:
+            scenes:
+              - root: some-scene
+                service: some-scene-service
+                network: some.scene-network
+          result:
+            scenes: []
 
 #don't change
 procedure: event-store

@@ -13,7 +13,7 @@ const CODE_LENGTH = 6;
 const determineUpgrade = async (payload, context, queryAggregatesFn) => {
   // Check to see if the phone is recognized.
   // If the principal is being upgraded, use a placeholder identity with it instead.
-  const { body: [identity] = [] } = await queryAggregatesFn({
+  const [identity] = await queryAggregatesFn({
     domain: "identity",
     key: "id",
     value: payload.id,
@@ -136,7 +136,7 @@ module.exports = async ({
           value: token,
         },
       ],
-      references: {
+      receipt: {
         challenge: {
           root,
           service: process.env.SERVICE,

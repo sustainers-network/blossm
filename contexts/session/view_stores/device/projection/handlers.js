@@ -1,13 +1,11 @@
 module.exports = {
   core: {
-    session: {
-      start: ({ payload }) => {
-        return {
-          update: {
-            name: payload.device.type,
-          },
-        };
-      },
+    session: ({ state }) => {
+      return {
+        update: {
+          name: state.device.type,
+        },
+      };
     },
   },
 };

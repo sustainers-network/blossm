@@ -20,7 +20,7 @@ describe("Command handler unit tests", () => {
     restore();
   });
   it("should return successfully", async () => {
-    const aggregateFake = fake.returns({ aggregate: {} });
+    const aggregateFake = fake.returns({ state: {} });
     const result = await main({
       context,
       aggregateFn: aggregateFake,
@@ -40,7 +40,7 @@ describe("Command handler unit tests", () => {
   });
   it("should throw correctly if aggregate has already been terminated", async () => {
     const aggregateFake = fake.returns({
-      aggregate: { terminated: deps.stringDate() },
+      state: { terminated: deps.stringDate() },
     });
     const error = "some-error";
     const messageFake = fake.returns(error);

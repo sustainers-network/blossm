@@ -53,7 +53,7 @@ module.exports = async ({ payload, context, commandFn }) => {
   ];
 
   const response = {
-    references: {
+    receipt: {
       scene: {
         root: sceneRoot,
         service: process.env.SERVICE,
@@ -80,7 +80,7 @@ module.exports = async ({ payload, context, commandFn }) => {
     events,
     response: {
       ...response,
-      references: { ...response.references, principal },
+      receipt: { ...response.receipt, principal },
       tokens,
       context: newContext,
     },

@@ -3,7 +3,7 @@ domain: connection
 service: system
 
 payload:
-  key: 
+  key:
     type: string
     in:
       - access
@@ -27,7 +27,7 @@ testing:
   validate:
     ok:
       - key: access
-      - key: challenge 
+      - key: challenge
     bad:
       - key: 3
       - key: some-bogus
@@ -61,7 +61,7 @@ testing:
           network:
           key: access
           value:
-        references:
+        receipt:
           connection:
             root:
             service:

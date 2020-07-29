@@ -11,9 +11,7 @@ schema:
   id: String
   # unique is network + id
   # unique could be Root
-  unique:
-    type: String
-    unique: true
+  unique: String
   permissions:
     - privilege: String
       domain: String

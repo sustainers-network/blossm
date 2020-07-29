@@ -49,7 +49,7 @@ module.exports = async ({ payload, context }) => {
     ],
     response: {
       token: { network: process.env.NETWORK, key: payload.key, value: token },
-      references: {
+      receipt: {
         connection: {
           root,
           service: process.env.SERVICE,

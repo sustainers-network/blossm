@@ -1,8 +1,7 @@
 const { expect } = require("chai").use(require("sinon-chai"));
-const { restore, replace, fake } = require("sinon");
+const { restore, fake } = require("sinon");
 
 const main = require("../../main");
-const deps = require("../../deps");
 
 describe("Fact unit tests", () => {
   afterEach(() => {
@@ -15,31 +14,19 @@ describe("Fact unit tests", () => {
     const principal = "some-principal";
     const network = "some-network";
 
-    const aggregate = {
+    const aggregateFake = fake.returns({
       state: {
         secret,
         scene,
         principal,
         network,
       },
-    };
-    const aggregateFake = fake.returns({ body: aggregate });
-    const setFake = fake.returns({
-      aggregate: aggregateFake,
     });
-    const eventStoreFake = fake.returns({
-      set: setFake,
-    });
-    replace(deps, "eventStore", eventStoreFake);
-    const result = await main({ root });
-    expect(eventStoreFake).to.have.been.calledWith({
+    const result = await main({ root, aggregateFn: aggregateFake });
+    expect(aggregateFake).to.have.been.calledWith(root, {
       domain: "key",
       service: "system",
     });
-    expect(setFake).to.have.been.calledWith({
-      token: { internalFn: deps.gcpToken },
-    });
-    expect(aggregateFake).to.have.been.calledWith(root);
     expect(result).to.deep.equal({
       response: {
         root,
@@ -57,16 +44,8 @@ describe("Fact unit tests", () => {
     const errorMessage = "some-message";
     const error = new Error(errorMessage);
     const aggregateFake = fake.rejects(error);
-    const setFake = fake.returns({
-      aggregate: aggregateFake,
-    });
-    const eventStoreFake = fake.returns({
-      set: setFake,
-    });
-    replace(deps, "eventStore", eventStoreFake);
-
     try {
-      await main({ query });
+      await main({ query, aggregateFn: aggregateFake });
 
       //shouldn't get called
       expect(1).to.equal(2);

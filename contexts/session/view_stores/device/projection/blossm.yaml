@@ -1,7 +1,7 @@
 name: device
 context: session
 
-stores:
+events:
   - domain: session
     service: core
     actions:
@@ -14,7 +14,7 @@ testing:
         domain: session
         service: core
       examples:
-        - payload:
+        - state:
             device:
               type: some-type
               agent: some-agent

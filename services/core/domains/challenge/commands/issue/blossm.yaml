@@ -87,7 +87,7 @@ testing:
           - network:
             type: challenge
             value:
-        references:
+        receipt:
           challenge:
             root:
             service:
@@ -136,7 +136,7 @@ testing:
           - network:
             type: challenge
             value:
-        references:
+        receipt:
           challenge:
             root:
             service:

@@ -74,7 +74,7 @@ describe("Command handler unit tests", () => {
       response: {
         tokens,
         context: newContext,
-        references: {
+        receipt: {
           principal: {
             root: uuid,
             service,
@@ -150,7 +150,7 @@ describe("Command handler unit tests", () => {
         { action: "register", payload, root },
       ],
       response: {
-        references: {
+        receipt: {
           scene: {
             root,
             service,

@@ -5,12 +5,10 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
   if (!Object.keys(payload).length) return {};
 
   // Get the aggregate for this session.
-  const { aggregate: sessionAggregate } = await aggregateFn(
-    context.session.root
-  );
+  const aggregate = await aggregateFn(context.session.root);
 
   // Check to see if this session has already been terminated.
-  if (sessionAggregate.terminated)
+  if (aggregate.state.terminated)
     throw deps.badRequestError.message("This session is terminated.");
 
   const newContext = {

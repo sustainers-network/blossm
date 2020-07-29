@@ -52,7 +52,7 @@ describe("Command handler unit tests", () => {
       body: {
         tokens,
         context: newContext,
-        references: {
+        receipt: {
           principal: {
             root: principalRoot,
             service: principalService,
@@ -99,7 +99,7 @@ describe("Command handler unit tests", () => {
       response: {
         tokens,
         context: newContext,
-        references: {
+        receipt: {
           node: { root: nodeRoot, service, network },
           principal: {
             root: principalRoot,
@@ -140,7 +140,7 @@ describe("Command handler unit tests", () => {
     const commandFnFake = fake.returns({
       body: {
         tokens,
-        references: {
+        receipt: {
           scene: {
             root: sceneRoot,
             service: sceneService,
@@ -209,7 +209,7 @@ describe("Command handler unit tests", () => {
       ],
       response: {
         tokens,
-        references: {
+        receipt: {
           node: { root: nodeRoot, service, network },
           scene: {
             root: sceneRoot,

@@ -30,9 +30,12 @@ module.exports = {
       ...state,
       ...payload,
       roles: difference(
-        state.roles.map(
-          (role) => `${role.id}:${role.root}:${role.service}:${role.network}`
-        ),
+        state.roles
+          ? state.roles.map(
+              (role) =>
+                `${role.id}:${role.root}:${role.service}:${role.network}`
+            )
+          : [],
         payload.roles.map(
           (role) => `${role.id}:${role.root}:${role.service}:${role.network}`
         )
@@ -71,13 +74,16 @@ module.exports = {
     };
   },
   "remove-scenes": (state, payload) => {
+    if (!state) return payload;
     return {
       ...state,
       ...payload,
       scenes: difference(
-        state.scenes.map(
-          (scene) => `${scene.root}:${scene.service}:${scene.network}`
-        ),
+        state.scenes
+          ? state.scenes.map(
+              (scene) => `${scene.root}:${scene.service}:${scene.network}`
+            )
+          : [],
         payload.scenes.map(
           (scene) => `${scene.root}:${scene.service}:${scene.network}`
         )

@@ -1,4 +1,5 @@
 network: sustainers.network
+blockSchedule: "*/7 * * * *"
 vendors:
   cloud:
     gcp:

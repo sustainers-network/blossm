@@ -4,7 +4,7 @@ const NINETY_DAYS = 90 * MILLISECONDS_IN_DAY;
 
 const deps = require("./deps");
 
-module.exports = async ({ payload, context = {} }) => {
+module.exports = async ({ payload, context = {}, ip }) => {
   // Create the root for this session.
   const root = deps.uuid();
 
@@ -15,7 +15,7 @@ module.exports = async ({ payload, context = {} }) => {
       service: process.env.SERVICE,
       network: process.env.NETWORK,
     },
-    device: payload.device,
+    device: { ...payload.device, ip },
   };
 
   // Create a long-lived token.
@@ -49,7 +49,7 @@ module.exports = async ({ payload, context = {} }) => {
       {
         root,
         action: "start",
-        payload,
+        payload: { ...payload, device: { ...payload.device, ip } },
       },
     ],
     response: {
@@ -61,7 +61,7 @@ module.exports = async ({ payload, context = {} }) => {
         },
       ],
       context: newContext,
-      references: {
+      receipt: {
         session: {
           root,
           service: process.env.SERVICE,

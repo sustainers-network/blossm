@@ -8,7 +8,7 @@ module.exports = async ({ payload, context, aggregateFn }) => {
 
   const secret = deps.randomStringOfLength(40);
 
-  const [hash, { aggregate: nodeAggregate }] = await Promise.all([
+  const [hash, nodeAggregate] = await Promise.all([
     deps.hash(secret),
     aggregateFn(node.root, {
       domain: "node",
@@ -42,7 +42,7 @@ module.exports = async ({ payload, context, aggregateFn }) => {
         action: "create",
         payload: {
           name: payload.name,
-          network: nodeAggregate.network,
+          network: nodeAggregate.state.network,
           scene: context.scene,
           principal: {
             root: principalRoot,
@@ -57,7 +57,7 @@ module.exports = async ({ payload, context, aggregateFn }) => {
     response: {
       root: keyRoot,
       secret,
-      references: {
+      receipt: {
         key: {
           root: keyRoot,
           service: process.env.SERVICE,

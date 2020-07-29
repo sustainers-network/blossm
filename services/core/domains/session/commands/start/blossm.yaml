@@ -78,12 +78,13 @@ testing:
           type: mobile
           platform: ios
           agent: some-agent
+      ip: some-ip
       response:
         tokens:
           - network:
             type: access
             value:
-        references:
+        receipt:
           session:
             root:
             service:
@@ -94,6 +95,11 @@ testing:
             root:
             service:
             network:
+          device:
+            ip: some-ip
+            type: mobile
+            platform: ios
+            agent: some-agent
       code: 202
     - payload:
         device:
@@ -101,24 +107,30 @@ testing:
           platform: ios
           agent: some-agent
       context:
-        node:
-          network: some.network
+        network: some.network
+      ip: some-ip
       response:
         tokens:
           - network: some.network
             type: access
             value:
-        references:
+        receipt:
           session:
             root:
             service:
             network:
         context:
-          network:
+          network: some.network
           session:
             root:
             service:
             network:
+          device:
+            ip: some-ip
+            type: mobile
+            platform: ios
+            agent: some-agent
+
       code: 202
 
 #don't change

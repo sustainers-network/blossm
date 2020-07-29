@@ -1,7 +1,7 @@
 const deps = require("./deps");
 
 module.exports = async ({ context, query, queryAggregatesFn }) => {
-  const { body: networkRoles } = await queryAggregatesFn({
+  const networkRoles = await queryAggregatesFn({
     domain: process.env.DOMAIN,
     key: "network",
     value: context.network,

@@ -75,7 +75,7 @@ describe("Command handler unit tests", () => {
       ],
       response: {
         token: { network, key: payloadKey, value: token },
-        references: { connection: { root, service, network } },
+        receipt: { connection: { root, service, network } },
       },
     });
     expect(createJwtFake).to.have.been.calledWith({

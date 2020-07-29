@@ -1,9 +1,7 @@
 const { expect } = require("chai").use(require("sinon-chai"));
-const { restore, fake, replace } = require("sinon");
+const { restore, fake } = require("sinon");
 
 const main = require("../../main");
-
-const deps = require("../../deps");
 
 const sessionRoot = "some-session-root";
 const session = {
@@ -22,51 +20,27 @@ describe("Fact unit tests", () => {
     const terminated = "some-terminated";
 
     const aggregateFake = fake.returns({
-      body: {
-        state: { terminated },
-      },
+      state: { terminated },
     });
-    const setFake = fake.returns({
-      aggregate: aggregateFake,
-    });
-    const eventStoreFake = fake.returns({
-      set: setFake,
-    });
-    replace(deps, "eventStore", eventStoreFake);
 
-    const result = await main({ context: { session } });
+    const result = await main({
+      context: { session },
+      aggregateFn: aggregateFake,
+    });
 
-    expect(eventStoreFake).to.have.been.calledWith({
-      domain,
-    });
-    expect(setFake).to.have.been.calledWith({
-      token: { internalFn: deps.gcpToken },
-    });
     expect(aggregateFake).to.have.been.calledWith(sessionRoot);
     expect(result).to.deep.equal({ response: true });
   });
   it("should return false successfully", async () => {
     const aggregateFake = fake.returns({
-      body: {
-        state: {},
-      },
+      state: {},
     });
-    const setFake = fake.returns({
-      aggregate: aggregateFake,
-    });
-    const eventStoreFake = fake.returns({
-      set: setFake,
-    });
-    replace(deps, "eventStore", eventStoreFake);
 
-    const result = await main({ context: { session } });
+    const result = await main({
+      context: { session },
+      aggregateFn: aggregateFake,
+    });
 
-    expect(eventStoreFake).to.have.been.calledWith({
-      domain,
-    });
-    expect(setFake).to.have.been.calledWith({
-      token: { internalFn: deps.gcpToken },
-    });
     expect(aggregateFake).to.have.been.calledWith(sessionRoot);
     expect(result).to.deep.equal({ response: false });
   });

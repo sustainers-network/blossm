@@ -9,7 +9,7 @@ module.exports = async ({ payload, context, commandFn }) => {
     body: {
       tokens,
       context: newContext,
-      references: { principal, scene },
+      receipt: { principal, scene },
     },
   } = await commandFn({
     name: "register",
@@ -56,7 +56,7 @@ module.exports = async ({ payload, context, commandFn }) => {
     response: {
       ...(tokens && { tokens }),
       ...(newContext && { context: newContext }),
-      references: {
+      receipt: {
         ...(principal && { principal }),
         node: {
           root: nodeRoot,

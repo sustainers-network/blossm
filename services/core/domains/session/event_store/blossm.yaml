@@ -22,8 +22,8 @@ schema:
     root: String
     service: String
     network: String
-  #TODO add ip address
   device:
+    ip: String
     type:
       type: String
     platform: String
@@ -34,6 +34,7 @@ testing:
     - action: start
       payload:
         device:
+          ip: some-ip
           type: mobile
           platform: ios
           agent: some-agent
@@ -45,6 +46,7 @@ testing:
           service: some-scene-service
           domain: some-scene-domain
         device:
+          ip: some-other-ip
           type: desktop
           platform: browser
           agent: some-other-agent
@@ -63,6 +65,7 @@ testing:
       examples:
         - payload:
             device:
+              ip: some-ip
               type: mobile
               platform: ios
               agent: some-agent
@@ -86,6 +89,7 @@ testing:
               service: some-scene-service
               domain: some-scene-domain
             device:
+              ip: some-ip
               type: mobile
               platform: ios
               agent: some-agent
@@ -108,6 +112,7 @@ testing:
               service: some-scene-service
               domain: some-scene-domain
             device:
+              ip: some-ip
               type: mobile
               platform: ios
               agent: some-agent

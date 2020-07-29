@@ -72,18 +72,18 @@ describe("Command handler unit tests", () => {
   it("should return successfully if identity is found", async () => {
     const queryAggregatesFnFake = stub()
       .onFirstCall()
-      .returns({ body: [identity] })
+      .returns([identity])
       .onSecondCall()
-      .returns({ body: [] });
+      .returns([]);
 
     const aggregateFake = stub()
       .onFirstCall()
       .returns({
-        aggregate: principalAggregate,
+        state: principalAggregate,
       })
       .onSecondCall()
       .returns({
-        aggregate: sessionprincipalAggregate,
+        state: sessionprincipalAggregate,
       });
 
     const commandFnFake = fake.returns({ body: { tokens }, statusCode });
@@ -159,16 +159,16 @@ describe("Command handler unit tests", () => {
     });
   });
   it("should return successfully if identity is found with no principal in the context", async () => {
-    const queryAggregatesFnFake = fake.returns({ body: [identity] });
+    const queryAggregatesFnFake = fake.returns([identity]);
 
     const aggregateFake = stub()
       .onFirstCall()
       .returns({
-        aggregate: principalAggregate,
+        state: principalAggregate,
       })
       .onSecondCall()
       .returns({
-        aggregate: sessionprincipalAggregate,
+        state: sessionprincipalAggregate,
       });
 
     const commandFnFake = fake.returns({ body: { tokens }, statusCode });
@@ -222,18 +222,18 @@ describe("Command handler unit tests", () => {
   it("should return successfully if identity is found and there are no new roles to add", async () => {
     const queryAggregatesFnFake = stub()
       .onFirstCall()
-      .returns({ body: [identity] })
+      .returns([identity])
       .onSecondCall()
-      .returns({ body: [] });
+      .returns([]);
 
     const aggregateFake = stub()
       .onFirstCall()
       .returns({
-        aggregate: principalAggregate,
+        state: principalAggregate,
       })
       .onSecondCall()
       .returns({
-        aggregate: principalAggregate,
+        state: principalAggregate,
       });
 
     const commandFnFake = fake.returns({ body: { tokens }, statusCode });
@@ -290,7 +290,7 @@ describe("Command handler unit tests", () => {
     });
   });
   it("should return successfully if identity not found with no principal in the context", async () => {
-    const queryAggregatesFnFake = fake.returns({ body: [] });
+    const queryAggregatesFnFake = fake.returns([]);
 
     const identityRoot = "some-new-identity-root";
     const principalRoot = "some-new-principal-root";
@@ -373,7 +373,7 @@ describe("Command handler unit tests", () => {
     });
   });
   it("should return successfully if identity not found with no principal in the context and email as id", async () => {
-    const queryAggregatesFnFake = fake.returns({ body: [] });
+    const queryAggregatesFnFake = fake.returns([]);
 
     const identityRoot = "some-new-identity-root";
     const principalRoot = "some-new-principal-root";
@@ -462,7 +462,7 @@ describe("Command handler unit tests", () => {
     });
   });
   it("should return successfully if identity not found with principal in context", async () => {
-    const queryAggregatesFnFake = fake.returns({ body: [] });
+    const queryAggregatesFnFake = fake.returns([]);
 
     const identityRoot = "some-new-identity-root";
 
@@ -538,19 +538,17 @@ describe("Command handler unit tests", () => {
     });
   });
   it("should return nothing if context principal is the identity's principal", async () => {
-    const queryAggregatesFnFake = fake.returns({
-      body: [
-        {
-          state: {
-            principal: {
-              root: contextPrincipalRoot,
-              service: contextPrincipalService,
-              network: contextPrincipalNetwork,
-            },
+    const queryAggregatesFnFake = fake.returns([
+      {
+        state: {
+          principal: {
+            root: contextPrincipalRoot,
+            service: contextPrincipalService,
+            network: contextPrincipalNetwork,
           },
         },
-      ],
-    });
+      },
+    ]);
 
     replace(deps, "compare", fake.returns(true));
 
@@ -565,21 +563,19 @@ describe("Command handler unit tests", () => {
   it("should throw correctly if the session is saved to a different identity", async () => {
     const queryAggregatesFnFake = stub()
       .onFirstCall()
-      .returns({
-        body: [
-          {
-            state: {
-              principal: {
-                root: "some-random-root",
-                service: "some-random-service",
-                network: "some-random-network",
-              },
+      .returns([
+        {
+          state: {
+            principal: {
+              root: "some-random-root",
+              service: "some-random-service",
+              network: "some-random-network",
             },
           },
-        ],
-      })
+        },
+      ])
       .onSecondCall()
-      .returns({ body: ["something"] });
+      .returns(["something"]);
 
     replace(deps, "compare", fake.returns(true));
 
@@ -616,16 +612,16 @@ describe("Command handler unit tests", () => {
     }
   });
   it("should throw if compare fails", async () => {
-    const queryAggregatesFnFake = fake.returns({ body: [identity] });
+    const queryAggregatesFnFake = fake.returns([identity]);
 
     const aggregateFake = stub()
       .onFirstCall()
       .returns({
-        aggregate: principalAggregate,
+        state: principalAggregate,
       })
       .onSecondCall()
       .returns({
-        aggregate: sessionprincipalAggregate,
+        state: sessionprincipalAggregate,
       });
 
     const commandFnFake = fake.returns({ body: { tokens }, statusCode });

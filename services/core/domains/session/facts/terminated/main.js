@@ -1,12 +1,4 @@
-const deps = require("./deps");
-
-module.exports = async ({ context }) => {
-  const { body: aggregate } = await deps
-    .eventStore({
-      domain: process.env.DOMAIN,
-    })
-    .set({ token: { internalFn: deps.gcpToken } })
-    .aggregate(context.session.root);
-
+module.exports = async ({ context, aggregateFn }) => {
+  const aggregate = await aggregateFn(context.session.root);
   return { response: aggregate.state.terminated != undefined };
 };

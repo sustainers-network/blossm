@@ -86,7 +86,7 @@ testing:
           - network:
             type: access
             value:
-        references:
+        receipt:
           principal:
             root:
             service:
@@ -125,7 +125,7 @@ testing:
         aud: some-aud
         exp: 9999-12-31T00:00:00.000
       response:
-        references:
+        receipt:
           scene:
             root:
             service:

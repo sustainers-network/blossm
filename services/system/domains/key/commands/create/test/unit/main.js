@@ -80,7 +80,7 @@ describe("Command handler unit tests", () => {
 
     const nodeStateNetwork = "some-node-network";
     const aggregateFnFake = fake.returns({
-      aggregate: { network: nodeStateNetwork },
+      state: { network: nodeStateNetwork },
     });
     const result = await main({
       payload,
@@ -142,7 +142,7 @@ describe("Command handler unit tests", () => {
       response: {
         root: keyRoot,
         secret,
-        references: { key: { root: keyRoot, service, network } },
+        receipt: { key: { root: keyRoot, service, network } },
       },
     });
   });

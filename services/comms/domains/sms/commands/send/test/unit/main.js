@@ -54,7 +54,7 @@ describe("Command handler unit tests", () => {
         },
       ],
       response: {
-        references: {
+        receipt: {
           sms: {
             root,
             service,

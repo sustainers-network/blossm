@@ -1,10 +1,8 @@
-const deps = require("./deps");
-
-module.exports = async ({ root }) => {
-  const { body: aggregate } = await deps
-    .eventStore({ domain: "key", service: "system" })
-    .set({ token: { internalFn: deps.gcpToken } })
-    .aggregate(root);
+module.exports = async ({ root, aggregateFn }) => {
+  const aggregate = await aggregateFn(root, {
+    domain: "key",
+    service: "system",
+  });
 
   return {
     response: {

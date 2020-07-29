@@ -18,22 +18,20 @@ describe("Fact unit tests", () => {
     const id = "some-id";
     const permissions = "some-permissions";
 
-    const queryAggregatesFnFake = fake.returns({
-      body: [
-        {
-          state: {
-            id,
-            permissions,
-          },
+    const queryAggregatesFnFake = fake.returns([
+      {
+        state: {
+          id,
+          permissions,
         },
-        {
-          state: {
-            id: "some-other-id",
-            permissions: "some-other-permissions",
-          },
+      },
+      {
+        state: {
+          id: "some-other-id",
+          permissions: "some-other-permissions",
         },
-      ],
-    });
+      },
+    ]);
 
     const context = { network };
     const query = { id };
@@ -55,16 +53,14 @@ describe("Fact unit tests", () => {
     const network = "some-network";
     const id = "some-id";
 
-    const queryAggregatesFnFake = fake.returns({
-      body: [
-        {
-          state: {
-            id: "some-other-id",
-            permissions: "some-other-permissions",
-          },
+    const queryAggregatesFnFake = fake.returns([
+      {
+        state: {
+          id: "some-other-id",
+          permissions: "some-other-permissions",
         },
-      ],
-    });
+      },
+    ]);
 
     const context = { network };
     const query = { id };

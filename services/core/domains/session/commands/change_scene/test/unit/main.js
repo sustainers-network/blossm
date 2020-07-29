@@ -72,7 +72,7 @@ describe("Command handler unit tests", () => {
     const aggregateFake = stub()
       .onFirstCall()
       .returns({
-        aggregate: {
+        state: {
           scenes: [
             {
               root: newSceneRoot,
@@ -83,10 +83,10 @@ describe("Command handler unit tests", () => {
         },
       })
       .onSecondCall()
-      .returns({ aggregate: {} })
+      .returns({ state: {} })
       .onThirdCall()
       .returns({
-        aggregate: {
+        state: {
           domain: sceneAggregateDomain,
           service: sceneAggregateService,
           network: sceneAggregateNetwork,
@@ -179,7 +179,7 @@ describe("Command handler unit tests", () => {
     const aggregateFake = stub()
       .onFirstCall()
       .returns({
-        aggregate: {
+        state: {
           scenes: [
             {
               root: newSceneRoot,
@@ -190,10 +190,10 @@ describe("Command handler unit tests", () => {
         },
       })
       .onSecondCall()
-      .returns({ aggregate: {} })
+      .returns({ state: {} })
       .onThirdCall()
       .returns({
-        aggregate: {
+        state: {
           domain: sceneAggregateDomain,
           service: sceneAggregateService,
           network: sceneAggregateNetwork,
@@ -299,13 +299,13 @@ describe("Command handler unit tests", () => {
     const aggregateFake = stub()
       .onFirstCall()
       .returns({
-        aggregate: { scenes: [{ root: "bogus" }] },
+        state: { scenes: [{ root: "bogus" }] },
       })
       .onSecondCall()
-      .returns({ aggregate: {} })
+      .returns({ state: {} })
       .onThirdCall()
       .returns({
-        aggregate: {
+        state: {
           domain: sceneAggregateDomain,
           service: sceneAggregateService,
           network: sceneAggregateNetwork,
@@ -345,7 +345,7 @@ describe("Command handler unit tests", () => {
     const aggregateFake = stub()
       .onFirstCall()
       .returns({
-        aggregate: {
+        state: {
           scenes: [
             {
               root: newSceneRoot,
@@ -356,10 +356,10 @@ describe("Command handler unit tests", () => {
         },
       })
       .onSecondCall()
-      .returns({ aggregate: { terminated: deps.stringDate() } })
+      .returns({ state: { terminated: deps.stringDate() } })
       .onThirdCall()
       .returns({
-        aggregate: {
+        state: {
           domain: sceneAggregateDomain,
           root: sceneAggregateRoot,
         },
@@ -399,7 +399,7 @@ describe("Command handler unit tests", () => {
     const aggregateFake = stub()
       .onFirstCall()
       .returns({
-        aggregate: {
+        state: {
           scenes: [
             {
               root: newSceneRoot,
@@ -410,10 +410,10 @@ describe("Command handler unit tests", () => {
         },
       })
       .onSecondCall()
-      .returns({ aggregate: {} })
+      .returns({ state: {} })
       .onThirdCall()
       .returns({
-        aggregate: {
+        state: {
           domain: sceneAggregateDomain,
           service: sceneAggregateService,
           network: sceneAggregateNetwork,
