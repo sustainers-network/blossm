@@ -1,5 +1,5 @@
 network: sustainers.network
-blockSchedule: "*/7 * * * *"
+blockSchedule: "*/30 * * * *"
 vendors:
   cloud:
     gcp:
@@ -59,19 +59,6 @@ vendors:
         sandbox: event-store-pri.dyntm.gcp.mongodb.net
         staging: event-store-zhvxy.gcp.mongodb.net
         development: event-store.7kjnk.gcp.mongodb.net
-      protocol: mongodb+srv
-  eventHandler:
-    mongodb:
-      users:
-        production: blossm
-        sandbox: blossm
-        staging: blossm
-        development: blossm
-      hosts:
-        production: event-handler-u076u.gcp.mongodb.net
-        sandbox: event-handler-shiyl.gcp.mongodb.net
-        staging: event-handler-gn5o1.gcp.mongodb.net
-        development: event-handler-b8xbj.gcp.mongodb.net
       protocol: mongodb+srv
 defaults:
   viewStore: mongodb

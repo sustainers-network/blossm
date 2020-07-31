@@ -1,6 +1,8 @@
 domain: scene
 service: core
 
+public: true
+
 actions:
   - register
 

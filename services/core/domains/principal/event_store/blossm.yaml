@@ -1,6 +1,8 @@
 domain: principal
 service: core
 
+public: true
+
 actions:
   - add-roles
   - remove-roles

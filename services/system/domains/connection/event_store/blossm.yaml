@@ -1,6 +1,8 @@
 domain: connection
 service: system
 
+public: true
+
 actions:
   - open
 

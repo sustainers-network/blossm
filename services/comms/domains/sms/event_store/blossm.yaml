@@ -1,6 +1,8 @@
 domain: sms
 service: comms
 
+public: false
+
 actions:
   - send
 

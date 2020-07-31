@@ -1,6 +1,8 @@
 domain: identity
 service: core
 
+public: false
+
 actions:
   - register
 

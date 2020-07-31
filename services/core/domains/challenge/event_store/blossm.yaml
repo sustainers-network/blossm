@@ -1,6 +1,8 @@
 domain: challenge
 service: core
 
+public: false
+
 actions:
   - issue
   - answer

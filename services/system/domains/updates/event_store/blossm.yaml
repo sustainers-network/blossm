@@ -1,6 +1,8 @@
 domain: updates
 service: system
 
+public: true
+
 actions:
   - push
 

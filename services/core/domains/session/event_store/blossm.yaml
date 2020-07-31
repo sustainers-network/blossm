@@ -1,6 +1,8 @@
 domain: session
 service: core
 
+public: false
+
 actions:
   - start
   - save

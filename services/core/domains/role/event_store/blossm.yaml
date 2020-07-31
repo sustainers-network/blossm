@@ -1,6 +1,8 @@
 domain: role
 service: core
 
+public: true
+
 actions:
   - create
 
@@ -11,6 +13,7 @@ schema:
   id: String
   # unique is network + id
   # unique could be Root
+  # Todo: sort out
   unique: String
   permissions:
     - privilege: String
