@@ -1,5 +1,6 @@
 network: sustainers.network
-blockSchedule: "*/30 * * * *"
+# Once a day at 5 am
+blockSchedule: "0 5 * * *"
 vendors:
   cloud:
     gcp:
@@ -30,7 +31,7 @@ vendors:
         timeoutOverrides: {}
         memory: 512Mi
         memoryOverrides:
-          event-store: 512Mi
+          event-store: 1Gi
           event-handler: 512Mi
           projection: 512Mi
           view-store: 512Mi

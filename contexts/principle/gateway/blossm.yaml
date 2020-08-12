@@ -3,10 +3,10 @@ context: principal
 views:
   - name: nodes
     procedure: view-store
-    priviledges: none
+    privileges: none
   # - name: dashboard
   #   procedure: view-composite
-  #   priviledges: none
+  #   privileges: none
 
 whitelist:
   - "127.0.0.1"
