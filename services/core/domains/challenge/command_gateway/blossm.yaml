@@ -6,6 +6,8 @@ commands:
     privileges: none
   - name: answer
     privileges: none
+    contexts:
+      - challenge
     key: challenge
 
 whitelist:

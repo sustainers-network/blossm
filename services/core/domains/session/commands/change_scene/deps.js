@@ -5,12 +5,12 @@ const {
   stringFromDate,
   string: stringDate,
 } = require("@blossm/datetime");
-const { badRequest, unauthorized } = require("@blossm/errors");
+const { badRequest, forbidden } = require("@blossm/errors");
 
 exports.createJwt = createJwt;
 exports.sign = sign;
 exports.fineTimestamp = fineTimestamp;
 exports.stringFromDate = stringFromDate;
 exports.badRequestError = badRequest;
-exports.unauthorizedError = unauthorized;
+exports.forbiddenError = forbidden;
 exports.stringDate = stringDate;

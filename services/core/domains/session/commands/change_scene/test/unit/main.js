@@ -292,7 +292,7 @@ describe("Command handler unit tests", () => {
 
     const error = "some-error";
     const messageFake = fake.returns(error);
-    replace(deps, "unauthorizedError", {
+    replace(deps, "forbiddenError", {
       message: messageFake,
     });
 

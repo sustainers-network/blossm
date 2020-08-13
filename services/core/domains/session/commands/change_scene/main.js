@@ -18,7 +18,7 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
       (scene) => scene.root == payload.scene
     )
   )
-    throw deps.unauthorizedError.message("This scene isn't accessible.", {
+    throw deps.forbiddenError.message("This scene isn't accessible.", {
       info: { scene: payload.scene },
     });
 
