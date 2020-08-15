@@ -36,17 +36,6 @@ module.exports = async ({ payload, context }) => {
   });
 
   return {
-    events: [
-      {
-        action: "open",
-        payload: {
-          scene: context.scene,
-          key: context.key,
-          opened: deps.stringDate(),
-        },
-        root,
-      },
-    ],
     response: {
       token: { network: process.env.NETWORK, key: payload.key, value: token },
       receipt: {

@@ -32,6 +32,7 @@ env:
     FANOUT_REALM_ID: 53b46805
 
 testing:
+  store: false
   dependencies:
     - procedure: http
       host: api.fanout.io
@@ -91,7 +92,7 @@ testing:
           root: some-key-root
           service: some-key-service
           network: some-key-network
-      code: 202
+      code: 200
 
 #don't change
 procedure: command

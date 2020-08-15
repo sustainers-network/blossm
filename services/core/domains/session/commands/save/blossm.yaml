@@ -2,6 +2,9 @@ name: save
 domain: session
 service: core
 
+contexts:
+  - session
+
 payload:
   id: string
   phone: phoneNumber

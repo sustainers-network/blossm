@@ -47,25 +47,6 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
         action: "upgrade",
         payload,
       },
-      ...(payload.principal
-        ? [
-            {
-              root: payload.principal.root,
-              domain: "principal",
-              action: "add-roles",
-              payload: {
-                roles: [
-                  {
-                    id: "SessionAdmin",
-                    root: context.session.root,
-                    service: context.session.service,
-                    network: context.session.network,
-                  },
-                ],
-              },
-            },
-          ]
-        : []),
     ],
     response: {
       tokens: [

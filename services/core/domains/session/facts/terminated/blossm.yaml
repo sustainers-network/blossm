@@ -2,6 +2,9 @@ name: terminated
 domain: session
 service: core
 
+contexts:
+  - session
+
 testing:
   normalize:
     - payload: {}

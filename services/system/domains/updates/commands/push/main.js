@@ -1,7 +1,7 @@
 const deps = require("./deps");
 
 // Internal requests will have no context.
-module.exports = async ({ payload, context }) => {
+module.exports = async ({ payload }) => {
   // Lazily set the environment variable.
   if (!process.env.GRIP_URL) {
     process.env.GRIP_URL = `${
@@ -18,20 +18,5 @@ module.exports = async ({ payload, context }) => {
     )
   );
 
-  return {
-    events: [
-      {
-        action: "push",
-        payload: {
-          channel: payload.channel,
-          ...(context && {
-            node: context.node,
-            key: context.key,
-            connection: context.connection,
-          }),
-        },
-        root: deps.uuid(),
-      },
-    ],
-  };
+  return {};
 };

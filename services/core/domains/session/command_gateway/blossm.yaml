@@ -7,11 +7,9 @@ commands:
   - name: save
     privileges: none
   - name: terminate
-    privileges:
-      - update
+    privileges: none
   - name: change-scene
-    privileges:
-      - update
+    privileges: none
 
 whitelist:
   - "127.0.0.1"

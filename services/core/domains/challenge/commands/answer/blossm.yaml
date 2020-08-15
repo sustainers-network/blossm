@@ -2,6 +2,9 @@ name: answer
 domain: challenge
 service: core
 
+contexts:
+  - challenge
+
 payload:
   code:
     type: string

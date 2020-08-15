@@ -2,6 +2,9 @@ name: terminate
 domain: session
 service: core
 
+contexts:
+  - session
+
 payload: {}
 
 dependencies:

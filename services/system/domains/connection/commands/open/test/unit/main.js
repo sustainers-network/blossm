@@ -62,17 +62,6 @@ describe("Command handler unit tests", () => {
     });
 
     expect(result).to.deep.equal({
-      events: [
-        {
-          payload: {
-            scene,
-            key,
-            opened: deps.stringDate(),
-          },
-          action: "open",
-          root,
-        },
-      ],
       response: {
         token: { network, key: payloadKey, value: token },
         receipt: { connection: { root, service, network } },

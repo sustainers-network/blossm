@@ -91,21 +91,6 @@ describe("Command handler unit tests", () => {
           },
           root,
         },
-        {
-          root: principalRoot,
-          domain: "principal",
-          action: "add-roles",
-          payload: {
-            roles: [
-              {
-                id: "SessionAdmin",
-                root,
-                service: contextSessionService,
-                network: contextSessionNetwork,
-              },
-            ],
-          },
-        },
       ],
       response: {
         tokens: [{ network, type: "access", value: token }],
@@ -258,21 +243,6 @@ describe("Command handler unit tests", () => {
             },
           },
           root,
-        },
-        {
-          root: principalRoot,
-          domain: "principal",
-          action: "add-roles",
-          payload: {
-            roles: [
-              {
-                id: "SessionAdmin",
-                root,
-                service: contextSessionService,
-                network: contextSessionNetwork,
-              },
-            ],
-          },
         },
       ],
       response: {
