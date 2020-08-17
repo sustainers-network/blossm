@@ -6,7 +6,6 @@ const deps = require("../../deps");
 
 const name = "some-name";
 const context = "some-context";
-const source = "some-source";
 const network = "some-network";
 
 const queryContext = "some-query-context";
@@ -49,7 +48,6 @@ describe("Fact unit tests", () => {
   it("should return successfully with domain", async () => {
     const query = {
       name,
-      source,
       context: queryContext,
       network,
     };
@@ -68,7 +66,6 @@ describe("Fact unit tests", () => {
       query: {
         context,
         name: query.name,
-        source,
       },
     });
     expect(headers).to.deep.equal({

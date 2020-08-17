@@ -23,6 +23,24 @@ module.exports = async ({ payload, context, commandFn }) => {
     },
   });
 
+  const {
+    body: {
+      receipt: { group },
+    },
+  } = await commandFn({
+    name: "add-principals",
+    domain: "group",
+    service: "core",
+    payload: {
+      principals: [
+        {
+          role: "GroupAdmin",
+          ...(principal || context.principal),
+        },
+      ],
+    },
+  });
+
   return {
     events: [
       {
@@ -51,6 +69,7 @@ module.exports = async ({ payload, context, commandFn }) => {
           network: payload.network,
           scene,
         },
+        groupsAdded: [group],
       },
     ],
     response: {
@@ -58,6 +77,7 @@ module.exports = async ({ payload, context, commandFn }) => {
       ...(newContext && { context: newContext }),
       receipt: {
         ...(principal && { principal }),
+        ...(group && { group }),
         node: {
           root: nodeRoot,
           service: process.env.SERVICE,

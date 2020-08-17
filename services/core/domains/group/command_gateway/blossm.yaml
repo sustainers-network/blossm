@@ -1,10 +1,9 @@
-domain: key
-service: system
+domain: scene
+service: core
 
 commands:
-  - name: create
-    privileges:
-      - create
+  - name: register
+    privileges: none
 
 whitelist:
   - "127.0.0.1"

@@ -1,5 +1,5 @@
 const { expect } = require("chai").use(require("sinon-chai"));
-const { replace, restore, fake } = require("sinon");
+const { replace, restore, fake, stub } = require("sinon");
 
 const main = require("../../main");
 const deps = require("../../deps");
@@ -48,24 +48,42 @@ describe("Command handler unit tests", () => {
     const principalService = "some-principal-service";
     const principalNetwork = "some-principal-network";
 
-    const commandFnFake = fake.returns({
-      body: {
-        tokens,
-        context: newContext,
-        receipt: {
-          principal: {
-            root: principalRoot,
-            service: principalService,
-            network: principalNetwork,
-          },
-          scene: {
-            root: sceneRoot,
-            service: sceneService,
-            network: sceneNetwork,
+    const groupRoot = "some-group-root";
+    const groupService = "some-group-service";
+    const groupNetwork = "some-group-network";
+
+    const commandFnFake = stub()
+      .onFirstCall()
+      .returns({
+        body: {
+          tokens,
+          context: newContext,
+          receipt: {
+            principal: {
+              root: principalRoot,
+              service: principalService,
+              network: principalNetwork,
+            },
+            scene: {
+              root: sceneRoot,
+              service: sceneService,
+              network: sceneNetwork,
+            },
           },
         },
-      },
-    });
+      })
+      .onSecondCall()
+      .returns({
+        body: {
+          receipt: {
+            group: {
+              root: groupRoot,
+              service: groupService,
+              network: groupNetwork,
+            },
+          },
+        },
+      });
 
     const result = await main({ payload, context, commandFn: commandFnFake });
 
@@ -94,6 +112,13 @@ describe("Command handler unit tests", () => {
               network: sceneNetwork,
             },
           },
+          groupsAdded: [
+            {
+              root: groupRoot,
+              service: groupService,
+              network: groupNetwork,
+            },
+          ],
         },
       ],
       response: {
@@ -106,6 +131,11 @@ describe("Command handler unit tests", () => {
             service: principalService,
             network: principalNetwork,
           },
+          group: {
+            root: groupRoot,
+            service: groupService,
+            network: groupNetwork,
+          },
           scene: {
             root: sceneRoot,
             service: sceneService,
@@ -114,7 +144,7 @@ describe("Command handler unit tests", () => {
         },
       },
     });
-    expect(commandFnFake).to.have.been.calledWith({
+    expect(commandFnFake.getCall(0)).to.have.been.calledWith({
       name: "register",
       domain: "scene",
       service: "core",
@@ -123,6 +153,21 @@ describe("Command handler unit tests", () => {
         domain,
         service,
         network,
+      },
+    });
+    expect(commandFnFake.getCall(1)).to.have.been.calledWith({
+      name: "add-principals",
+      domain: "group",
+      service: "core",
+      payload: {
+        principals: [
+          {
+            role: "GroupAdmin",
+            root: principalRoot,
+            service: principalService,
+            network: principalNetwork,
+          },
+        ],
       },
     });
   });
@@ -136,19 +181,38 @@ describe("Command handler unit tests", () => {
 
     replace(deps, "uuid", uuidFake);
 
+    const groupRoot = "some-group-root";
+    const groupService = "some-group-service";
+    const groupNetwork = "some-group-network";
+
     const tokens = "some-tokens";
-    const commandFnFake = fake.returns({
-      body: {
-        tokens,
-        receipt: {
-          scene: {
-            root: sceneRoot,
-            service: sceneService,
-            network: sceneNetwork,
+
+    const commandFnFake = stub()
+      .onFirstCall()
+      .returns({
+        body: {
+          tokens,
+          receipt: {
+            scene: {
+              root: sceneRoot,
+              service: sceneService,
+              network: sceneNetwork,
+            },
           },
         },
-      },
-    });
+      })
+      .onSecondCall()
+      .returns({
+        body: {
+          receipt: {
+            group: {
+              root: groupRoot,
+              service: groupService,
+              network: groupNetwork,
+            },
+          },
+        },
+      });
 
     const contextPrincipalRoot = "some-context-principal-root";
     const contextPrincipalService = "some-context-principal-service";
@@ -205,6 +269,13 @@ describe("Command handler unit tests", () => {
               network: sceneNetwork,
             },
           },
+          groupsAdded: [
+            {
+              root: groupRoot,
+              service: groupService,
+              network: groupNetwork,
+            },
+          ],
         },
       ],
       response: {
@@ -216,10 +287,15 @@ describe("Command handler unit tests", () => {
             service: sceneService,
             network: sceneNetwork,
           },
+          group: {
+            root: groupRoot,
+            service: groupService,
+            network: groupNetwork,
+          },
         },
       },
     });
-    expect(commandFnFake).to.have.been.calledWith({
+    expect(commandFnFake.getCall(0)).to.have.been.calledWith({
       name: "register",
       domain: "scene",
       service: "core",
@@ -228,6 +304,21 @@ describe("Command handler unit tests", () => {
         domain,
         service,
         network,
+      },
+    });
+    expect(commandFnFake.getCall(1)).to.have.been.calledWith({
+      name: "add-principals",
+      domain: "group",
+      service: "core",
+      payload: {
+        principals: [
+          {
+            role: "GroupAdmin",
+            root: contextPrincipalRoot,
+            service: contextPrincipalService,
+            network: contextPrincipalNetwork,
+          },
+        ],
       },
     });
   });

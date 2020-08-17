@@ -74,7 +74,6 @@ module.exports = {
     };
   },
   "remove-scenes": (state, payload) => {
-    if (!state) return payload;
     return {
       ...state,
       ...payload,
@@ -89,6 +88,53 @@ module.exports = {
         )
       ).map((stringScene) => {
         const [root, service, network] = stringScene.split(":");
+        return {
+          root,
+          service,
+          network,
+        };
+      }),
+    };
+  },
+  "add-groups": (state, payload) => {
+    state.groups = state.groups || [];
+    return {
+      ...state,
+      ...payload,
+      groups: state.groups.concat(
+        difference(
+          payload.groups.map(
+            (group) => `${group.root}:${group.service}:${group.network}`
+          ),
+          state.groups.map(
+            (group) => `${group.root}:${group.service}:${group.network}`
+          )
+        ).map((stringGroup) => {
+          const [root, service, network] = stringGroup.split(":");
+          return {
+            root,
+            service,
+            network,
+          };
+        })
+      ),
+    };
+  },
+  "remove-groups": (state, payload) => {
+    return {
+      ...state,
+      ...payload,
+      groups: difference(
+        state.groups
+          ? state.groups.map(
+              (group) => `${group.root}:${group.service}:${group.network}`
+            )
+          : [],
+        payload.groups.map(
+          (group) => `${group.root}:${group.service}:${group.network}`
+        )
+      ).map((stringGroup) => {
+        const [root, service, network] = stringGroup.split(":");
         return {
           root,
           service,

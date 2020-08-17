@@ -1,4 +1,4 @@
-name: roles
+name: groups
 domain: principal
 service: core
 
@@ -22,25 +22,22 @@ testing:
         - domain: principal
           service: core
           root: some-principal-root
-          action: add-roles
+          action: add-groups
           payload:
-            roles:
-              - id: some-role-id
-                root: some-role-root
-                service: some-role-service
+            groups:
+              - root: some-group-root
+                service: some-group-service
                 network: some.network
-              - id: some-other-role-id
-                root: some-other-role-root
-                service: some-other-role-service
+              - root: some-other-group-root
+                service: some-other-group-service
                 network: some.other-network
       context:
         network: some.network
         principal:
           root: some-principal-root
       response:
-        - id: some-role-id
-          root: some-role-root
-          service: some-role-service
+        - root: some-group-root
+          service: some-group-service
           network: some.network
     - context:
         network: some.network

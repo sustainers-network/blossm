@@ -1,0 +1,37 @@
+name: principals
+domain: group
+service: core
+
+devDependencies:
+  "mocha": "^7.1.0"
+  "chai": "^4.2.0"
+  "sinon": "^7.3.2"
+  "sinon-chai": "^3.3.0"
+
+testing:
+  dependencies:
+    - domain: group
+      procedure: event-store
+      service: core
+
+  steps:
+    - pre:
+        - domain: group
+          service: core
+          root: some-group-root
+          action: add-principals
+          payload:
+            principals:
+              - root: some-principal-root
+                service: some-principal-service
+                network: some.network
+      root: some-group-root
+      response:
+        - root: some-principal-root
+          service: some-principal-service
+          network: some.network
+    - root: some-bogus-root
+      code: 404
+
+#don't change
+procedure: fact

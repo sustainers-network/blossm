@@ -35,6 +35,10 @@ testing:
       domain: scene
       service: core
       procedure: command
+    - name: add-principals
+      domain: group
+      service: core
+      procedure: command
     - domain: principal
       service: core
       procedure: event-store
@@ -74,6 +78,10 @@ testing:
             root:
             service:
             network:
+          group:
+            root:
+            service:
+            network:
           scene:
             root:
             service: core
@@ -98,6 +106,10 @@ testing:
       response:
         receipt:
           node:
+            root:
+            service:
+            network:
+          group:
             root:
             service:
             network:

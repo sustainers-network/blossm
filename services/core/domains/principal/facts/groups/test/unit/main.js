@@ -10,21 +10,21 @@ describe("Fact unit tests", () => {
   it("should return successfully", async () => {
     const network = "some-network";
     const root = "some-root";
-    const role = {
-      id: "some-id",
+    const group = {
+      root: "some-group-root",
       network,
     };
-    const roles = [
-      role,
+    const groups = [
+      group,
       {
-        id: "some-other-id",
+        root: "some-other-group-root",
         network: "some-other-network",
       },
     ];
 
     const aggregateFake = fake.returns({
       state: {
-        roles,
+        groups,
       },
     });
     const context = {
@@ -37,6 +37,6 @@ describe("Fact unit tests", () => {
     const result = await main({ context, aggregateFn: aggregateFake });
 
     expect(aggregateFake).to.have.been.calledWith(root);
-    expect(result).to.deep.equal({ response: [role] });
+    expect(result).to.deep.equal({ response: [group] });
   });
 });

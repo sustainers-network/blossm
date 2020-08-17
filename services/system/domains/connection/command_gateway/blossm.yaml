@@ -4,7 +4,6 @@ service: system
 commands:
   - name: open
     basic: true
-    context: node
     privileges:
       - create
 

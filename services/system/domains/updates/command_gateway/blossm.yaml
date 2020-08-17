@@ -3,7 +3,6 @@ service: system
 
 commands:
   - name: push
-    context: node
     privileges:
       - create
 

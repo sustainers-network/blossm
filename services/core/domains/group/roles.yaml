@@ -1,0 +1,4 @@
+GroupAdmin:
+  title: Group Admin
+  permissions:
+    - core:group:update

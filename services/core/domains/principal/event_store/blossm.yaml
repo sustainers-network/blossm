@@ -8,6 +8,8 @@ actions:
   - remove-roles
   - add-scenes
   - remove-scenes
+  - add-groups
+  - remove-groups
 
 schema:
   roles:
@@ -16,6 +18,10 @@ schema:
       service: String
       network: String
   scenes:
+    - root: String
+      service: String
+      network: String
+  groups:
     - root: String
       service: String
       network: String
@@ -55,6 +61,18 @@ testing:
           - root: some-scene
             service: some-scene-service
             network: some.scene-network
+    - action: add-groups
+      payload:
+        groups:
+          - root: some-group
+            service: some-group-service
+            network: some.group-network
+    - action: remove-groups
+      payload:
+        groups:
+          - root: some-group
+            service: some-group-service
+            network: some.group-network
 
   handlers:
     - action: add-roles
@@ -204,6 +222,57 @@ testing:
                 network: some.scene-network
           result:
             scenes: []
+    - action: add-groups
+      examples:
+        - state:
+            groups:
+              - root: some-group
+                service: some-group-service
+                network: some.group-network
+          payload:
+            groups:
+              - root: some-group
+                service: some-group-service
+                network: some.group-network
+              - root: some-other-group
+                service: some-other-group-service
+                network: some.other-group-network
+          result:
+            groups:
+              - root: some-group
+                service: some-group-service
+                network: some.group-network
+              - root: some-other-group
+                service: some-other-group-service
+                network: some.other-group-network
+    - action: remove-groups
+      examples:
+        - state:
+            groups:
+              - root: some-group
+                service: some-group-service
+                network: some.group-network
+              - root: some-other-group
+                service: some-other-group-service
+                network: some.other-group-network
+          payload:
+            groups:
+              - root: some-group
+                service: some-group-service
+                network: some.group-network
+          result:
+            groups:
+              - root: some-other-group
+                service: some-other-group-service
+                network: some.other-group-network
+        - state: {}
+          payload:
+            groups:
+              - root: some-group
+                service: some-group-service
+                network: some.group-network
+          result:
+            groups: []
 
 #don't change
 procedure: event-store
