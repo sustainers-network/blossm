@@ -46,6 +46,7 @@ describe("Command handler unit tests", () => {
     const aggregateFake = fake.returns({
       state: {
         networks: [network],
+        principals: [],
       },
     });
     const context = {
@@ -234,7 +235,11 @@ describe("Command handler unit tests", () => {
     const uuidFake = fake.throws(errorMessage);
     replace(deps, "uuid", uuidFake);
     try {
-      await main({});
+      await main({
+        payload: {
+          principals: [],
+        },
+      });
       //shouldn't get called
       expect(2).to.equal(3);
     } catch (e) {
@@ -265,6 +270,78 @@ describe("Command handler unit tests", () => {
     } catch (e) {
       expect(messageFake).to.have.been.calledWith(
         "This group isn't accessible."
+      );
+      expect(e).to.equal(error);
+    }
+  });
+  it("should throw correctly too many principals with root", async () => {
+    const error = "some-error";
+    const messageFake = fake.returns(error);
+    replace(deps, "badRequestError", {
+      message: messageFake,
+    });
+
+    const principals = [];
+    for (let i = 0; i < 100; i++) {
+      principals.push("some");
+    }
+    try {
+      await main({
+        root,
+        context: {
+          network,
+        },
+        aggregateFn: fake.returns({
+          state: {
+            networks: [network],
+            principals: ["some-thing"],
+          },
+        }),
+        payload: {
+          principals,
+        },
+      });
+      //shouldn't get called
+      expect(2).to.equal(3);
+    } catch (e) {
+      expect(messageFake).to.have.been.calledWith(
+        `A group has a max size of 100`,
+        {
+          info: {
+            currentCount: 1,
+          },
+        }
+      );
+      expect(e).to.equal(error);
+    }
+  });
+  it("should throw correctly too many principals with no root", async () => {
+    const error = "some-error";
+    const messageFake = fake.returns(error);
+    replace(deps, "badRequestError", {
+      message: messageFake,
+    });
+
+    const principals = [];
+    for (let i = 0; i < 101; i++) {
+      principals.push("some");
+    }
+    try {
+      await main({
+        payload: {
+          principals,
+        },
+      });
+      //shouldn't get called
+      expect(2).to.equal(3);
+    } catch (e) {
+      expect(messageFake).to.have.been.calledWith(
+        `A group has a max size of 100`,
+        {
+          info: {
+            currentCount: 0,
+          },
+        }
       );
       expect(e).to.equal(error);
     }

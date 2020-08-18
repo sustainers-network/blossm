@@ -77,15 +77,16 @@ testing:
           payload:
             networks:
               - some.group-network
+            principals: []
       payload:
         principals:
           - role: GroupAdmin
             root: some-principal-root
             service: core
-            network: some.network
+            network: some.group-network
       context:
         network: some.group-network
-      root: some-root
+      root: some-group-root
       code: 202
     - payload:
         principals:
@@ -109,7 +110,13 @@ testing:
           action: add-networks
           payload:
             networks: []
-      payload: {}
+            principals: []
+      payload:
+        principals:
+          - role: GroupAdmin
+            root: some-principal-root
+            service: core
+            network: some.group-network
       context:
         network: some.group-network
       root: some-other-group-root

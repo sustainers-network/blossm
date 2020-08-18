@@ -3,6 +3,7 @@ service: system
 
 commands:
   - name: create
+    context: node
     privileges:
       - create
 

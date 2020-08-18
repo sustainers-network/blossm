@@ -54,6 +54,7 @@ module.exports = {
     state.networks = state.networks || [];
     return {
       ...state,
+      ...payload,
       networks: state.networks.concat(
         difference(payload.networks, state.networks)
       ),
@@ -62,6 +63,7 @@ module.exports = {
   "remove-networks": (state, payload) => {
     return {
       ...state,
+      ...payload,
       networks: difference(state.networks || [], payload.networks),
     };
   },

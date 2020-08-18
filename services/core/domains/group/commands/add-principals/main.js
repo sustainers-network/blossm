@@ -1,15 +1,39 @@
 const deps = require("./deps");
 
+const principalLimit = 100;
+
 module.exports = async ({ context, payload, root, aggregateFn }) => {
   if (root) {
     const groupAggregate = await aggregateFn(root);
     if (!groupAggregate.state.networks.includes(context.network))
       throw deps.forbiddenError.message("This group isn't accessible.");
+
+    if (
+      groupAggregate.state.principals.length + payload.principals.length >
+      principalLimit
+    )
+      throw deps.badRequestError.message(
+        `A group has a max size of ${principalLimit}`,
+        {
+          info: {
+            currentCount: groupAggregate.state.principals.length,
+          },
+        }
+      );
+  } else {
+    if (payload.principals.length > principalLimit)
+      throw deps.badRequestError.message(
+        `A group has a max size of ${principalLimit}`,
+        {
+          info: {
+            currentCount: 0,
+          },
+        }
+      );
   }
 
   const groupRoot = root || deps.uuid();
 
-  //TODO add principal limit of 100 per network.
   return {
     events: [
       ...payload.principals.map((principal) => ({
