@@ -1,10 +1,61 @@
 const deps = require("./deps");
 
+const mergeGroups = async ({
+  sessionPrincipalAggregate,
+  principalAggregate,
+  principal,
+  commandFn,
+}) => {
+  const groupCommandFns = [];
+  deps
+    .difference(
+      sessionPrincipalAggregate.state.groups.map(
+        (group) => `${group.root}:${group.service}:${group.network}`
+      ),
+      principalAggregate.state.groups.map(
+        (group) => `${group.root}:${group.service}:${group.network}`
+      )
+    )
+    .forEach((groupString) => {
+      const [root, service, network] = groupString.split(":");
+      const [role] = sessionPrincipalAggregate.state.roles.filter(
+        (role) =>
+          role.root == root &&
+          role.service == service &&
+          role.network == network
+      ) || [null];
+
+      if (!role) return;
+
+      groupCommandFns.push(
+        commandFn({
+          name: "add-principals",
+          domain: "group",
+          service,
+          root,
+          async: true,
+          payload: {
+            principals: [
+              {
+                role,
+                root: principal.root,
+                service: principal.service,
+                network: principal.network,
+              },
+            ],
+          },
+        })
+      );
+    });
+
+  await Promise.all(groupCommandFns);
+};
 const getEventsForPermissionsMerge = async ({
   principal,
   context,
   identityRoot,
   aggregateFn,
+  commandFn,
 }) => {
   // Get the aggregates of the principal of the identity and the current principal of the session.
   const [principalAggregate, sessionPrincipalAggregate] = await Promise.all([
@@ -22,25 +73,52 @@ const getEventsForPermissionsMerge = async ({
       : []),
   ]);
 
+  if (sessionPrincipalAggregate) {
+    await mergeGroups({
+      sessionPrincipalAggregate,
+      principalAggregate,
+      principal,
+      commandFn,
+    });
+  }
+
   return {
     identityRoot,
     events: [
-      ...(sessionPrincipalAggregate &&
-      deps.difference(
-        principalAggregate.state.roles,
-        sessionPrincipalAggregate.state.roles
-      ).length > 0
-        ? [
-            {
-              domain: "principal",
-              service: process.env.SERVICE,
-              action: "add-roles",
-              root: principal.root,
-              payload: {
-                roles: sessionPrincipalAggregate.state.roles,
+      ...(sessionPrincipalAggregate
+        ? deps.difference(
+            principalAggregate.state.roles.map(
+              (role) =>
+                `${role.id}:${role.root}:${role.service}:${role.network}`
+            ),
+            sessionPrincipalAggregate.state.roles.map(
+              (role) =>
+                `${role.id}:${role.root}:${role.service}:${role.network}`
+            )
+          ).length > 0
+          ? [
+              {
+                domain: "principal",
+                service: process.env.SERVICE,
+                action: "add-roles",
+                root: principal.root,
+                payload: {
+                  roles: sessionPrincipalAggregate.state.roles,
+                },
               },
+            ]
+          : []
+        : []),
+      ...(sessionPrincipalAggregate
+        ? sessionPrincipalAggregate.state.groups.map((group) => ({
+            domain: "group",
+            service: group.service,
+            action: "remove-principals",
+            root: group.root,
+            payload: {
+              principals: [context.principal],
             },
-          ]
+          }))
         : []),
     ],
     principal,
@@ -92,6 +170,13 @@ const getEventsForIdentityRegistering = async ({ context, payload }) => {
       },
     ],
     principal,
+    receipt: {
+      identity: {
+        root: identityRoot,
+        service: process.env.SERVICE,
+        network: process.env.NETWORK,
+      },
+    },
   };
 };
 
@@ -139,12 +224,18 @@ module.exports = async ({
   // If an identity is found, merge the roles given to the principal already in the context;
   // to the identity's principal.
   // If not found, register a new identity and set the principal to be the principal in the context.
-  const { events, principal, identityRoot } = identity
+  const {
+    events,
+    principal,
+    identityRoot,
+    receipt: { identity: receiptIdentity } = {},
+  } = identity
     ? await getEventsForPermissionsMerge({
         principal: identity.state.principal,
         identityRoot: identity.root,
         context,
         aggregateFn,
+        commandFn,
       })
     : await getEventsForIdentityRegistering({
         context,
@@ -152,7 +243,10 @@ module.exports = async ({
       });
 
   const {
-    body: { tokens },
+    body: {
+      tokens,
+      receipt: { challenge },
+    },
     statusCode,
   } = await commandFn({
     name: "issue",
@@ -176,5 +270,14 @@ module.exports = async ({
     },
   });
 
-  return { response: { tokens }, statusCode };
+  return {
+    response: {
+      tokens,
+      receipt: {
+        challenge,
+        ...(receiptIdentity && { identity: receiptIdentity }),
+      },
+    },
+    statusCode,
+  };
 };

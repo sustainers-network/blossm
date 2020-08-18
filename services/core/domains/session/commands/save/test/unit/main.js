@@ -12,6 +12,7 @@ const now = new Date();
 const id = "some-id";
 const phone = "some-phone";
 const payload = { id, phone };
+const challenge = "some-challenge";
 const tokens = "some-tokens";
 const contextPrincipalRoot = "some-context-principal-root";
 const contextPrincipalService = "some-context-principal-service";
@@ -45,6 +46,7 @@ const identity = {
 
 const principalAggregate = {
   roles: [{ id: "some-role-id", root: "some-role-root", service, network }],
+  groups: [{ root: "some-role-root", service, network }],
 };
 
 const sessionprincipalAggregate = {
@@ -56,6 +58,7 @@ const sessionprincipalAggregate = {
       network,
     },
   ],
+  groups: [{ root: "some-other-role-root", service, network }],
 };
 
 process.env.SERVICE = service;
@@ -86,7 +89,12 @@ describe("Command handler unit tests", () => {
         state: sessionprincipalAggregate,
       });
 
-    const commandFnFake = fake.returns({ body: { tokens }, statusCode });
+    const commandFnFake = stub()
+      .onSecondCall()
+      .returns({
+        body: { tokens, receipt: { challenge } },
+        statusCode,
+      });
 
     replace(deps, "compare", fake.returns(true));
 
@@ -99,7 +107,12 @@ describe("Command handler unit tests", () => {
     });
 
     expect(result).to.deep.equal({
-      response: { tokens },
+      response: {
+        tokens,
+        receipt: {
+          challenge,
+        },
+      },
       statusCode,
     });
     expect(queryAggregatesFnFake.getCall(0)).to.have.been.calledWith({
@@ -125,7 +138,30 @@ describe("Command handler unit tests", () => {
       }
     );
     expect(aggregateFake).to.have.been.calledTwice;
-    expect(commandFnFake).to.have.been.calledWith({
+    expect(commandFnFake).to.have.been.calledTwice;
+    expect(commandFnFake.getCall(0)).to.have.been.calledWith({
+      name: "add-principals",
+      domain: "group",
+      async: true,
+      payload: {
+        principals: [
+          {
+            network: principalNetwork,
+            role: {
+              id: "some-other-role-id",
+              root: "some-other-role-root",
+              service,
+              network,
+            },
+            root: principalRoot,
+            service: principalService,
+          },
+        ],
+      },
+      root: "some-other-role-root",
+      service,
+    });
+    expect(commandFnFake.getCall(1)).to.have.been.calledWith({
       name: "issue",
       domain: "challenge",
       payload: { id, phone },
@@ -154,6 +190,21 @@ describe("Command handler unit tests", () => {
               ],
             },
           },
+          {
+            action: "remove-principals",
+            domain: "group",
+            payload: {
+              principals: [
+                {
+                  network: contextPrincipalNetwork,
+                  root: contextPrincipalRoot,
+                  service: contextPrincipalService,
+                },
+              ],
+            },
+            root: "some-other-role-root",
+            service,
+          },
         ],
       },
     });
@@ -171,7 +222,10 @@ describe("Command handler unit tests", () => {
         state: sessionprincipalAggregate,
       });
 
-    const commandFnFake = fake.returns({ body: { tokens }, statusCode });
+    const commandFnFake = fake.returns({
+      body: { tokens, receipt: { challenge } },
+      statusCode,
+    });
 
     replace(deps, "compare", fake.returns(true));
 
@@ -185,7 +239,12 @@ describe("Command handler unit tests", () => {
     });
 
     expect(result).to.deep.equal({
-      response: { tokens },
+      response: {
+        tokens,
+        receipt: {
+          challenge,
+        },
+      },
       statusCode,
     });
     expect(queryAggregatesFnFake.getCall(0)).to.have.been.calledWith({
@@ -236,7 +295,10 @@ describe("Command handler unit tests", () => {
         state: principalAggregate,
       });
 
-    const commandFnFake = fake.returns({ body: { tokens }, statusCode });
+    const commandFnFake = fake.returns({
+      body: { tokens, receipt: { challenge } },
+      statusCode,
+    });
 
     replace(deps, "compare", fake.returns(true));
 
@@ -249,7 +311,12 @@ describe("Command handler unit tests", () => {
     });
 
     expect(result).to.deep.equal({
-      response: { tokens },
+      response: {
+        tokens,
+        receipt: {
+          challenge,
+        },
+      },
       statusCode,
     });
     expect(queryAggregatesFnFake.getCall(0)).to.have.been.calledWith({
@@ -285,7 +352,23 @@ describe("Command handler unit tests", () => {
             network,
           },
         },
-        events: [],
+        events: [
+          {
+            action: "remove-principals",
+            domain: "group",
+            payload: {
+              principals: [
+                {
+                  network: contextPrincipalNetwork,
+                  root: contextPrincipalRoot,
+                  service: contextPrincipalService,
+                },
+              ],
+            },
+            root: "some-role-root",
+            service,
+          },
+        ],
       },
     });
   });
@@ -306,7 +389,10 @@ describe("Command handler unit tests", () => {
     const hashFake = fake.returns(phoneHash);
     replace(deps, "hash", hashFake);
 
-    const commandFnFake = fake.returns({ body: { tokens }, statusCode });
+    const commandFnFake = fake.returns({
+      body: { tokens, receipt: { challenge } },
+      statusCode,
+    });
 
     replace(deps, "compare", fake.returns(true));
 
@@ -319,7 +405,17 @@ describe("Command handler unit tests", () => {
     });
 
     expect(result).to.deep.equal({
-      response: { tokens },
+      response: {
+        tokens,
+        receipt: {
+          challenge,
+          identity: {
+            root: identityRoot,
+            service,
+            network,
+          },
+        },
+      },
       statusCode,
     });
     expect(queryAggregatesFnFake).to.have.been.calledWith({
@@ -390,7 +486,10 @@ describe("Command handler unit tests", () => {
     const hashFake = fake.returns(phoneHash);
     replace(deps, "hash", hashFake);
 
-    const commandFnFake = fake.returns({ body: { tokens }, statusCode });
+    const commandFnFake = fake.returns({
+      body: { tokens, receipt: { challenge } },
+      statusCode,
+    });
 
     replace(deps, "compare", fake.returns(true));
 
@@ -407,7 +506,17 @@ describe("Command handler unit tests", () => {
     });
 
     expect(result).to.deep.equal({
-      response: { tokens },
+      response: {
+        tokens,
+        receipt: {
+          challenge,
+          identity: {
+            root: identityRoot,
+            service: process.env.SERVICE,
+            network: process.env.NETWORK,
+          },
+        },
+      },
       statusCode,
     });
     expect(queryAggregatesFnFake).to.have.been.calledWith({
@@ -473,7 +582,10 @@ describe("Command handler unit tests", () => {
     const hashFake = fake.returns(phoneHash);
     replace(deps, "hash", hashFake);
 
-    const commandFnFake = fake.returns({ body: { tokens }, statusCode });
+    const commandFnFake = fake.returns({
+      body: { tokens, receipt: { challenge } },
+      statusCode,
+    });
 
     replace(deps, "compare", fake.returns(true));
 
@@ -485,7 +597,17 @@ describe("Command handler unit tests", () => {
     });
 
     expect(result).to.deep.equal({
-      response: { tokens },
+      response: {
+        tokens,
+        receipt: {
+          challenge,
+          identity: {
+            root: identityRoot,
+            service: process.env.SERVICE,
+            network: process.env.NETWORK,
+          },
+        },
+      },
       statusCode,
     });
     expect(queryAggregatesFnFake).to.have.been.calledWith({

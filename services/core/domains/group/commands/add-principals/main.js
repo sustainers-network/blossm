@@ -3,6 +3,7 @@ const deps = require("./deps");
 const principalLimit = 100;
 
 module.exports = async ({ context, payload, root, aggregateFn }) => {
+  const nonDuplicatedPrincipals = [];
   if (root) {
     const groupAggregate = await aggregateFn(root);
     if (!groupAggregate.state.networks.includes(context.network))
@@ -20,6 +21,19 @@ module.exports = async ({ context, payload, root, aggregateFn }) => {
           },
         }
       );
+
+    for (const principal of payload.principals) {
+      if (
+        !groupAggregate.state.principals.some(
+          (p) =>
+            p.root == principal.root &&
+            p.service == principal.service &&
+            p.network == principal.network
+        )
+      )
+        nonDuplicatedPrincipals.push(principal);
+    }
+    if (nonDuplicatedPrincipals.length == 0) return {};
   } else {
     if (payload.principals.length > principalLimit)
       throw deps.badRequestError.message(
@@ -30,13 +44,14 @@ module.exports = async ({ context, payload, root, aggregateFn }) => {
           },
         }
       );
+    nonDuplicatedPrincipals.push(...payload.principals);
   }
 
   const groupRoot = root || deps.uuid();
 
   return {
     events: [
-      ...payload.principals.map((principal) => ({
+      ...nonDuplicatedPrincipals.map((principal) => ({
         domain: "principal",
         service: process.env.SERVICE,
         network: process.env.NETWORK,
@@ -53,7 +68,7 @@ module.exports = async ({ context, payload, root, aggregateFn }) => {
           ],
         },
       })),
-      ...payload.principals.map((principal) => ({
+      ...nonDuplicatedPrincipals.map((principal) => ({
         domain: "principal",
         service: process.env.SERVICE,
         network: process.env.NETWORK,
@@ -73,13 +88,24 @@ module.exports = async ({ context, payload, root, aggregateFn }) => {
         action: "add-principals",
         root: groupRoot,
         payload: {
-          principals: payload.principals.map((principal) => ({
+          principals: nonDuplicatedPrincipals.map((principal) => ({
             root: principal.root,
             service: principal.service,
             network: principal.network,
           })),
         },
       },
+      ...(groupRoot != root
+        ? [
+            {
+              action: "add-networks",
+              root: groupRoot,
+              payload: {
+                networks: [context.network],
+              },
+            },
+          ]
+        : []),
     ],
     response: {
       ...(groupRoot != root && {

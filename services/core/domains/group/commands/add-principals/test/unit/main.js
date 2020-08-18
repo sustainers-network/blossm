@@ -123,6 +123,155 @@ describe("Command handler unit tests", () => {
       response: {},
     });
   });
+  it("should return successfully without duplicated", async () => {
+    const principal1Root = "principal1-root";
+    const principal1Service = "principal1-service";
+    const principal1Network = "principal1-network";
+    const principal1Role = "principal1-role";
+
+    const principal2Root = "principal2-root";
+    const principal2Service = "principal2-service";
+    const principal2Network = "principal2-network";
+    const principal2Role = "principal2-role";
+
+    const payload = {
+      principals: [
+        {
+          root: principal1Root,
+          service: principal1Service,
+          network: principal1Network,
+          role: principal1Role,
+        },
+        {
+          root: principal2Root,
+          service: principal2Service,
+          network: principal2Network,
+          role: principal2Role,
+        },
+      ],
+    };
+
+    const aggregateFake = fake.returns({
+      state: {
+        networks: [network],
+        principals: [
+          {
+            root: principal2Root,
+            service: principal2Service,
+            network: principal2Network,
+            role: principal2Role,
+          },
+        ],
+      },
+    });
+    const context = {
+      network,
+    };
+    const result = await main({
+      payload,
+      root,
+      aggregateFn: aggregateFake,
+      context,
+    });
+    expect(aggregateFake).to.have.been.calledWith(root);
+    expect(result).to.deep.equal({
+      events: [
+        {
+          domain: "principal",
+          service,
+          network,
+          action: "add-roles",
+          root: principal1Root,
+          payload: {
+            roles: [{ id: principal1Role, root, service, network }],
+          },
+        },
+        {
+          domain: "principal",
+          service,
+          network,
+          action: "add-groups",
+          root: principal1Root,
+          payload: {
+            groups: [{ root, service, network }],
+          },
+        },
+        {
+          action: "add-principals",
+          root,
+          payload: {
+            principals: [
+              {
+                root: principal1Root,
+                service: principal1Service,
+                network: principal1Network,
+              },
+            ],
+          },
+        },
+      ],
+      response: {},
+    });
+  });
+  it("should return successfully with no events", async () => {
+    const principal1Root = "principal1-root";
+    const principal1Service = "principal1-service";
+    const principal1Network = "principal1-network";
+    const principal1Role = "principal1-role";
+
+    const principal2Root = "principal2-root";
+    const principal2Service = "principal2-service";
+    const principal2Network = "principal2-network";
+    const principal2Role = "principal2-role";
+
+    const payload = {
+      principals: [
+        {
+          root: principal1Root,
+          service: principal1Service,
+          network: principal1Network,
+          role: principal1Role,
+        },
+        {
+          root: principal2Root,
+          service: principal2Service,
+          network: principal2Network,
+          role: principal2Role,
+        },
+      ],
+    };
+
+    const aggregateFake = fake.returns({
+      state: {
+        networks: [network],
+        principals: [
+          {
+            root: principal1Root,
+            service: principal1Service,
+            network: principal1Network,
+            role: principal1Role,
+          },
+          {
+            root: principal2Root,
+            service: principal2Service,
+            network: principal2Network,
+            role: principal2Role,
+          },
+        ],
+      },
+    });
+    const context = {
+      network,
+    };
+    const result = await main({
+      payload,
+      root,
+      aggregateFn: aggregateFake,
+      context,
+    });
+    expect(aggregateFake).to.have.been.calledWith(root);
+    expect(result).to.deep.equal({});
+  });
   it("should return successfully with no root passed in", async () => {
     const uuid = "some-uuid";
     const uuidFake = fake.returns(uuid);
@@ -157,6 +306,9 @@ describe("Command handler unit tests", () => {
 
     const result = await main({
       payload,
+      context: {
+        network,
+      },
     });
     expect(result).to.deep.equal({
       events: [
@@ -216,6 +368,13 @@ describe("Command handler unit tests", () => {
                 network: principal2Network,
               },
             ],
+          },
+        },
+        {
+          action: "add-networks",
+          root: uuid,
+          payload: {
+            networks: [network],
           },
         },
       ],

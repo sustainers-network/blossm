@@ -1,8 +1,8 @@
-domain: scene
+domain: group
 service: core
 
 commands:
-  - name: register
+  - name: add-principals
     privileges: none
 
 whitelist:

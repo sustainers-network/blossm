@@ -112,6 +112,15 @@ testing:
           - network:
             type: challenge
             value:
+        receipt:
+          challenge:
+            root:
+            service:
+            network:
+          identity:
+            root:
+            service:
+            network:
     # Return successfully if saving a new id with a context that has
     # a principal that doesn't yet belong to an identity.
     - pre:
@@ -122,7 +131,12 @@ testing:
           payload:
             roles:
               - id: some-role
+                root: some-root
                 service: some-service
+                network: some.network
+            groups:
+              - root: some-group-root
+                service: some-group-service
                 network: some.network
         - domain: principal
           service: core
@@ -131,7 +145,12 @@ testing:
           payload:
             roles:
               - id: some-other-role
+                root: some-other-root
                 service: some-service
+                network: some.network
+            groups:
+              - root: some-other-group-root
+                service: some-other-group-service
                 network: some.network
         - domain: identity
           service: core
@@ -157,6 +176,11 @@ testing:
           - network:
             type: challenge
             value:
+        receipt:
+          challenge:
+            root:
+            service:
+            network:
       code: 202
       # Should return 400 if the principal in the context belongs to a different identity.
     - pre:
