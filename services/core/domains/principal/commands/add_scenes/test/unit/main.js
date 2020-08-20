@@ -3,6 +3,8 @@ const { restore, fake } = require("sinon");
 
 const main = require("../../main");
 
+const network = "some-network";
+
 describe("Command handler unit tests", () => {
   beforeEach(() => {
     delete process.env.NETWORK;
@@ -11,16 +13,12 @@ describe("Command handler unit tests", () => {
     restore();
   });
   it("should return successfully", async () => {
-    const id = "some-id";
     const root = "some-root";
     const service = "some-service";
 
-    const network = "some-network";
-
     const payload = {
-      roles: [
+      scenes: [
         {
-          id,
           root,
           service,
           network,
@@ -28,18 +26,15 @@ describe("Command handler unit tests", () => {
       ],
     };
 
-    const aggregateFn = fake.returns({ state: { roles: [] } });
+    const aggregateFn = fake.returns({ state: { scenes: [] } });
     const result = await main({ payload, root, aggregateFn });
-
-    expect(aggregateFn).to.have.been.calledWith(root);
     expect(result).to.deep.equal({
       events: [
         {
-          action: "add-roles",
+          action: "add-scenes",
           payload: {
-            roles: [
+            scenes: [
               {
-                id,
                 root,
                 service,
                 network,
@@ -52,7 +47,6 @@ describe("Command handler unit tests", () => {
     });
   });
   it("should return successfully if no context network and removing duplicates", async () => {
-    const id = "some-id";
     const root = "some-root";
     const service = "some-service";
 
@@ -60,14 +54,13 @@ describe("Command handler unit tests", () => {
     process.env.NETWORK = envNetwork;
 
     const payload = {
-      roles: [
+      scenes: [
         {
-          id,
           root,
           service,
+          network,
         },
         {
-          id,
           root: "some-other-root",
           service,
         },
@@ -76,25 +69,23 @@ describe("Command handler unit tests", () => {
 
     const aggregateFn = fake.returns({
       state: {
-        roles: [
+        scenes: [
           {
-            id,
             root,
             service,
+            network,
           },
         ],
       },
     });
     const result = await main({ payload, root, aggregateFn });
-
     expect(result).to.deep.equal({
       events: [
         {
-          action: "add-roles",
+          action: "add-scenes",
           payload: {
-            roles: [
+            scenes: [
               {
-                id,
                 root: "some-other-root",
                 service,
                 network: envNetwork,
@@ -106,8 +97,7 @@ describe("Command handler unit tests", () => {
       ],
     });
   });
-  it("should return successfully if no roles", async () => {
-    const id = "some-id";
+  it("should return successfully if no new scenes", async () => {
     const root = "some-root";
     const service = "some-service";
 
@@ -115,28 +105,27 @@ describe("Command handler unit tests", () => {
     process.env.NETWORK = envNetwork;
 
     const payload = {
-      roles: [
+      scenes: [
         {
-          id,
           root,
           service,
+          network,
         },
       ],
     };
 
     const aggregateFn = fake.returns({
       state: {
-        roles: [
+        scenes: [
           {
-            id,
             root,
             service,
+            network,
           },
         ],
       },
     });
     const result = await main({ payload, root, aggregateFn });
-
     expect(result).to.deep.equal({});
   });
 });

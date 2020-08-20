@@ -10,9 +10,7 @@ payload:
           - GroupAdmin
       root: string
       service: string
-      network:
-        type: domain
-        is: $network
+      network: domain
 
 dependencies:
   "@blossm/uuid": "*"
@@ -44,8 +42,6 @@ testing:
           - service: 3
       - principals:
           - network: 3
-      - principals:
-          - network: some.bogus-network
       - principals:
           - network: some-bad-network
 

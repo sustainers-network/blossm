@@ -1,0 +1,81 @@
+name: add-scenes
+domain: principal
+service: core
+
+payload:
+  scenes:
+    - root: string
+      service: string
+      network: domain
+      # TODO this wont work. add-scenes should really be in the scenes domain
+      # type: domain
+      # is: $network
+
+testing:
+  validate:
+    # context:
+    #   network: some.network
+    ok:
+      - scenes:
+          - root: some-root
+            service: some-service
+            network: some.network
+    bad:
+      - scenes:
+          a: 1
+      - scenes:
+          - root: 3
+      - scenes:
+          - service: 3
+      # - scenes:
+      #     - root: some-root
+      #       service: some-service
+      #       network: some.whack-network
+      - scenes:
+          - root: some-root
+            service: some-service
+            network: some-whack-network
+
+  normalize:
+    - payload:
+        scenes:
+          - root: some-root
+            service: some-service
+            network: some-network
+      normalized:
+        scenes:
+          - root: some-root
+            service: some-service
+            network: some-network
+
+  dependencies:
+
+  steps:
+    - pre:
+        - domain: principal
+          service: core
+          root: some-root
+          action: add-scenes
+          payload:
+            scenes: []
+      payload:
+        scenes:
+          - root: some-scene-root
+            service: some-scene-service
+            network: some.scene-network
+      context:
+        network: some.scene-network
+      root: some-root
+      code: 202
+    - payload:
+        scenes:
+          - root: some-scene-root
+            service: some-scene-service
+            network: some.scene-network
+      context:
+        network: some.scene-network
+      root: some-root
+      code: 204
+
+#don't change
+procedure: command

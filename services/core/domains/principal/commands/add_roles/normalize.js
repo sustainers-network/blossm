@@ -5,6 +5,7 @@ module.exports = async (payload) => {
         id: role.id,
         root: role.root,
         service: role.service,
+        network: role.network,
       };
     }),
   };

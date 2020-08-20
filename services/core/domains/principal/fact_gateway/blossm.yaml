@@ -4,6 +4,8 @@ service: core
 facts:
   - name: roles
     privileges: none
+  - name: groups
+    privileges: none
 
 whitelist:
   - "127.0.0.1"

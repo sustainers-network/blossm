@@ -16,10 +16,10 @@ describe("Fact unit tests", () => {
     };
     const groups = [
       group,
-      {
-        root: "some-other-group-root",
-        network: "some-other-network",
-      },
+      // {
+      //   root: "some-other-group-root",
+      //   network: "some-other-network",
+      // },
     ];
 
     const aggregateFake = fake.returns({
@@ -38,5 +38,24 @@ describe("Fact unit tests", () => {
 
     expect(aggregateFake).to.have.been.calledWith(root);
     expect(result).to.deep.equal({ response: [group] });
+  });
+  it("should return successfully with no groups set", async () => {
+    const network = "some-network";
+    const root = "some-root";
+
+    const aggregateFake = fake.returns({
+      state: {},
+    });
+    const context = {
+      network,
+      principal: {
+        root,
+      },
+    };
+
+    const result = await main({ context, aggregateFn: aggregateFake });
+
+    expect(aggregateFake).to.have.been.calledWith(root);
+    expect(result).to.deep.equal({ response: [] });
   });
 });

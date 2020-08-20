@@ -47,16 +47,25 @@ testing:
           - id: some-id
             root: some-root
             service: some-service
+            network: some-network
       normalized:
         roles:
           - id: some-id
             root: some-root
             service: some-service
+            network: some-network
 
   dependencies:
 
   steps:
-    - payload:
+    - pre:
+        - domain: principal
+          service: core
+          root: some-root
+          action: add-roles
+          payload:
+            roles: []
+      payload:
         roles:
           - id: some-role-id
             root: some-role-root
@@ -68,14 +77,14 @@ testing:
       code: 202
     - payload:
         roles:
-          - id: some-other-role-id
+          - id: some-role-id
             root: some-role-root
             service: some-role-service
             network: some.role-network
       context:
         network: some.role-network
       root: some-root
-      code: 202
+      code: 204
 
 #don't change
 procedure: command
