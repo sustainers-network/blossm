@@ -1,4 +1,6 @@
-module.exports = async ({ payload, root, aggregateFn }) => {
+const deps = require("./deps");
+
+module.exports = async ({ payload, context, root, aggregateFn }) => {
   const nonDuplicatedScenes = [];
   const principalAggregate = await aggregateFn(root);
   for (const scene of payload.scenes) {
@@ -12,7 +14,18 @@ module.exports = async ({ payload, root, aggregateFn }) => {
     )
       nonDuplicatedScenes.push(scene);
   }
-  if (nonDuplicatedScenes.length == 0) return {};
+  if (nonDuplicatedScenes.length == 0) return;
+
+  await Promise.all(
+    nonDuplicatedScenes.map(async (scene) => {
+      const aggregate = await aggregateFn(scene.root, {
+        domain: "scene",
+        service: "core",
+      });
+      if (aggregate.state.network != context.network)
+        throw deps.forbiddenError.message("This scene isn't accessible.");
+    })
+  );
 
   return {
     events: [
@@ -22,6 +35,22 @@ module.exports = async ({ payload, root, aggregateFn }) => {
           scenes: [
             ...nonDuplicatedScenes.map((scene) => {
               return {
+                root: scene.root,
+                service: scene.service,
+                network: scene.network || process.env.NETWORK,
+              };
+            }),
+          ],
+        },
+        root,
+      },
+      {
+        action: "add-roles",
+        payload: {
+          roles: [
+            ...nonDuplicatedScenes.map((scene) => {
+              return {
+                id: scene.role,
                 root: scene.root,
                 service: scene.service,
                 network: scene.network || process.env.NETWORK,

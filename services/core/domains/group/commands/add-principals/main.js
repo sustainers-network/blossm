@@ -33,7 +33,7 @@ module.exports = async ({ context, payload, root, aggregateFn }) => {
       )
         nonDuplicatedPrincipals.push(principal);
     }
-    if (nonDuplicatedPrincipals.length == 0) return {};
+    if (nonDuplicatedPrincipals.length == 0) return;
   } else {
     if (payload.principals.length > principalLimit)
       throw deps.badRequestError.message(

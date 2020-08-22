@@ -67,7 +67,7 @@ describe("Command handler unit tests", () => {
       `event: update\ndata: ${JSON.stringify(view)}\n\n`
     );
     expect(publishFake).to.have.been.calledWith(channel, stream.prototype);
-    expect(result).to.deep.equal({});
+    expect(result).to.deep.equal();
     await main({ payload, context });
     expect(secretFake).to.have.been.calledOnce;
   });
@@ -100,7 +100,7 @@ describe("Command handler unit tests", () => {
       `event: update\ndata: ${JSON.stringify(view)}\n\n`
     );
     expect(publishFake).to.have.been.calledWith(channel, stream.prototype);
-    expect(result).to.deep.equal({});
+    expect(result).to.deep.equal();
     await main({ payload, context });
     expect(secretFake).to.have.been.calledOnce;
   });
@@ -132,6 +132,6 @@ describe("Command handler unit tests", () => {
       `event: update\ndata: ${JSON.stringify(view)}\n\n`
     );
     expect(publishFake).to.have.been.calledWith(channel, stream.prototype);
-    expect(result).to.deep.equal({});
+    expect(result).to.deep.equal();
   });
 });

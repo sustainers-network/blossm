@@ -18,5 +18,5 @@ module.exports = async ({ payload }) => {
     )
   );
 
-  return {};
+  return;
 };

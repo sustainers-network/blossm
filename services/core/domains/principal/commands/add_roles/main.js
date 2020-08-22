@@ -13,7 +13,7 @@ module.exports = async ({ payload, root, aggregateFn }) => {
     )
       nonDuplicatedRoles.push(role);
   }
-  if (nonDuplicatedRoles.length == 0) return {};
+  if (nonDuplicatedRoles.length == 0) return;
 
   return {
     events: [

@@ -4,33 +4,36 @@ service: core
 
 payload:
   scenes:
-    - root: string
+    - role:
+        type: string
+        in:
+          - SceneAdmin
+      root: string
       service: string
       network: domain
-      # TODO this wont work. add-scenes should really be in the scenes domain
-      # type: domain
-      # is: $network
+
+dependencies:
+  "@blossm/errors": "*"
 
 testing:
   validate:
-    # context:
-    #   network: some.network
     ok:
       - scenes:
-          - root: some-root
+          - role: SceneAdmin
+            root: some-root
             service: some-service
             network: some.network
     bad:
       - scenes:
           a: 1
       - scenes:
+          - role: 3
+      - scenes:
+          - role: some-bogus
+      - scenes:
           - root: 3
       - scenes:
           - service: 3
-      # - scenes:
-      #     - root: some-root
-      #       service: some-service
-      #       network: some.whack-network
       - scenes:
           - root: some-root
             service: some-service
@@ -39,16 +42,21 @@ testing:
   normalize:
     - payload:
         scenes:
-          - root: some-root
+          - role: some-role
+            root: some-root
             service: some-service
             network: some-network
       normalized:
         scenes:
-          - root: some-root
+          - role: some-role
+            root: some-root
             service: some-service
             network: some-network
 
   dependencies:
+    - domain: scene
+      service: core
+      procedure: event-store
 
   steps:
     - pre:
@@ -58,24 +66,57 @@ testing:
           action: add-scenes
           payload:
             scenes: []
+        - domain: scene
+          service: core
+          root: some-scene-root
+          action: register
+          payload:
+            network: some.context-network
       payload:
         scenes:
-          - root: some-scene-root
+          - role: SceneAdmin
+            root: some-scene-root
             service: some-scene-service
             network: some.scene-network
       context:
-        network: some.scene-network
+        network: some.context-network
       root: some-root
       code: 202
     - payload:
         scenes:
-          - root: some-scene-root
+          - role: SceneAdmin
+            root: some-scene-root
             service: some-scene-service
             network: some.scene-network
       context:
         network: some.scene-network
       root: some-root
       code: 204
+    - pre:
+        - domain: scene
+          service: core
+          root: another-scene-root
+          action: register
+          payload:
+            network: some.context-network
+      payload:
+        scenes:
+          - role: SceneAdmin
+            root: another-scene-root
+            service: some-scene-service
+            network: some.scene-network
+      context:
+        network: some.whacky-scene-network
+      root: some-root
+      code: 403
+    - payload:
+        scenes:
+          - role: SceneAdmin
+            root: bogus-scene-root
+            service: some-scene-service
+            network: some.scene-network
+      root: some-root
+      code: 404
 
 #don't change
 procedure: command

@@ -680,7 +680,7 @@ describe("Command handler unit tests", () => {
       queryAggregatesFn: queryAggregatesFnFake,
     });
 
-    expect(result).to.deep.equal({});
+    expect(result).to.deep.equal();
   });
   it("should throw correctly if the session is saved to a different identity", async () => {
     const queryAggregatesFnFake = stub()

@@ -206,7 +206,7 @@ module.exports = async ({
         identity.state.principal.service == context.principal.service &&
         identity.state.principal.network == context.principal.network
       )
-        return {};
+        return;
 
       const [subjectIdentity] = await queryAggregatesFn({
         domain: "identity",

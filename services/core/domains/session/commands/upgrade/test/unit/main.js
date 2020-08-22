@@ -311,7 +311,7 @@ describe("Command handler unit tests", () => {
       context,
       aggregateFn: aggregateFake,
     });
-    expect(response).to.deep.equal({});
+    expect(response).to.deep.equal();
   });
   it("should throw correctly if session terminated", async () => {
     const signature = "some-signature";

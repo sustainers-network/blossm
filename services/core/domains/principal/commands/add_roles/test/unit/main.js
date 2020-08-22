@@ -137,6 +137,6 @@ describe("Command handler unit tests", () => {
     });
     const result = await main({ payload, root, aggregateFn });
 
-    expect(result).to.deep.equal({});
+    expect(result).to.deep.equal();
   });
 });

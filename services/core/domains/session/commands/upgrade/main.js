@@ -2,7 +2,7 @@ const deps = require("./deps");
 
 module.exports = async ({ payload, context, claims, aggregateFn }) => {
   // If there's nothing to upgrade to, dont save events.
-  if (!Object.keys(payload).length) return {};
+  if (!Object.keys(payload).length) return;
 
   // Get the aggregate for this session.
   const aggregate = await aggregateFn(context.session.root);

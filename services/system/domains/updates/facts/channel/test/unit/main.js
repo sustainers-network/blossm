@@ -45,10 +45,9 @@ describe("Fact unit tests", () => {
       "Grip-Keep-Alive": ":\\n\\n; format=cstring; timeout=20",
     });
   });
-  it("should return successfully with domain", async () => {
+  it("should return successfully with domain and no context", async () => {
     const query = {
       name,
-      context: queryContext,
       network,
     };
 
@@ -62,7 +61,7 @@ describe("Fact unit tests", () => {
     const padding = new Array(2048);
     const body = `:${padding.join(" ")}\n\n`;
     expect(response).to.deep.equal(body);
-    expect(getFake).to.have.been.calledWith(`v.${queryContext}.${network}`, {
+    expect(getFake).to.have.been.calledWith(`v.${network}`, {
       query: {
         context,
         name: query.name,

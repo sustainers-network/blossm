@@ -270,7 +270,7 @@ describe("Command handler unit tests", () => {
       context,
     });
     expect(aggregateFake).to.have.been.calledWith(root);
-    expect(result).to.deep.equal({});
+    expect(result).to.deep.equal();
   });
   it("should return successfully with no root passed in", async () => {
     const uuid = "some-uuid";
