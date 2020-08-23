@@ -4,6 +4,8 @@ service: system
 facts:
   - name: channel
     privileges: none
+  - name: token
+    privileges: none
 
 whitelist:
   - "127.0.0.1"
