@@ -125,6 +125,7 @@ module.exports = async ({
           expires: deps.moment().add(THREE_MINUTES, "s").toDate().toISOString(),
           ...(events && { events }),
         },
+        correctNumber: 0,
         root,
       },
     ],

@@ -69,7 +69,12 @@ describe("Command handler unit tests", () => {
             scenes: [{ root, service, network }],
           },
         },
-        { action: "register", payload, root },
+        {
+          action: "register",
+          payload,
+          root,
+          correctNumber: 0,
+        },
       ],
       response: {
         tokens,
@@ -147,7 +152,12 @@ describe("Command handler unit tests", () => {
             scenes: [{ root, service, network }],
           },
         },
-        { action: "register", payload, root },
+        {
+          action: "register",
+          payload,
+          root,
+          correctNumber: 0,
+        },
       ],
       response: {
         receipt: {

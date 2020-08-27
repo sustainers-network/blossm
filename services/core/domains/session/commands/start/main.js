@@ -50,6 +50,7 @@ module.exports = async ({ payload, context = {}, ip }) => {
         root,
         action: "start",
         payload: { ...payload, device: { ...payload.device, ip } },
+        correctNumber: 0,
       },
     ],
     response: {

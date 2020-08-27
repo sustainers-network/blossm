@@ -91,6 +91,7 @@ describe("Command handler unit tests", () => {
       events: [
         {
           action: "issue",
+          correctNumber: 0,
           root,
           payload: {
             code,
@@ -198,6 +199,7 @@ describe("Command handler unit tests", () => {
       events: [
         {
           action: "issue",
+          correctNumber: 0,
           root,
           payload: {
             code,
@@ -311,6 +313,7 @@ describe("Command handler unit tests", () => {
       events: [
         {
           action: "issue",
+          correctNumber: 0,
           root,
           payload: {
             code,
@@ -426,6 +429,7 @@ describe("Command handler unit tests", () => {
       events: [
         {
           action: "issue",
+          correctNumber: 0,
           root,
           payload: {
             code,

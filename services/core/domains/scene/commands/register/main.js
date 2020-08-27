@@ -49,6 +49,7 @@ module.exports = async ({ payload, context, commandFn }) => {
       action: "register",
       root: sceneRoot,
       payload,
+      correctNumber: 0,
     },
   ];
 
