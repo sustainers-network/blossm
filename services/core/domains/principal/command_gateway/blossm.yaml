@@ -2,10 +2,11 @@ domain: principal
 service: core
 
 commands:
-  # TODO it shouldn't be anyones right to add a role or scene to a principal
   - name: add-roles
     privileges: none
   - name: add-scenes
+    privileges: none
+  - name: remove-scenes
     privileges: none
 
 whitelist:

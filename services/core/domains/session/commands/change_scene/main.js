@@ -12,13 +12,6 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
     }),
   ]);
 
-  //TODO
-  console.log({
-    pRoot: claims.sub,
-    pA: principalAggregate.state.scenes,
-    pScene: payload.scene,
-  });
-
   // Check to see if the principal has access to the context being switched in to.
   if (
     !principalAggregate.state.scenes.some(

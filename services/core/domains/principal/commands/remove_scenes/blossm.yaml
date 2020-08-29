@@ -1,6 +1,8 @@
-name: add-scenes
+name: remove-scenes
 domain: principal
 service: core
+
+root: true
 
 payload:
   scenes:
@@ -66,7 +68,10 @@ testing:
           root: some-root
           action: add-scenes
           payload:
-            scenes: []
+            scenes:
+              - root: some-scene-root
+                service: some-scene-service
+                network: some.scene-network
         - domain: scene
           service: core
           root: some-scene-root
@@ -94,6 +99,15 @@ testing:
       root: some-root
       code: 204
     - pre:
+        - domain: principal
+          service: core
+          root: some-root
+          action: add-scenes
+          payload:
+            scenes:
+              - root: another-scene-root
+                service: some-scene-service
+                network: some.scene-network
         - domain: scene
           service: core
           root: another-scene-root
@@ -110,13 +124,13 @@ testing:
         network: some.whacky-scene-network
       root: some-root
       code: 403
-    - payload:
+    - root: some-bogus-root
+      payload:
         scenes:
           - role: SceneAdmin
-            root: bogus-scene-root
+            root: another-scene-root
             service: some-scene-service
             network: some.scene-network
-      root: some-root
       code: 404
 
 #don't change

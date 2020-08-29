@@ -1,6 +1,8 @@
-name: add-principals
+name: remove-principals
 domain: group
 service: core
+
+root: true
 
 payload:
   principals:
@@ -13,7 +15,6 @@ payload:
       network: domain
 
 dependencies:
-  "@blossm/uuid": "*"
   "@blossm/errors": "*"
 
 devDependencies:
@@ -75,6 +76,15 @@ testing:
             networks:
               - some.group-network
             principals: []
+        - domain: group
+          service: core
+          root: some-group-root
+          action: add-principals
+          payload:
+            principals:
+              - root: some-principal-root
+                service: core
+                network: some.group-network
       payload:
         principals:
           - role: GroupAdmin
@@ -92,14 +102,9 @@ testing:
             service: some-principal-service
             network: some.network
       context:
-        network: some.network
-      response:
-        receipt:
-          group:
-            root:
-            service:
-            network:
-      code: 202
+        network: some.group-network
+      root: some-group-root
+      code: 204
     - pre:
         - domain: group
           service: core
