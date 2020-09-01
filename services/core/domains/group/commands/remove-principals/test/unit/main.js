@@ -1,13 +1,15 @@
 const { expect } = require("chai").use(require("sinon-chai"));
-const { replace, restore, fake } = require("sinon");
+const { replace, restore, fake, stub } = require("sinon");
 
 const main = require("../../main");
 const deps = require("../../deps");
 
 const root = "some-root";
+const domain = "some-domain";
 const service = "some-service";
 const network = "some-network";
 
+process.env.DOMAIN = domain;
 process.env.SERVICE = service;
 process.env.NETWORK = network;
 
@@ -65,11 +67,63 @@ describe("Command handler unit tests", () => {
     const context = {
       network,
     };
+    const roles1 = "some-roles1";
+    const roles2 = "some-roles2";
+    const readFactFnFake = stub()
+      .onFirstCall()
+      .returns({ body: roles1 })
+      .onSecondCall()
+      .returns({ body: roles2 });
     const result = await main({
       payload,
       root,
       aggregateFn: aggregateFake,
+      readFactFn: readFactFnFake,
       context,
+    });
+    expect(readFactFnFake.getCall(0)).to.have.been.calledWith({
+      name: "roles",
+      domain: "principal",
+      service: "core",
+      context: {
+        principal: {
+          root: principal1Root,
+          service: principal1Service,
+          network: principal1Network,
+          role: principal1Role,
+        },
+      },
+      query: {
+        includes: [
+          {
+            root,
+            domain,
+            service,
+          },
+        ],
+      },
+    });
+    expect(readFactFnFake.getCall(1)).to.have.been.calledWith({
+      name: "roles",
+      domain: "principal",
+      service: "core",
+      context: {
+        principal: {
+          root: principal2Root,
+          service: principal2Service,
+          network: principal2Network,
+          role: principal2Role,
+        },
+      },
+      query: {
+        includes: [
+          {
+            root,
+            domain,
+            service,
+          },
+        ],
+      },
     });
     expect(aggregateFake).to.have.been.calledWith(root);
     expect(result).to.deep.equal({
@@ -81,7 +135,7 @@ describe("Command handler unit tests", () => {
           action: "remove-roles",
           root: principal1Root,
           payload: {
-            roles: [{ id: principal1Role, root, service, network }],
+            roles: roles1,
           },
         },
         {
@@ -91,7 +145,7 @@ describe("Command handler unit tests", () => {
           action: "remove-roles",
           root: principal2Root,
           payload: {
-            roles: [{ id: principal2Role, root, service, network }],
+            roles: roles2,
           },
         },
         {
@@ -179,11 +233,36 @@ describe("Command handler unit tests", () => {
     const context = {
       network,
     };
+    const roles = "some-roles";
+    const readFactFnFake = fake.returns({ body: roles });
     const result = await main({
       payload,
       root,
       aggregateFn: aggregateFake,
+      readFactFn: readFactFnFake,
       context,
+    });
+    expect(readFactFnFake.getCall(0)).to.have.been.calledWith({
+      name: "roles",
+      domain: "principal",
+      service: "core",
+      context: {
+        principal: {
+          root: principal1Root,
+          service: principal1Service,
+          network: principal1Network,
+          role: principal1Role,
+        },
+      },
+      query: {
+        includes: [
+          {
+            root,
+            domain,
+            service,
+          },
+        ],
+      },
     });
     expect(aggregateFake).to.have.been.calledWith(root);
     expect(result).to.deep.equal({
@@ -195,7 +274,7 @@ describe("Command handler unit tests", () => {
           action: "remove-roles",
           root: principal1Root,
           payload: {
-            roles: [{ id: principal1Role, root, service, network }],
+            roles,
           },
         },
         {

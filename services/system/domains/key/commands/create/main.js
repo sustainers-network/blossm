@@ -30,9 +30,10 @@ module.exports = async ({ payload, context, aggregateFn }) => {
           roles: payload.roles.map((role) => {
             return {
               id: role,
-              root: "some-tmp-root-TODO",
-              service: process.env.SERVICE,
-              network: process.env.NETWORK,
+              root: context.node.root,
+              domain: "node",
+              service: context.node.service,
+              network: context.node.network,
             };
           }),
         },

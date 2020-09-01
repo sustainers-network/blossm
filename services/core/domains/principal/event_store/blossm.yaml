@@ -15,6 +15,7 @@ schema:
   roles:
     - id: String
       root: String
+      domain: String
       service: String
       network: String
   scenes:
@@ -36,10 +37,12 @@ testing:
         roles:
           - id: some-role
             root: some-role-root
+            domain: some-role-domain
             service: some-role-service
             network: some.role-network
           - id: some-other-role
             root: some-other-role-root
+            domain: some-other-role-domain
             service: some-other-role-service
             network: some.other-role-network
     - action: remove-roles
@@ -47,6 +50,7 @@ testing:
         roles:
           - id: some-role
             root: some-role-root
+            domain: some-role-domain
             service: some-role-service
             network: some.role-network
     - action: add-scenes
@@ -81,48 +85,57 @@ testing:
             roles:
               - id: some-role
                 root: some-role-root
+                domain: some-role-domain
                 service: some-role-service
                 network: some.role-network
           payload:
             roles:
               - id: some-role
                 root: some-role-root
+                domain: some-role-domain
                 service: some-role-service
                 network: some.role-network
               - id: some-other-role
                 root: some-other-role-root
+                domain: some-other-role-domain
                 service: some-other-role-service
                 network: some.other-role-network
           result:
             roles:
               - id: some-role
                 root: some-role-root
+                domain: some-role-domain
                 service: some-role-service
                 network: some.role-network
               - id: some-other-role
                 root: some-other-role-root
+                domain: some-other-role-domain
                 service: some-other-role-service
                 network: some.other-role-network
         - state:
             roles:
               - id: some-role
                 root: some-role-root
+                domain: some-role-domain
                 service: some-role-service
                 network: some.role-network
           payload:
             roles:
               - id: some-other-role
                 root: some-other-role-root
+                domain: some-other-role-domain
                 service: some-other-role-service
                 network: some.other-role-network
           result:
             roles:
               - id: some-role
                 root: some-role-root
+                domain: some-role-domain
                 service: some-role-service
                 network: some.role-network
               - id: some-other-role
                 root: some-other-role-root
+                domain: some-other-role-domain
                 service: some-other-role-service
                 network: some.other-role-network
         - state: {}
@@ -130,12 +143,14 @@ testing:
             roles:
               - id: some-role
                 root: some-role-root
+                domain: some-role-domain
                 service: some-role-service
                 network: some.role-network
           result:
             roles:
               - id: some-role
                 root: some-role-root
+                domain: some-role-domain
                 service: some-role-service
                 network: some.role-network
     - action: remove-roles
@@ -144,22 +159,26 @@ testing:
             roles:
               - id: some-role
                 root: some-role-root
+                domain: some-role-domain
                 service: some-role-service
                 network: some.role-network
               - id: some-other-role
                 root: some-other-role-root
+                domain: some-other-role-domain
                 service: some-other-role-service
                 network: some.other-role-network
           payload:
             roles:
               - id: some-role
                 root: some-role-root
+                domain: some-role-domain
                 service: some-role-service
                 network: some.role-network
           result:
             roles:
               - id: some-other-role
                 root: some-other-role-root
+                domain: some-other-role-domain
                 service: some-other-role-service
                 network: some.other-role-network
         - state: {}
@@ -167,6 +186,7 @@ testing:
             roles:
               - id: some-role
                 root: some-role-root
+                domain: some-role-domain
                 service: some-role-service
                 network: some.role-network
           result:

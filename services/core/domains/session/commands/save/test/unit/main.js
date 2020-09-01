@@ -26,6 +26,7 @@ const context = {
 };
 const statusCode = "status-code";
 const service = "some-service";
+const domain = "some-domain";
 const network = "some-network";
 
 const principalRoot = "some-principal-root";
@@ -54,6 +55,7 @@ const sessionprincipalAggregate = {
     {
       id: "some-other-role-id",
       root: "some-other-role-root",
+      domain,
       service,
       network,
     },
@@ -150,6 +152,7 @@ describe("Command handler unit tests", () => {
             role: {
               id: "some-other-role-id",
               root: "some-other-role-root",
+              domain,
               service,
               network,
             },
@@ -184,6 +187,7 @@ describe("Command handler unit tests", () => {
                 {
                   id: "some-other-role-id",
                   root: "some-other-role-root",
+                  domain,
                   service,
                   network,
                 },
@@ -460,7 +464,13 @@ describe("Command handler unit tests", () => {
             root: principalRoot,
             payload: {
               roles: [
-                { id: `IdentityAdmin`, root: identityRoot, service, network },
+                {
+                  id: `IdentityAdmin`,
+                  root: identityRoot,
+                  domain: "identity",
+                  service,
+                  network,
+                },
               ],
             },
           },
@@ -562,7 +572,13 @@ describe("Command handler unit tests", () => {
             root: principalRoot,
             payload: {
               roles: [
-                { id: `IdentityAdmin`, root: identityRoot, service, network },
+                {
+                  id: `IdentityAdmin`,
+                  root: identityRoot,
+                  domain: "identity",
+                  service,
+                  network,
+                },
               ],
             },
           },
@@ -651,7 +667,13 @@ describe("Command handler unit tests", () => {
             root: contextPrincipalRoot,
             payload: {
               roles: [
-                { id: "IdentityAdmin", root: identityRoot, service, network },
+                {
+                  id: "IdentityAdmin",
+                  root: identityRoot,
+                  domain: "identity",
+                  service,
+                  network,
+                },
               ],
             },
           },

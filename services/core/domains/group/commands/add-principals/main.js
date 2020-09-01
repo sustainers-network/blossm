@@ -62,6 +62,7 @@ module.exports = async ({ context, payload, root, aggregateFn }) => {
             {
               id: principal.role,
               root: groupRoot,
+              domain: "group",
               service: process.env.SERVICE,
               network: process.env.NETWORK,
             },

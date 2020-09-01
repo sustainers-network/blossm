@@ -7,23 +7,22 @@ const deps = require("../../deps");
 const contextNetwork = "some-context-network";
 
 describe("Command handler unit tests", () => {
-  beforeEach(() => {
-    delete process.env.NETWORK;
-  });
   afterEach(() => {
     restore();
   });
   it("should return successfully", async () => {
     const role = "some-role";
     const root = "some-root";
+    const domain = "some-domain";
     const service = "some-service";
     const network = "some-network";
 
     const payload = {
       scenes: [
         {
-          role,
+          roles: [role],
           root,
+          domain,
           service,
           network,
         },
@@ -65,6 +64,7 @@ describe("Command handler unit tests", () => {
               {
                 id: role,
                 root,
+                domain: "scene",
                 service,
                 network,
               },
@@ -81,9 +81,6 @@ describe("Command handler unit tests", () => {
     const service = "some-service";
     const network = "some-network";
 
-    const envNetwork = "some-env-network";
-    process.env.NETWORK = envNetwork;
-
     const payload = {
       scenes: [
         {
@@ -92,9 +89,10 @@ describe("Command handler unit tests", () => {
           network,
         },
         {
-          role,
+          roles: [role],
           root: "some-other-root",
           service,
+          network,
         },
       ],
     };
@@ -133,7 +131,7 @@ describe("Command handler unit tests", () => {
               {
                 root: "some-other-root",
                 service,
-                network: envNetwork,
+                network,
               },
             ],
           },
@@ -146,8 +144,9 @@ describe("Command handler unit tests", () => {
               {
                 id: role,
                 root: "some-other-root",
+                domain: "scene",
                 service,
-                network: envNetwork,
+                network,
               },
             ],
           },
@@ -160,9 +159,6 @@ describe("Command handler unit tests", () => {
     const root = "some-root";
     const service = "some-service";
     const network = "some-network";
-
-    const envNetwork = "some-env-network";
-    process.env.NETWORK = envNetwork;
 
     const payload = {
       scenes: [
@@ -197,7 +193,7 @@ describe("Command handler unit tests", () => {
     const payload = {
       scenes: [
         {
-          role,
+          roles: [role],
           root,
           service,
           network,

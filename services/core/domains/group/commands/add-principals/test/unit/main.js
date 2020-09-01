@@ -68,7 +68,9 @@ describe("Command handler unit tests", () => {
           action: "add-roles",
           root: principal1Root,
           payload: {
-            roles: [{ id: principal1Role, root, service, network }],
+            roles: [
+              { id: principal1Role, root, domain: "group", service, network },
+            ],
           },
         },
         {
@@ -78,7 +80,9 @@ describe("Command handler unit tests", () => {
           action: "add-roles",
           root: principal2Root,
           payload: {
-            roles: [{ id: principal2Role, root, service, network }],
+            roles: [
+              { id: principal2Role, root, domain: "group", service, network },
+            ],
           },
         },
         {
@@ -183,7 +187,9 @@ describe("Command handler unit tests", () => {
           action: "add-roles",
           root: principal1Root,
           payload: {
-            roles: [{ id: principal1Role, root, service, network }],
+            roles: [
+              { id: principal1Role, root, domain: "group", service, network },
+            ],
           },
         },
         {
@@ -319,7 +325,15 @@ describe("Command handler unit tests", () => {
           action: "add-roles",
           root: principal1Root,
           payload: {
-            roles: [{ id: principal1Role, root: uuid, service, network }],
+            roles: [
+              {
+                id: principal1Role,
+                root: uuid,
+                domain: "group",
+                service,
+                network,
+              },
+            ],
           },
         },
         {
@@ -329,7 +343,15 @@ describe("Command handler unit tests", () => {
           action: "add-roles",
           root: principal2Root,
           payload: {
-            roles: [{ id: principal2Role, root: uuid, service, network }],
+            roles: [
+              {
+                id: principal2Role,
+                root: uuid,
+                domain: "group",
+                service,
+                network,
+              },
+            ],
           },
         },
         {

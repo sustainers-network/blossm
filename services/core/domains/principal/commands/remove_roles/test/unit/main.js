@@ -27,14 +27,26 @@ describe("Command handler unit tests", () => {
       ],
     };
 
-    const aggregateFn = fake.returns({ state: { roles: [] } });
+    const aggregateFn = fake.returns({
+      state: {
+        roles: [
+          {
+            id,
+            root,
+            domain,
+            service,
+            network,
+          },
+        ],
+      },
+    });
     const result = await main({ payload, root, aggregateFn });
 
     expect(aggregateFn).to.have.been.calledWith(root);
     expect(result).to.deep.equal({
       events: [
         {
-          action: "add-roles",
+          action: "remove-roles",
           payload: {
             roles: [
               {
@@ -51,7 +63,7 @@ describe("Command handler unit tests", () => {
       ],
     });
   });
-  it("should return successfully if no context network and removing duplicates", async () => {
+  it("should return successfully if no context network and removing non existing", async () => {
     const id = "some-id";
     const root = "some-root";
     const domain = "some-domain";
@@ -95,12 +107,12 @@ describe("Command handler unit tests", () => {
     expect(result).to.deep.equal({
       events: [
         {
-          action: "add-roles",
+          action: "remove-roles",
           payload: {
             roles: [
               {
                 id,
-                root: "some-other-root",
+                root,
                 domain,
                 service,
                 network,
@@ -133,15 +145,7 @@ describe("Command handler unit tests", () => {
 
     const aggregateFn = fake.returns({
       state: {
-        roles: [
-          {
-            id,
-            root,
-            domain,
-            service,
-            network,
-          },
-        ],
+        roles: [],
       },
     });
     const result = await main({ payload, root, aggregateFn });

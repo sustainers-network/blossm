@@ -1,6 +1,12 @@
 const deps = require("./deps");
 
-module.exports = async ({ payload, root, context, aggregateFn }) => {
+module.exports = async ({
+  payload,
+  root,
+  context,
+  aggregateFn,
+  readFactFn,
+}) => {
   const existingScenes = [];
   const principalAggregate = await aggregateFn(root);
   for (const scene of payload.scenes) {
@@ -27,6 +33,31 @@ module.exports = async ({ payload, root, context, aggregateFn }) => {
     })
   );
 
+  const { body: roles } = await readFactFn({
+    name: "roles",
+    domain: "principal",
+    service: "core",
+    query: {
+      includes: existingScenes.map((scene) => ({
+        root: scene.root,
+        domain: "scene",
+        service: scene.service,
+      })),
+    },
+  });
+
+  const flattenedRoles = [];
+  for (const scene of existingScenes) {
+    for (const role of roles.filter((role) => role.root == scene.root))
+      flattenedRoles.push({
+        id: role.id,
+        root: scene.root,
+        domain: "scene",
+        service: scene.service,
+        network: scene.network,
+      });
+  }
+
   return {
     events: [
       {
@@ -37,7 +68,7 @@ module.exports = async ({ payload, root, context, aggregateFn }) => {
               return {
                 root: scene.root,
                 service: scene.service,
-                network: scene.network || process.env.NETWORK,
+                network: scene.network,
               };
             }),
           ],
@@ -47,16 +78,7 @@ module.exports = async ({ payload, root, context, aggregateFn }) => {
       {
         action: "remove-roles",
         payload: {
-          roles: [
-            ...existingScenes.map((scene) => {
-              return {
-                id: scene.role,
-                root: scene.root,
-                service: scene.service,
-                network: scene.network || process.env.NETWORK,
-              };
-            }),
-          ],
+          roles: flattenedRoles,
         },
         root,
       },

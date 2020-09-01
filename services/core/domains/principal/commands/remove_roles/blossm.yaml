@@ -1,4 +1,4 @@
-name: add-roles
+name: remove-roles
 domain: principal
 service: core
 
@@ -55,6 +55,7 @@ testing:
             domain: some-domain
             service: some-service
             network: some-network
+            some: bogus
       normalized:
         roles:
           - id: some-id
@@ -72,12 +73,17 @@ testing:
           root: some-root
           action: add-roles
           payload:
-            roles: []
+            roles:
+              - id: some-role-id
+                root: some-role-root
+                domain: some-domain
+                service: some-role-service
+                network: some.role-network
       payload:
         roles:
           - id: some-role-id
             root: some-role-root
-            domain: some-role-domain
+            domain: some-domain
             service: some-role-service
             network: some.role-network
       context:
@@ -88,7 +94,7 @@ testing:
         roles:
           - id: some-role-id
             root: some-role-root
-            domain: some-role-domain
+            domain: some-domain
             service: some-role-service
             network: some.role-network
       context:
@@ -97,5 +103,4 @@ testing:
       code: 204
 
 #don't change
-
 procedure: command

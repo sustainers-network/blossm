@@ -4,13 +4,12 @@ service: core
 
 root: true
 
+contexts:
+  - principal
+
 payload:
   principals:
-    - role:
-        type: string
-        in:
-          - GroupAdmin
-      root: string
+    - root: string
       service: string
       network: domain
 
@@ -65,6 +64,10 @@ testing:
     - domain: principal
       service: core
       procedure: event-store
+    - name: roles
+      domain: principal
+      service: core
+      procedure: fact
 
   steps:
     - pre:
@@ -83,6 +86,16 @@ testing:
           payload:
             principals:
               - root: some-principal-root
+                service: core
+                network: some.group-network
+        - domain: principal
+          service: core
+          root: some-principal-root
+          action: add-roles
+          payload:
+            roles:
+              - id: some-role-id
+                root: some-group-root
                 service: core
                 network: some.group-network
       payload:

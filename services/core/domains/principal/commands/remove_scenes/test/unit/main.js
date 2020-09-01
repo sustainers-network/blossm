@@ -7,14 +7,11 @@ const deps = require("../../deps");
 const contextNetwork = "some-context-network";
 
 describe("Command handler unit tests", () => {
-  beforeEach(() => {
-    delete process.env.NETWORK;
-  });
   afterEach(() => {
     restore();
   });
   it("should return successfully", async () => {
-    const role = "some-role";
+    const roleId = "some-role-id";
     const root = "some-root";
     const service = "some-service";
     const network = "some-network";
@@ -22,7 +19,6 @@ describe("Command handler unit tests", () => {
     const payload = {
       scenes: [
         {
-          role,
           root,
           service,
           network,
@@ -35,7 +31,6 @@ describe("Command handler unit tests", () => {
         state: {
           scenes: [
             {
-              role,
               root,
               service,
               network,
@@ -46,6 +41,12 @@ describe("Command handler unit tests", () => {
       .onSecondCall()
       .returns({ state: { network: contextNetwork } });
 
+    const role = {
+      id: roleId,
+      root,
+    };
+    const readFactFnFake = fake.returns({ body: [role] });
+
     const result = await main({
       payload,
       context: {
@@ -53,8 +54,23 @@ describe("Command handler unit tests", () => {
       },
       root,
       aggregateFn,
+      readFactFn: readFactFnFake,
     });
 
+    expect(readFactFnFake).to.have.been.calledWith({
+      name: "roles",
+      domain: "principal",
+      service: "core",
+      query: {
+        includes: [
+          {
+            root,
+            domain: "scene",
+            service,
+          },
+        ],
+      },
+    });
     expect(result).to.deep.equal({
       events: [
         {
@@ -75,8 +91,9 @@ describe("Command handler unit tests", () => {
           payload: {
             roles: [
               {
-                id: role,
+                id: roleId,
                 root,
+                domain: "scene",
                 service,
                 network,
               },
@@ -88,7 +105,7 @@ describe("Command handler unit tests", () => {
     });
   });
   it("should return successfully with no duplicates", async () => {
-    const role = "some-role";
+    const roleId = "some-role-id";
     const root = "some-root";
     const service = "some-service";
     const network = "some-network";
@@ -96,13 +113,11 @@ describe("Command handler unit tests", () => {
     const payload = {
       scenes: [
         {
-          role,
           root,
           service,
           network,
         },
         {
-          role,
           root: "some-other-scene-root",
           service,
           network,
@@ -115,7 +130,6 @@ describe("Command handler unit tests", () => {
         state: {
           scenes: [
             {
-              role,
               root,
               service,
               network,
@@ -126,6 +140,12 @@ describe("Command handler unit tests", () => {
       .onSecondCall()
       .returns({ state: { network: contextNetwork } });
 
+    const role = {
+      id: roleId,
+      root,
+    };
+    const readFactFnFake = fake.returns({ body: [role] });
+
     const result = await main({
       payload,
       context: {
@@ -133,8 +153,23 @@ describe("Command handler unit tests", () => {
       },
       root,
       aggregateFn,
+      readFactFn: readFactFnFake,
     });
 
+    expect(readFactFnFake).to.have.been.calledWith({
+      name: "roles",
+      domain: "principal",
+      service: "core",
+      query: {
+        includes: [
+          {
+            root,
+            domain: "scene",
+            service,
+          },
+        ],
+      },
+    });
     expect(result).to.deep.equal({
       events: [
         {
@@ -155,8 +190,9 @@ describe("Command handler unit tests", () => {
           payload: {
             roles: [
               {
-                id: role,
+                id: roleId,
                 root,
+                domain: "scene",
                 service,
                 network,
               },
@@ -171,9 +207,6 @@ describe("Command handler unit tests", () => {
     const root = "some-root";
     const service = "some-service";
     const network = "some-network";
-
-    const envNetwork = "some-env-network";
-    process.env.NETWORK = envNetwork;
 
     const payload = {
       scenes: [
@@ -202,7 +235,6 @@ describe("Command handler unit tests", () => {
     const payload = {
       scenes: [
         {
-          role,
           root,
           service,
           network,

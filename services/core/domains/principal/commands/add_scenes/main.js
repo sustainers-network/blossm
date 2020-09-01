@@ -27,6 +27,18 @@ module.exports = async ({ payload, context, root, aggregateFn }) => {
     })
   );
 
+  const flattenedRoles = [];
+  for (const scene of nonDuplicatedScenes) {
+    for (const role of scene.roles)
+      flattenedRoles.push({
+        id: role,
+        root: scene.root,
+        domain: "scene",
+        service: scene.service,
+        network: scene.network,
+      });
+  }
+
   return {
     events: [
       {
@@ -37,7 +49,7 @@ module.exports = async ({ payload, context, root, aggregateFn }) => {
               return {
                 root: scene.root,
                 service: scene.service,
-                network: scene.network || process.env.NETWORK,
+                network: scene.network,
               };
             }),
           ],
@@ -47,16 +59,7 @@ module.exports = async ({ payload, context, root, aggregateFn }) => {
       {
         action: "add-roles",
         payload: {
-          roles: [
-            ...nonDuplicatedScenes.map((scene) => {
-              return {
-                id: scene.role,
-                root: scene.root,
-                service: scene.service,
-                network: scene.network || process.env.NETWORK,
-              };
-            }),
-          ],
+          roles: flattenedRoles,
         },
         root,
       },

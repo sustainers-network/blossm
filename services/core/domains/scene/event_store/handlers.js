@@ -1,8 +1,10 @@
 module.exports = {
-  register: (state, payload) => {
-    return {
-      ...state,
-      ...payload,
-    };
-  },
+  register: (state, payload) => ({
+    ...state,
+    ...payload,
+  }),
+  delete: (state, payload) => ({
+    ...state,
+    ...payload,
+  }),
 };

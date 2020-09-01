@@ -5,8 +5,10 @@ public: true
 
 actions:
   - register
+  - delete
 
 schema:
+  deleted: Date
   root: String
   domain: String
   service: String

@@ -6,11 +6,7 @@ root: true
 
 payload:
   scenes:
-    - role:
-        type: string
-        in:
-          - SceneAdmin
-      root: string
+    - root: string
       service: string
       network: domain
 
@@ -21,17 +17,12 @@ testing:
   validate:
     ok:
       - scenes:
-          - role: SceneAdmin
-            root: some-root
+          - root: some-root
             service: some-service
             network: some.network
     bad:
       - scenes:
           a: 1
-      - scenes:
-          - role: 3
-      - scenes:
-          - role: some-bogus
       - scenes:
           - root: 3
       - scenes:
@@ -44,15 +35,13 @@ testing:
   normalize:
     - payload:
         scenes:
-          - role: some-role
-            root: some-root
+          - root: some-root
             service: some-service
             network: some-network
             bogus: some-bogus
       normalized:
         scenes:
-          - role: some-role
-            root: some-root
+          - root: some-root
             service: some-service
             network: some-network
 
@@ -60,18 +49,33 @@ testing:
     - domain: scene
       service: core
       procedure: event-store
+    - name: roles
+      domain: principal
+      service: core
+      procedure: fact
 
   steps:
     - pre:
         - domain: principal
           service: core
-          root: some-root
+          root: some-principal-root
           action: add-scenes
           payload:
             scenes:
               - root: some-scene-root
                 service: some-scene-service
-                network: some.scene-network
+                network: some.context-network
+        - domain: principal
+          service: core
+          root: some-principal-root
+          action: add-roles
+          payload:
+            roles:
+              - id: some-role-id
+                root: some-scene-root
+                domain: some-scene-domain
+                service: some-scene-service
+                network: some.context-network
         - domain: scene
           service: core
           root: some-scene-root
@@ -80,28 +84,30 @@ testing:
             network: some.context-network
       payload:
         scenes:
-          - role: SceneAdmin
-            root: some-scene-root
+          - root: some-scene-root
             service: some-scene-service
-            network: some.scene-network
+            network: some.context-network
       context:
         network: some.context-network
-      root: some-root
+        principal:
+          root: some-principal-root
+      root: some-principal-root
       code: 202
     - payload:
         scenes:
-          - role: SceneAdmin
-            root: some-scene-root
+          - root: some-scene-root
             service: some-scene-service
             network: some.scene-network
       context:
         network: some.scene-network
-      root: some-root
+        principal:
+          root: some-principal-root
+      root: some-principal-root
       code: 204
     - pre:
         - domain: principal
           service: core
-          root: some-root
+          root: some-principal-root
           action: add-scenes
           payload:
             scenes:
@@ -116,19 +122,19 @@ testing:
             network: some.context-network
       payload:
         scenes:
-          - role: SceneAdmin
-            root: another-scene-root
+          - root: another-scene-root
             service: some-scene-service
             network: some.scene-network
       context:
         network: some.whacky-scene-network
-      root: some-root
+        principal:
+          root: some-principal-root
+      root: some-principal-root
       code: 403
     - root: some-bogus-root
       payload:
         scenes:
-          - role: SceneAdmin
-            root: another-scene-root
+          - root: another-scene-root
             service: some-scene-service
             network: some.scene-network
       code: 404

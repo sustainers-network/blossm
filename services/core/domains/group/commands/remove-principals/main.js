@@ -1,6 +1,13 @@
 const deps = require("./deps");
 
-module.exports = async ({ context, payload, root, aggregateFn }) => {
+//TODO make sure requesting principal has permissions.
+module.exports = async ({
+  context,
+  payload,
+  root,
+  aggregateFn,
+  readFactFn,
+}) => {
   const existingPrincipals = [];
   const groupAggregate = await aggregateFn(root);
   if (!groupAggregate.state.networks.includes(context.network))
@@ -19,6 +26,30 @@ module.exports = async ({ context, payload, root, aggregateFn }) => {
   }
   if (existingPrincipals.length == 0) return;
 
+  const rolesByPrincipal = {};
+  await Promise.all(
+    existingPrincipals.map(async (principal) => {
+      const { body: roles } = await readFactFn({
+        name: "roles",
+        domain: "principal",
+        service: "core",
+        context: {
+          principal,
+        },
+        query: {
+          includes: [
+            {
+              root,
+              domain: process.env.DOMAIN,
+              service: process.env.SERVICE,
+            },
+          ],
+        },
+      });
+      rolesByPrincipal[principal.root] = roles;
+    })
+  );
+
   return {
     events: [
       ...existingPrincipals.map((principal) => ({
@@ -28,14 +59,7 @@ module.exports = async ({ context, payload, root, aggregateFn }) => {
         action: "remove-roles",
         root: principal.root,
         payload: {
-          roles: [
-            {
-              id: principal.role,
-              root,
-              service: process.env.SERVICE,
-              network: process.env.NETWORK,
-            },
-          ],
+          roles: rolesByPrincipal[principal.root],
         },
       })),
       ...existingPrincipals.map((principal) => ({

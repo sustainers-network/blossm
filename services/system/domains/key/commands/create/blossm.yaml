@@ -2,10 +2,15 @@ name: create
 domain: key
 service: system
 
+contexts:
+  - node
+
 payload:
   name: string
   roles:
-    - string
+    - type: string
+      in:
+        - NodeAdmin
 
 dependencies:
   "@blossm/random-string-of-length": "*"
@@ -25,10 +30,12 @@ testing:
     ok:
       - name: Some-name
         roles:
-          - some-id
+          - NodeAdmin
     bad:
       - name: 3
       - roles: bad
+      - roles:
+          - bad
       - roles:
           - id: 4
 
@@ -61,7 +68,7 @@ testing:
       payload:
         name: some name
         roles:
-          - some-role-id
+          - NodeAdmin
       context:
         domain: node
         node:
@@ -80,7 +87,7 @@ testing:
     - payload:
         name: some name
         roles:
-          - some-role-id
+          - NodeAdmin
       context:
         domain: bogus
       code: 403

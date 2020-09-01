@@ -56,7 +56,9 @@ describe("Command handler unit tests", () => {
           action: "add-roles",
           root: uuid,
           payload: {
-            roles: [{ id: "SceneAdmin", root, service, network }],
+            roles: [
+              { id: "SceneAdmin", root, domain: "scene", service, network },
+            ],
           },
         },
         {
@@ -139,7 +141,9 @@ describe("Command handler unit tests", () => {
           action: "add-roles",
           root: principalRoot,
           payload: {
-            roles: [{ id: "SceneAdmin", root, service, network }],
+            roles: [
+              { id: "SceneAdmin", root, domain: "scene", service, network },
+            ],
           },
         },
         {

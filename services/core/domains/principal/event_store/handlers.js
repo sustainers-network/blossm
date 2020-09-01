@@ -8,16 +8,19 @@ module.exports = {
       roles: state.roles.concat(
         difference(
           payload.roles.map(
-            (role) => `${role.id}:${role.root}:${role.service}:${role.network}`
+            (role) =>
+              `${role.id}:${role.root}:${role.domain}:${role.service}:${role.network}`
           ),
           state.roles.map(
-            (role) => `${role.id}:${role.root}:${role.service}:${role.network}`
+            (role) =>
+              `${role.id}:${role.root}:${role.domain}:${role.service}:${role.network}`
           )
         ).map((stringRole) => {
-          const [id, root, service, network] = stringRole.split(":");
+          const [id, root, domain, service, network] = stringRole.split(":");
           return {
             id,
             root,
+            domain,
             service,
             network,
           };
@@ -33,17 +36,19 @@ module.exports = {
         state.roles
           ? state.roles.map(
               (role) =>
-                `${role.id}:${role.root}:${role.service}:${role.network}`
+                `${role.id}:${role.root}:${role.domain}:${role.service}:${role.network}`
             )
           : [],
         payload.roles.map(
-          (role) => `${role.id}:${role.root}:${role.service}:${role.network}`
+          (role) =>
+            `${role.id}:${role.root}:${role.domain}:${role.service}:${role.network}`
         )
       ).map((stringRole) => {
-        const [id, root, service, network] = stringRole.split(":");
+        const [id, root, domain, service, network] = stringRole.split(":");
         return {
           id,
           root,
+          domain,
           service,
           network,
         };

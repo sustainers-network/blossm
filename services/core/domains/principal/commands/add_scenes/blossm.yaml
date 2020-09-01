@@ -4,10 +4,10 @@ service: core
 
 payload:
   scenes:
-    - role:
-        type: string
-        in:
-          - SceneAdmin
+    - roles:
+        - type: string
+          in:
+            - SceneAdmin
       root: string
       service: string
       network: domain
@@ -19,7 +19,8 @@ testing:
   validate:
     ok:
       - scenes:
-          - role: SceneAdmin
+          - roles:
+              - SceneAdmin
             root: some-root
             service: some-service
             network: some.network
@@ -27,9 +28,12 @@ testing:
       - scenes:
           a: 1
       - scenes:
-          - role: 3
+          - roles: 3
       - scenes:
-          - role: some-bogus
+          - roles:
+              - some-bogus
+      - scenes:
+          - roles: some-bogus
       - scenes:
           - root: 3
       - scenes:
@@ -42,14 +46,16 @@ testing:
   normalize:
     - payload:
         scenes:
-          - role: some-role
+          - roles:
+              - some-roles
             root: some-root
             service: some-service
             network: some-network
             bogus: some-bogus
       normalized:
         scenes:
-          - role: some-role
+          - roles:
+              - some-roles
             root: some-root
             service: some-service
             network: some-network
@@ -75,7 +81,8 @@ testing:
             network: some.context-network
       payload:
         scenes:
-          - role: SceneAdmin
+          - roles:
+              - SceneAdmin
             root: some-scene-root
             service: some-scene-service
             network: some.scene-network
@@ -85,7 +92,8 @@ testing:
       code: 202
     - payload:
         scenes:
-          - role: SceneAdmin
+          - roles:
+              - SceneAdmin
             root: some-scene-root
             service: some-scene-service
             network: some.scene-network
@@ -102,7 +110,8 @@ testing:
             network: some.context-network
       payload:
         scenes:
-          - role: SceneAdmin
+          - roles:
+              - SceneAdmin
             root: another-scene-root
             service: some-scene-service
             network: some.scene-network
@@ -112,7 +121,8 @@ testing:
       code: 403
     - payload:
         scenes:
-          - role: SceneAdmin
+          - roles:
+              - SceneAdmin
             root: bogus-scene-root
             service: some-scene-service
             network: some.scene-network

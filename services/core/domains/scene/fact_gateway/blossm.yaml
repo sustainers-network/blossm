@@ -1,0 +1,12 @@
+domain: scene
+service: core
+
+facts:
+  - name: deleted
+    privileges: none
+
+whitelist:
+  - "127.0.0.1"
+
+#don't change
+procedure: fact-gateway

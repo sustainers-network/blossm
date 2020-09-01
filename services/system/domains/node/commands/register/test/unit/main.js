@@ -97,7 +97,15 @@ describe("Command handler unit tests", () => {
           context: newContext,
           root: newContextPrincipalRoot,
           payload: {
-            roles: [{ id: "NodeAdmin", root: nodeRoot, service, network }],
+            roles: [
+              {
+                id: "NodeAdmin",
+                root: nodeRoot,
+                domain: "node",
+                service,
+                network,
+              },
+            ],
           },
         },
         {
@@ -247,7 +255,15 @@ describe("Command handler unit tests", () => {
           },
           root: contextPrincipalRoot,
           payload: {
-            roles: [{ id: "NodeAdmin", root: nodeRoot, service, network }],
+            roles: [
+              {
+                id: "NodeAdmin",
+                root: nodeRoot,
+                domain: "node",
+                service,
+                network,
+              },
+            ],
           },
         },
         {

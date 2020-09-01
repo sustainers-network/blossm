@@ -162,6 +162,7 @@ const getEventsForIdentityRegistering = async ({ context, payload }) => {
             {
               id: "IdentityAdmin",
               root: identityRoot,
+              domain: "identity",
               service: process.env.SERVICE,
               network: process.env.NETWORK,
             },

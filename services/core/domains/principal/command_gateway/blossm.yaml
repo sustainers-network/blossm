@@ -4,6 +4,8 @@ service: core
 commands:
   - name: add-roles
     privileges: none
+  - name: remove-roles
+    privileges: none
   - name: add-scenes
     privileges: none
   - name: remove-scenes
