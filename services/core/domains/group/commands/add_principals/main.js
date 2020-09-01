@@ -58,15 +58,13 @@ module.exports = async ({ context, payload, root, aggregateFn }) => {
         action: "add-roles",
         root: principal.root,
         payload: {
-          roles: [
-            {
-              id: principal.role,
-              root: groupRoot,
-              domain: "group",
-              service: process.env.SERVICE,
-              network: process.env.NETWORK,
-            },
-          ],
+          roles: principal.roles.map((role) => ({
+            id: role,
+            root: groupRoot,
+            domain: "group",
+            service: process.env.SERVICE,
+            network: process.env.NETWORK,
+          })),
         },
       })),
       ...nonDuplicatedPrincipals.map((principal) => ({

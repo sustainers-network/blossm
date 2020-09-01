@@ -170,7 +170,7 @@ describe("Command handler unit tests", () => {
       payload: {
         principals: [
           {
-            role: "GroupAdmin",
+            roles: ["GroupAdmin"],
             root: principalRoot,
             service: principalService,
             network: principalNetwork,
@@ -329,7 +329,7 @@ describe("Command handler unit tests", () => {
       payload: {
         principals: [
           {
-            role: "GroupAdmin",
+            roles: ["GroupAdmin"],
             root: contextPrincipalRoot,
             service: contextPrincipalService,
             network: contextPrincipalNetwork,

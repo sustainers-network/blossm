@@ -18,14 +18,15 @@ const mergeGroups = async ({
     )
     .forEach((groupString) => {
       const [root, service, network] = groupString.split(":");
-      const [role] = sessionPrincipalAggregate.state.roles.filter(
+      const roles = sessionPrincipalAggregate.state.roles.filter(
         (role) =>
           role.root == root &&
+          role.domain == "group" &&
           role.service == service &&
           role.network == network
       ) || [null];
 
-      if (!role) return;
+      if (roles.length == 0) return;
 
       groupCommandFns.push(
         commandFn({
@@ -37,7 +38,7 @@ const mergeGroups = async ({
           payload: {
             principals: [
               {
-                role,
+                roles: roles.map((role) => role.id),
                 root: principal.root,
                 service: principal.service,
                 network: principal.network,
@@ -87,14 +88,18 @@ const getEventsForPermissionsMerge = async ({
     events: [
       ...(sessionPrincipalAggregate
         ? deps.difference(
-            principalAggregate.state.roles.map(
-              (role) =>
-                `${role.id}:${role.root}:${role.service}:${role.network}`
-            ),
-            sessionPrincipalAggregate.state.roles.map(
-              (role) =>
-                `${role.id}:${role.root}:${role.service}:${role.network}`
-            )
+            principalAggregate.state.roles
+              .filter((role) => role.domain != "group")
+              .map(
+                (role) =>
+                  `${role.id}:${role.root}:${role.domain}:${role.service}:${role.network}`
+              ),
+            sessionPrincipalAggregate.state.roles
+              .filter((role) => role.domain != "group")
+              .map(
+                (role) =>
+                  `${role.id}:${role.root}:${role.domain}:${role.service}:${role.network}`
+              )
           ).length > 0
           ? [
               {
@@ -103,7 +108,9 @@ const getEventsForPermissionsMerge = async ({
                 action: "add-roles",
                 root: principal.root,
                 payload: {
-                  roles: sessionPrincipalAggregate.state.roles,
+                  roles: sessionPrincipalAggregate.state.roles.filter(
+                    (role) => role.domain != "group"
+                  ),
                 },
               },
             ]

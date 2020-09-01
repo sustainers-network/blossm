@@ -34,7 +34,7 @@ module.exports = async ({ payload, context, commandFn }) => {
     payload: {
       principals: [
         {
-          role: "GroupAdmin",
+          roles: ["GroupAdmin"],
           ...(principal || context.principal),
         },
       ],

@@ -50,8 +50,15 @@ const principalAggregate = {
   groups: [{ root: "some-role-root", service, network }],
 };
 
-const sessionprincipalAggregate = {
+const sessionPrincipalAggregate = {
   roles: [
+    {
+      id: "some-group-role-id",
+      root: "some-group-role-root",
+      domain: "group",
+      service,
+      network,
+    },
     {
       id: "some-other-role-id",
       root: "some-other-role-root",
@@ -60,7 +67,7 @@ const sessionprincipalAggregate = {
       network,
     },
   ],
-  groups: [{ root: "some-other-role-root", service, network }],
+  groups: [{ root: "some-group-role-root", service, network }],
 };
 
 process.env.SERVICE = service;
@@ -88,7 +95,7 @@ describe("Command handler unit tests", () => {
       })
       .onSecondCall()
       .returns({
-        state: sessionprincipalAggregate,
+        state: sessionPrincipalAggregate,
       });
 
     const commandFnFake = stub()
@@ -149,19 +156,13 @@ describe("Command handler unit tests", () => {
         principals: [
           {
             network: principalNetwork,
-            role: {
-              id: "some-other-role-id",
-              root: "some-other-role-root",
-              domain,
-              service,
-              network,
-            },
+            roles: ["some-group-role-id"],
             root: principalRoot,
             service: principalService,
           },
         ],
       },
-      root: "some-other-role-root",
+      root: "some-group-role-root",
       service,
     });
     expect(commandFnFake.getCall(1)).to.have.been.calledWith({
@@ -206,7 +207,7 @@ describe("Command handler unit tests", () => {
                 },
               ],
             },
-            root: "some-other-role-root",
+            root: "some-group-role-root",
             service,
           },
         ],
@@ -223,7 +224,7 @@ describe("Command handler unit tests", () => {
       })
       .onSecondCall()
       .returns({
-        state: sessionprincipalAggregate,
+        state: sessionPrincipalAggregate,
       });
 
     const commandFnFake = fake.returns({
@@ -765,7 +766,7 @@ describe("Command handler unit tests", () => {
       })
       .onSecondCall()
       .returns({
-        state: sessionprincipalAggregate,
+        state: sessionPrincipalAggregate,
       });
 
     const commandFnFake = fake.returns({ body: { tokens }, statusCode });

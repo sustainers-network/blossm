@@ -4,10 +4,10 @@ service: core
 
 payload:
   principals:
-    - role:
-        type: string
-        in:
-          - GroupAdmin
+    - roles:
+        - type: string
+          in:
+            - GroupAdmin
       root: string
       service: string
       network: domain
@@ -28,14 +28,18 @@ testing:
       network: some.network
     ok:
       - principals:
-          - role: GroupAdmin
+          - roles:
+              - GroupAdmin
             root: some-root
             service: some-service
             network: some.network
     bad:
       - principals: 3
       - principals:
-          - role: some-bogus
+          - roles:
+              - some-bogus
+      - principals:
+          - roles: some-bogus
       - principals:
           - root: 3
       - principals:
@@ -48,14 +52,16 @@ testing:
   normalize:
     - payload:
         principals:
-          - role: some-role
+          - roles:
+              - some-role
             root: some-root
             service: some-service
             network: some.network
             bogus: some-bogus
       normalized:
         principals:
-          - role: some-role
+          - roles:
+              - some-role
             root: some-root
             service: some-service
             network: some.network
@@ -77,7 +83,8 @@ testing:
             principals: []
       payload:
         principals:
-          - role: GroupAdmin
+          - roles:
+              - GroupAdmin
             root: some-principal-root
             service: core
             network: some.group-network
@@ -87,7 +94,8 @@ testing:
       code: 202
     - payload:
         principals:
-          - role: GroupAdmin
+          - roles:
+              - GroupAdmin
             root: some-principal-root
             service: some-principal-service
             network: some.network
@@ -110,7 +118,8 @@ testing:
             principals: []
       payload:
         principals:
-          - role: GroupAdmin
+          - roles:
+              - GroupAdmin
             root: some-principal-root
             service: core
             network: some.group-network
