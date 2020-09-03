@@ -131,9 +131,11 @@ testing:
           payload:
             roles:
               - id: some-role
-                root: some-root
-                service: some-service
-                network: some.network
+                subject:
+                  root: some-root
+                  domain: some-domain
+                  service: some-service
+                  network: some.network
             groups:
               - root: some-group-root
                 service: some-group-service
@@ -146,6 +148,7 @@ testing:
             roles:
               - id: some-other-role
                 root: some-other-root
+                domain: some-domain
                 service: some-service
                 network: some.network
             groups:
@@ -191,8 +194,11 @@ testing:
           payload:
             roles:
               - id: some-role
-                service: some-service
-                network: some.network
+                subject:
+                  root: some-role-subject-root
+                  domain: some-domain
+                  service: some-service
+                  network: some.network
         - domain: principal
           service: core
           root: some-other-principal-root_1
@@ -200,8 +206,11 @@ testing:
           payload:
             roles:
               - id: some-other-role
-                service: some-service
-                network: some.network
+                subject:
+                  root: some-role-subject-root
+                  domain: some-domain
+                  service: some-service
+                  network: some.network
         - domain: identity
           service: core
           root: yet-another-identity-root_1

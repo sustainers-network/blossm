@@ -54,6 +54,8 @@ testing:
         principals:
           - roles:
               - some-role
+              - some-role
+              - some-other-role
             root: some-root
             service: some-service
             network: some.network
@@ -62,6 +64,7 @@ testing:
         principals:
           - roles:
               - some-role
+              - some-other-role
             root: some-root
             service: some-service
             network: some.network

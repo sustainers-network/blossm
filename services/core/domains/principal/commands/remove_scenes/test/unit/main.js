@@ -92,10 +92,12 @@ describe("Command handler unit tests", () => {
             roles: [
               {
                 id: roleId,
-                root,
-                domain: "scene",
-                service,
-                network,
+                subject: {
+                  root,
+                  domain: "scene",
+                  service,
+                  network,
+                },
               },
             ],
           },
@@ -191,10 +193,12 @@ describe("Command handler unit tests", () => {
             roles: [
               {
                 id: roleId,
-                root,
-                domain: "scene",
-                service,
-                network,
+                subject: {
+                  root,
+                  domain: "scene",
+                  service,
+                  network,
+                },
               },
             ],
           },

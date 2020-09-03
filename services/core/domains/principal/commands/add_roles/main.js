@@ -6,9 +6,9 @@ module.exports = async ({ payload, root, aggregateFn }) => {
       !(principalAggregate.state.roles || []).some(
         (r) =>
           r.id == role.id &&
-          r.root == role.root &&
-          r.service == role.service &&
-          r.network == role.network
+          r.subject.root == role.subject.root &&
+          r.subject.service == role.subject.service &&
+          r.subject.network == role.subject.network
       )
     )
       nonDuplicatedRoles.push(role);
@@ -24,10 +24,12 @@ module.exports = async ({ payload, root, aggregateFn }) => {
             ...nonDuplicatedRoles.map((role) => {
               return {
                 id: role.id,
-                root: role.root,
-                domain: role.domain,
-                service: role.service,
-                network: role.network,
+                subject: {
+                  root: role.subject.root,
+                  domain: role.subject.domain,
+                  service: role.subject.service,
+                  network: role.subject.network,
+                },
               };
             }),
           ],

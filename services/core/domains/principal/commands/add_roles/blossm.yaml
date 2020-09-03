@@ -5,12 +5,13 @@ service: core
 payload:
   roles:
     - id: string
-      root: string
-      domain: string
-      service: string
-      network:
-        type: domain
-        is: $network
+      subject:
+        root: string
+        domain: string
+        service: string
+        network:
+          type: domain
+          is: $network
 
 testing:
   validate:
@@ -19,49 +20,57 @@ testing:
     ok:
       - roles:
           - id: some-id
-            root: some-root
-            domain: some-domain
-            service: some-service
-            network: some.network
+            subject:
+              root: some-root
+              domain: some-domain
+              service: some-service
+              network: some.network
     bad:
       - roles:
           a: 1
       - roles:
           - id: 3
       - roles:
-          - root: 3
+          - subject:
+              root: 3
       - roles:
-          - domain: 3
+          - subject:
+              domain: 3
       - roles:
-          - service: 3
-      - roles:
-          - id: some-id
-            root: some-root
-            domain: some-domain
-            service: some-service
-            network: some.whack-network
+          - subject:
+              service: 3
       - roles:
           - id: some-id
-            root: some-root
-            domain: some-domain
-            service: some-service
-            network: some-whack-network
+            subject:
+              root: some-root
+              domain: some-domain
+              service: some-service
+              network: some.whack-network
+      - roles:
+          - id: some-id
+            subject:
+              root: some-root
+              domain: some-domain
+              service: some-service
+              network: some-whack-network
 
   normalize:
     - payload:
         roles:
           - id: some-id
-            root: some-root
-            domain: some-domain
-            service: some-service
-            network: some-network
+            subject:
+              root: some-root
+              domain: some-domain
+              service: some-service
+              network: some-network
       normalized:
         roles:
           - id: some-id
-            root: some-root
-            domain: some-domain
-            service: some-service
-            network: some-network
+            subject:
+              root: some-root
+              domain: some-domain
+              service: some-service
+              network: some-network
 
   dependencies:
 
@@ -76,23 +85,25 @@ testing:
       payload:
         roles:
           - id: some-role-id
-            root: some-role-root
-            domain: some-role-domain
-            service: some-role-service
-            network: some.role-network
+            subject:
+              root: some-role-subject-root
+              domain: some-role-subject-domain
+              service: some-role-subject-service
+              network: some.role-subject-network
       context:
-        network: some.role-network
+        network: some.role-subject-network
       root: some-root
       code: 202
     - payload:
         roles:
           - id: some-role-id
-            root: some-role-root
-            domain: some-role-domain
-            service: some-role-service
-            network: some.role-network
+            subject:
+              root: some-role-subject-root
+              domain: some-role-subject-domain
+              service: some-role-subject-service
+              network: some.role-subject-network
       context:
-        network: some.role-network
+        network: some.role-subject-network
       root: some-root
       code: 204
 

@@ -44,10 +44,13 @@ testing:
         name: Some-name
         roles:
           - some-id
+          - some-id
+          - some-other-id
       normalized:
         name: Some-name
         roles:
           - some-id
+          - some-other-id
 
   dependencies:
     - domain: principal

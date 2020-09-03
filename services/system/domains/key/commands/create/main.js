@@ -27,15 +27,15 @@ module.exports = async ({ payload, context, aggregateFn }) => {
         service: "core",
         action: "add-roles",
         payload: {
-          roles: payload.roles.map((role) => {
-            return {
-              id: role,
+          roles: payload.roles.map((role) => ({
+            id: role,
+            subject: {
               root: context.node.root,
               domain: "node",
               service: context.node.service,
               network: context.node.network,
-            };
-          }),
+            },
+          })),
         },
         root: principalRoot,
       },

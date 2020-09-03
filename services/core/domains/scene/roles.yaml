@@ -2,3 +2,9 @@ SceneAdmin:
   title: Scene Admin
   permissions:
     - core:scene:delete
+    - core:scene:read
+
+SceneViewer:
+  title: Scene Viewer
+  permissions:
+    - core:scene:read

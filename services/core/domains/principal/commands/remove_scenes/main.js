@@ -51,10 +51,12 @@ module.exports = async ({
     for (const role of roles.filter((role) => role.root == scene.root))
       flattenedRoles.push({
         id: role.id,
-        root: scene.root,
-        domain: "scene",
-        service: scene.service,
-        network: scene.network,
+        subject: {
+          root: scene.root,
+          domain: "scene",
+          service: scene.service,
+          network: scene.network,
+        },
       });
   }
 

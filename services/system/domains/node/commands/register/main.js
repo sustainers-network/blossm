@@ -54,10 +54,12 @@ module.exports = async ({ payload, context, commandFn }) => {
           roles: [
             {
               id: "NodeAdmin",
-              root: nodeRoot,
-              domain: "node",
-              service: process.env.SERVICE,
-              network: process.env.NETWORK,
+              subject: {
+                root: nodeRoot,
+                domain: "node",
+                service: process.env.SERVICE,
+                network: process.env.NETWORK,
+              },
             },
           ],
         },

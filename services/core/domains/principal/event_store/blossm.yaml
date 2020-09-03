@@ -14,10 +14,11 @@ actions:
 schema:
   roles:
     - id: String
-      root: String
-      domain: String
-      service: String
-      network: String
+      subject:
+        root: String
+        domain: String
+        service: String
+        network: String
   scenes:
     - root: String
       service: String
@@ -36,23 +37,26 @@ testing:
       payload:
         roles:
           - id: some-role
-            root: some-role-root
-            domain: some-role-domain
-            service: some-role-service
-            network: some.role-network
+            subject:
+              root: some-role-subject-root
+              domain: some-role-subject-domain
+              service: some-role-subject-service
+              network: some.role-subject-network
           - id: some-other-role
-            root: some-other-role-root
-            domain: some-other-role-domain
-            service: some-other-role-service
-            network: some.other-role-network
+            subject:
+              root: some-other-role-subject-root
+              domain: some-other-role-subject-domain
+              service: some-other-role-subject-service
+              network: some.other-role-subject-network
     - action: remove-roles
       payload:
         roles:
           - id: some-role
-            root: some-role-root
-            domain: some-role-domain
-            service: some-role-service
-            network: some.role-network
+            subject:
+              root: some-role-subject-root
+              domain: some-role-subject-domain
+              service: some-role-subject-service
+              network: some.role-subject-network
     - action: add-scenes
       payload:
         scenes:
@@ -84,111 +88,127 @@ testing:
         - state:
             roles:
               - id: some-role
-                root: some-role-root
-                domain: some-role-domain
-                service: some-role-service
-                network: some.role-network
+                subject:
+                  root: some-role-subject-root
+                  domain: some-role-subject-domain
+                  service: some-role-subject-service
+                  network: some.role-subject-network
           payload:
             roles:
               - id: some-role
-                root: some-role-root
-                domain: some-role-domain
-                service: some-role-service
-                network: some.role-network
+                subject:
+                  root: some-role-subject-root
+                  domain: some-role-subject-domain
+                  service: some-role-subject-service
+                  network: some.role-subject-network
               - id: some-other-role
-                root: some-other-role-root
-                domain: some-other-role-domain
-                service: some-other-role-service
-                network: some.other-role-network
+                subject:
+                  root: some-other-role-subject-root
+                  domain: some-other-role-subject-domain
+                  service: some-other-role-subject-service
+                  network: some.other-role-subject-network
           result:
             roles:
               - id: some-role
-                root: some-role-root
-                domain: some-role-domain
-                service: some-role-service
-                network: some.role-network
+                subject:
+                  root: some-role-subject-root
+                  domain: some-role-subject-domain
+                  service: some-role-subject-service
+                  network: some.role-subject-network
               - id: some-other-role
-                root: some-other-role-root
-                domain: some-other-role-domain
-                service: some-other-role-service
-                network: some.other-role-network
+                subject:
+                  root: some-other-role-subject-root
+                  domain: some-other-role-subject-domain
+                  service: some-other-role-subject-service
+                  network: some.other-role-subject-network
         - state:
             roles:
               - id: some-role
-                root: some-role-root
-                domain: some-role-domain
-                service: some-role-service
-                network: some.role-network
+                subject:
+                  root: some-role-subject-root
+                  domain: some-role-subject-domain
+                  service: some-role-subject-service
+                  network: some.role-subject-network
           payload:
             roles:
               - id: some-other-role
-                root: some-other-role-root
-                domain: some-other-role-domain
-                service: some-other-role-service
-                network: some.other-role-network
+                subject:
+                  root: some-other-role-subject-root
+                  domain: some-other-role-subject-domain
+                  service: some-other-role-subject-service
+                  network: some.other-role-subject-network
           result:
             roles:
               - id: some-role
-                root: some-role-root
-                domain: some-role-domain
-                service: some-role-service
-                network: some.role-network
+                subject:
+                  root: some-role-subject-root
+                  domain: some-role-subject-domain
+                  service: some-role-subject-service
+                  network: some.role-subject-network
               - id: some-other-role
-                root: some-other-role-root
-                domain: some-other-role-domain
-                service: some-other-role-service
-                network: some.other-role-network
+                subject:
+                  root: some-other-role-subject-root
+                  domain: some-other-role-subject-domain
+                  service: some-other-role-subject-service
+                  network: some.other-role-subject-network
         - state: {}
           payload:
             roles:
               - id: some-role
-                root: some-role-root
-                domain: some-role-domain
-                service: some-role-service
-                network: some.role-network
+                subject:
+                  root: some-role-subject-root
+                  domain: some-role-subject-domain
+                  service: some-role-subject-service
+                  network: some.role-subject-network
           result:
             roles:
               - id: some-role
-                root: some-role-root
-                domain: some-role-domain
-                service: some-role-service
-                network: some.role-network
+                subject:
+                  root: some-role-subject-root
+                  domain: some-role-subject-domain
+                  service: some-role-subject-service
+                  network: some.role-subject-network
     - action: remove-roles
       examples:
         - state:
             roles:
               - id: some-role
-                root: some-role-root
-                domain: some-role-domain
-                service: some-role-service
-                network: some.role-network
+                subject:
+                  root: some-role-subject-root
+                  domain: some-role-subject-domain
+                  service: some-role-subject-service
+                  network: some.role-subject-network
               - id: some-other-role
-                root: some-other-role-root
-                domain: some-other-role-domain
-                service: some-other-role-service
-                network: some.other-role-network
+                subject:
+                  root: some-other-role-subject-root
+                  domain: some-other-role-subject-domain
+                  service: some-other-role-subject-service
+                  network: some.other-role-subject-network
           payload:
             roles:
               - id: some-role
-                root: some-role-root
-                domain: some-role-domain
-                service: some-role-service
-                network: some.role-network
+                subject:
+                  root: some-role-subject-root
+                  domain: some-role-subject-domain
+                  service: some-role-subject-service
+                  network: some.role-subject-network
           result:
             roles:
               - id: some-other-role
-                root: some-other-role-root
-                domain: some-other-role-domain
-                service: some-other-role-service
-                network: some.other-role-network
+                subject:
+                  root: some-other-role-subject-root
+                  domain: some-other-role-subject-domain
+                  service: some-other-role-subject-service
+                  network: some.other-role-subject-network
         - state: {}
           payload:
             roles:
               - id: some-role
-                root: some-role-root
-                domain: some-role-domain
-                service: some-role-service
-                network: some.role-network
+                subject:
+                  root: some-role-subject-root
+                  domain: some-role-subject-domain
+                  service: some-role-subject-service
+                  network: some.role-subject-network
           result:
             roles: []
     - action: add-scenes

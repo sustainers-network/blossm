@@ -69,7 +69,10 @@ describe("Command handler unit tests", () => {
           root: principal1Root,
           payload: {
             roles: [
-              { id: principal1Role, root, domain: "group", service, network },
+              {
+                id: principal1Role,
+                subject: { root, domain: "group", service, network },
+              },
             ],
           },
         },
@@ -81,7 +84,10 @@ describe("Command handler unit tests", () => {
           root: principal2Root,
           payload: {
             roles: [
-              { id: principal2Role, root, domain: "group", service, network },
+              {
+                id: principal2Role,
+                subject: { root, domain: "group", service, network },
+              },
             ],
           },
         },
@@ -125,6 +131,49 @@ describe("Command handler unit tests", () => {
         },
       ],
       response: {},
+    });
+  });
+  it("should return successfully with no principals", async () => {
+    const payload = {
+      principals: [],
+    };
+
+    const aggregateFake = fake.returns({
+      state: {
+        networks: [network],
+        principals: [],
+      },
+    });
+    const context = {
+      network,
+    };
+    const uuid = "some-uuid";
+    const uuidFake = fake.returns(uuid);
+    replace(deps, "uuid", uuidFake);
+    const result = await main({
+      payload,
+      aggregateFn: aggregateFake,
+      context,
+    });
+    expect(result).to.deep.equal({
+      events: [
+        {
+          action: "add-networks",
+          root: uuid,
+          payload: {
+            networks: [network],
+          },
+        },
+      ],
+      response: {
+        receipt: {
+          group: {
+            root: uuid,
+            service,
+            network,
+          },
+        },
+      },
     });
   });
   it("should return successfully without duplicated", async () => {
@@ -188,7 +237,10 @@ describe("Command handler unit tests", () => {
           root: principal1Root,
           payload: {
             roles: [
-              { id: principal1Role, root, domain: "group", service, network },
+              {
+                id: principal1Role,
+                subject: { root, domain: "group", service, network },
+              },
             ],
           },
         },
@@ -328,10 +380,12 @@ describe("Command handler unit tests", () => {
             roles: [
               {
                 id: principal1Role,
-                root: uuid,
-                domain: "group",
-                service,
-                network,
+                subject: {
+                  root: uuid,
+                  domain: "group",
+                  service,
+                  network,
+                },
               },
             ],
           },
@@ -346,10 +400,12 @@ describe("Command handler unit tests", () => {
             roles: [
               {
                 id: principal2Role,
-                root: uuid,
-                domain: "group",
-                service,
-                network,
+                subject: {
+                  root: uuid,
+                  domain: "group",
+                  service,
+                  network,
+                },
               },
             ],
           },

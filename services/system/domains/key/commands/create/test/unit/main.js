@@ -111,17 +111,21 @@ describe("Command handler unit tests", () => {
             roles: [
               {
                 id: roleRoot1,
-                root: nodeRoot,
-                domain: "node",
-                service: nodeService,
-                network: nodeNetwork,
+                subject: {
+                  root: nodeRoot,
+                  domain: "node",
+                  service: nodeService,
+                  network: nodeNetwork,
+                },
               },
               {
                 id: roleRoot2,
-                root: nodeRoot,
-                domain: "node",
-                service: nodeService,
-                network: nodeNetwork,
+                subject: {
+                  root: nodeRoot,
+                  domain: "node",
+                  service: nodeService,
+                  network: nodeNetwork,
+                },
               },
             ],
           },

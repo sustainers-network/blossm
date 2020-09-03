@@ -21,11 +21,13 @@ module.exports = async ({ payload, context, commandFn }) => {
       payload: {
         roles: [
           {
-            id: "SceneAdmin",
-            root: sceneRoot,
-            domain: "scene",
-            service: process.env.SERVICE,
-            network: process.env.NETWORK,
+            id: payload.role,
+            subject: {
+              root: sceneRoot,
+              domain: "scene",
+              service: process.env.SERVICE,
+              network: process.env.NETWORK,
+            },
           },
         ],
       },
@@ -49,7 +51,12 @@ module.exports = async ({ payload, context, commandFn }) => {
     {
       action: "register",
       root: sceneRoot,
-      payload,
+      payload: {
+        root: payload.root,
+        domain: payload.domain,
+        service: payload.service,
+        network: payload.network,
+      },
       correctNumber: 0,
     },
   ];

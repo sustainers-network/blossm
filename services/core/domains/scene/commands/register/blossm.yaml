@@ -3,6 +3,12 @@ domain: scene
 service: core
 
 payload:
+  role:
+    type: string
+    in:
+      - SceneAdmin
+      - SceneViewer
+    default: SceneAdmin
   root: string
   domain: string
   service: string
@@ -28,7 +34,14 @@ testing:
         domain: some-domain
         service: some-service
         network: some.network
+      - role: SceneViewer
+        root: some-root
+        domain: some-domain
+        service: some-service
+        network: some.network
     bad:
+      - role: 3
+      - role: some-bogus-role
       - root: 3
       - domain: 3
       - service: 3
@@ -43,6 +56,18 @@ testing:
         service: some-service
         network: some.network
       normalized:
+        root: some-root
+        domain: some-domain
+        service: some-service
+        network: some.network
+    - payload:
+        role: some-role
+        root: some-root
+        domain: some-domain
+        service: some-service
+        network: some.network
+      normalized:
+        role: some-role
         root: some-root
         domain: some-domain
         service: some-service

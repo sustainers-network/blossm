@@ -32,10 +32,12 @@ module.exports = async ({ payload, context, root, aggregateFn }) => {
     for (const role of scene.roles)
       flattenedRoles.push({
         id: role,
-        root: scene.root,
-        domain: "scene",
-        service: scene.service,
-        network: scene.network,
+        subject: {
+          root: scene.root,
+          domain: "scene",
+          service: scene.service,
+          network: scene.network,
+        },
       });
   }
 

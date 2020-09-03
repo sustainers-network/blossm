@@ -4,7 +4,18 @@ const { replace, restore, fake, stub } = require("sinon");
 const main = require("../../main");
 const deps = require("../../deps");
 
-const payload = "some-payload";
+const role = "some-role";
+const subjectRoot = "some-subject-root";
+const subjectDomain = "some-subject-domain";
+const subjectService = "some-subject-service";
+const subjectNetwork = "some-subject-network";
+const payload = {
+  role,
+  root: subjectRoot,
+  domain: subjectDomain,
+  service: subjectService,
+  network: subjectNetwork,
+};
 const root = "some-root";
 const service = "some-service";
 const network = "some-network";
@@ -57,7 +68,10 @@ describe("Command handler unit tests", () => {
           root: uuid,
           payload: {
             roles: [
-              { id: "SceneAdmin", root, domain: "scene", service, network },
+              {
+                id: role,
+                subject: { root, domain: "scene", service, network },
+              },
             ],
           },
         },
@@ -73,7 +87,12 @@ describe("Command handler unit tests", () => {
         },
         {
           action: "register",
-          payload,
+          payload: {
+            root: subjectRoot,
+            domain: subjectDomain,
+            service: subjectService,
+            network: subjectNetwork,
+          },
           root,
           correctNumber: 0,
         },
@@ -142,7 +161,10 @@ describe("Command handler unit tests", () => {
           root: principalRoot,
           payload: {
             roles: [
-              { id: "SceneAdmin", root, domain: "scene", service, network },
+              {
+                id: role,
+                subject: { root, domain: "scene", service, network },
+              },
             ],
           },
         },
@@ -158,7 +180,12 @@ describe("Command handler unit tests", () => {
         },
         {
           action: "register",
-          payload,
+          payload: {
+            root: subjectRoot,
+            domain: subjectDomain,
+            service: subjectService,
+            network: subjectNetwork,
+          },
           root,
           correctNumber: 0,
         },

@@ -100,10 +100,12 @@ describe("Command handler unit tests", () => {
             roles: [
               {
                 id: "NodeAdmin",
-                root: nodeRoot,
-                domain: "node",
-                service,
-                network,
+                subject: {
+                  root: nodeRoot,
+                  domain: "node",
+                  service,
+                  network,
+                },
               },
             ],
           },
@@ -258,10 +260,12 @@ describe("Command handler unit tests", () => {
             roles: [
               {
                 id: "NodeAdmin",
-                root: nodeRoot,
-                domain: "node",
-                service,
-                network,
+                subject: {
+                  root: nodeRoot,
+                  domain: "node",
+                  service,
+                  network,
+                },
               },
             ],
           },

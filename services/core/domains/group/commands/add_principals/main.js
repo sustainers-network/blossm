@@ -60,10 +60,12 @@ module.exports = async ({ context, payload, root, aggregateFn }) => {
         payload: {
           roles: principal.roles.map((role) => ({
             id: role,
-            root: groupRoot,
-            domain: "group",
-            service: process.env.SERVICE,
-            network: process.env.NETWORK,
+            subject: {
+              root: groupRoot,
+              domain: "group",
+              service: process.env.SERVICE,
+              network: process.env.NETWORK,
+            },
           })),
         },
       })),
@@ -83,17 +85,21 @@ module.exports = async ({ context, payload, root, aggregateFn }) => {
           ],
         },
       })),
-      {
-        action: "add-principals",
-        root: groupRoot,
-        payload: {
-          principals: nonDuplicatedPrincipals.map((principal) => ({
-            root: principal.root,
-            service: principal.service,
-            network: principal.network,
-          })),
-        },
-      },
+      ...(nonDuplicatedPrincipals.length > 0
+        ? [
+            {
+              action: "add-principals",
+              root: groupRoot,
+              payload: {
+                principals: nonDuplicatedPrincipals.map((principal) => ({
+                  root: principal.root,
+                  service: principal.service,
+                  network: principal.network,
+                })),
+              },
+            },
+          ]
+        : []),
       ...(groupRoot != root
         ? [
             {

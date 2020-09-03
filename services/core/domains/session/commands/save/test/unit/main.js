@@ -46,25 +46,34 @@ const identity = {
 };
 
 const principalAggregate = {
-  roles: [{ id: "some-role-id", root: "some-role-root", service, network }],
-  groups: [{ root: "some-role-root", service, network }],
+  roles: [
+    {
+      id: "some-role-id",
+      subject: { root: "some-group-root", domain: "group", service, network },
+    },
+  ],
+  groups: [{ root: "some-group-root", service, network }],
 };
 
 const sessionPrincipalAggregate = {
   roles: [
     {
       id: "some-group-role-id",
-      root: "some-group-role-root",
-      domain: "group",
-      service,
-      network,
+      subject: {
+        root: "some-group-role-root",
+        domain: "group",
+        service,
+        network,
+      },
     },
     {
       id: "some-other-role-id",
-      root: "some-other-role-root",
-      domain,
-      service,
-      network,
+      subject: {
+        root: "some-other-role-root",
+        domain,
+        service,
+        network,
+      },
     },
   ],
   groups: [{ root: "some-group-role-root", service, network }],
@@ -187,10 +196,12 @@ describe("Command handler unit tests", () => {
               roles: [
                 {
                   id: "some-other-role-id",
-                  root: "some-other-role-root",
-                  domain,
-                  service,
-                  network,
+                  subject: {
+                    root: "some-other-role-root",
+                    domain,
+                    service,
+                    network,
+                  },
                 },
               ],
             },
@@ -370,7 +381,7 @@ describe("Command handler unit tests", () => {
                 },
               ],
             },
-            root: "some-role-root",
+            root: "some-group-root",
             service,
           },
         ],
@@ -467,10 +478,12 @@ describe("Command handler unit tests", () => {
               roles: [
                 {
                   id: `IdentityAdmin`,
-                  root: identityRoot,
-                  domain: "identity",
-                  service,
-                  network,
+                  subject: {
+                    root: identityRoot,
+                    domain: "identity",
+                    service,
+                    network,
+                  },
                 },
               ],
             },
@@ -575,10 +588,12 @@ describe("Command handler unit tests", () => {
               roles: [
                 {
                   id: `IdentityAdmin`,
-                  root: identityRoot,
-                  domain: "identity",
-                  service,
-                  network,
+                  subject: {
+                    root: identityRoot,
+                    domain: "identity",
+                    service,
+                    network,
+                  },
                 },
               ],
             },
@@ -670,10 +685,12 @@ describe("Command handler unit tests", () => {
               roles: [
                 {
                   id: "IdentityAdmin",
-                  root: identityRoot,
-                  domain: "identity",
-                  service,
-                  network,
+                  subject: {
+                    root: identityRoot,
+                    domain: "identity",
+                    service,
+                    network,
+                  },
                 },
               ],
             },

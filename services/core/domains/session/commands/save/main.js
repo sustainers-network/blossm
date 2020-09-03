@@ -20,10 +20,10 @@ const mergeGroups = async ({
       const [root, service, network] = groupString.split(":");
       const roles = sessionPrincipalAggregate.state.roles.filter(
         (role) =>
-          role.root == root &&
-          role.domain == "group" &&
-          role.service == service &&
-          role.network == network
+          role.subject.root == root &&
+          role.subject.domain == "group" &&
+          role.subject.service == service &&
+          role.subject.network == network
       ) || [null];
 
       if (roles.length == 0) return;
@@ -109,7 +109,7 @@ const getEventsForPermissionsMerge = async ({
                 root: principal.root,
                 payload: {
                   roles: sessionPrincipalAggregate.state.roles.filter(
-                    (role) => role.domain != "group"
+                    (role) => role.subject.domain != "group"
                   ),
                 },
               },
@@ -168,10 +168,12 @@ const getEventsForIdentityRegistering = async ({ context, payload }) => {
           roles: [
             {
               id: "IdentityAdmin",
-              root: identityRoot,
-              domain: "identity",
-              service: process.env.SERVICE,
-              network: process.env.NETWORK,
+              subject: {
+                root: identityRoot,
+                domain: "identity",
+                service: process.env.SERVICE,
+                network: process.env.NETWORK,
+              },
             },
           ],
         },

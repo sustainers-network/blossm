@@ -19,10 +19,12 @@ describe("Command handler unit tests", () => {
       roles: [
         {
           id,
-          root,
-          domain,
-          service,
-          network,
+          subject: {
+            root,
+            domain,
+            service,
+            network,
+          },
         },
       ],
     };
@@ -39,10 +41,12 @@ describe("Command handler unit tests", () => {
             roles: [
               {
                 id,
-                root,
-                domain,
-                service,
-                network,
+                subject: {
+                  root,
+                  domain,
+                  service,
+                  network,
+                },
               },
             ],
           },
@@ -62,17 +66,21 @@ describe("Command handler unit tests", () => {
       roles: [
         {
           id,
-          root,
-          domain,
-          service,
-          network,
+          subject: {
+            root,
+            domain,
+            service,
+            network,
+          },
         },
         {
           id,
-          root: "some-other-root",
-          domain,
-          service,
-          network,
+          subject: {
+            root: "some-other-root",
+            domain,
+            service,
+            network,
+          },
         },
       ],
     };
@@ -82,10 +90,12 @@ describe("Command handler unit tests", () => {
         roles: [
           {
             id,
-            root,
-            domain,
-            service,
-            network,
+            subject: {
+              root,
+              domain,
+              service,
+              network,
+            },
           },
         ],
       },
@@ -100,10 +110,12 @@ describe("Command handler unit tests", () => {
             roles: [
               {
                 id,
-                root: "some-other-root",
-                domain,
-                service,
-                network,
+                subject: {
+                  root: "some-other-root",
+                  domain,
+                  service,
+                  network,
+                },
               },
             ],
           },
@@ -123,10 +135,12 @@ describe("Command handler unit tests", () => {
       roles: [
         {
           id,
-          root,
-          domain,
-          service,
-          network,
+          subject: {
+            root,
+            domain,
+            service,
+            network,
+          },
         },
       ],
     };
@@ -136,10 +150,12 @@ describe("Command handler unit tests", () => {
         roles: [
           {
             id,
-            root,
-            domain,
-            service,
-            network,
+            subject: {
+              root,
+              domain,
+              service,
+              network,
+            },
           },
         ],
       },
