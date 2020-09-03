@@ -282,7 +282,7 @@ describe("Command handler unit tests", () => {
       }),
     });
   });
-  it("should throw correctly if context isnt accessible", async () => {
+  it("should throw correctly if scene isnt accessible", async () => {
     const signature = "some-signature";
     const signFake = fake.returns(signature);
     replace(deps, "sign", signFake);
@@ -300,6 +300,58 @@ describe("Command handler unit tests", () => {
       .onFirstCall()
       .returns({
         state: { scenes: [{ root: "bogus" }] },
+      })
+      .onSecondCall()
+      .returns({ state: {} })
+      .onThirdCall()
+      .returns({
+        state: {
+          domain: sceneAggregateDomain,
+          service: sceneAggregateService,
+          network: sceneAggregateNetwork,
+          root: sceneAggregateRoot,
+        },
+      });
+
+    try {
+      await main({
+        payload,
+        context,
+        claims,
+        aggregateFn: aggregateFake,
+      });
+      //shouldn't get called
+      expect(2).to.equal(3);
+    } catch (e) {
+      expect(messageFake).to.have.been.calledWith(
+        "This scene isn't accessible.",
+        {
+          info: {
+            scene: newSceneRoot,
+          },
+        }
+      );
+      expect(e).to.equal(error);
+    }
+  });
+  it("should throw correctly if no scenes", async () => {
+    const signature = "some-signature";
+    const signFake = fake.returns(signature);
+    replace(deps, "sign", signFake);
+
+    const createJwtFake = fake.returns(token);
+    replace(deps, "createJwt", createJwtFake);
+
+    const error = "some-error";
+    const messageFake = fake.returns(error);
+    replace(deps, "forbiddenError", {
+      message: messageFake,
+    });
+
+    const aggregateFake = stub()
+      .onFirstCall()
+      .returns({
+        state: {},
       })
       .onSecondCall()
       .returns({ state: {} })

@@ -17,6 +17,4 @@ module.exports = async ({ payload }) => {
       `event: update\ndata: ${JSON.stringify(payload.view)}\n\n`
     )
   );
-
-  return;
 };

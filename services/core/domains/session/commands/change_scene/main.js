@@ -14,7 +14,7 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
 
   // Check to see if the principal has access to the context being switched in to.
   if (
-    !principalAggregate.state.scenes.some(
+    !(principalAggregate.state.scenes || []).some(
       (scene) => scene.root == payload.scene
     )
   )

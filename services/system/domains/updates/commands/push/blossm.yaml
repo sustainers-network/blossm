@@ -92,7 +92,7 @@ testing:
           root: some-key-root
           service: some-key-service
           network: some-key-network
-      code: 200
+      code: 204
 
 #don't change
 procedure: command
