@@ -12,42 +12,46 @@ module.exports = async ({ payload, context, commandFn }) => {
 
   // Give the principal admin privileges to this context.
   const events = [
-    {
-      domain: "principal",
-      service: principal.service,
-      network: principal.network,
-      action: "add-roles",
-      root: principal.root,
-      payload: {
-        roles: [
+    ...(payload.role
+      ? [
           {
-            id: payload.role,
-            subject: {
-              root: sceneRoot,
-              domain: "scene",
-              service: process.env.SERVICE,
-              network: process.env.NETWORK,
+            domain: "principal",
+            service: principal.service,
+            network: principal.network,
+            action: "add-roles",
+            root: principal.root,
+            payload: {
+              roles: [
+                {
+                  id: payload.role,
+                  subject: {
+                    root: sceneRoot,
+                    domain: "scene",
+                    service: process.env.SERVICE,
+                    network: process.env.NETWORK,
+                  },
+                },
+              ],
             },
           },
-        ],
-      },
-    },
-    {
-      domain: "principal",
-      service: principal.service,
-      network: principal.network,
-      action: "add-scenes",
-      root: principal.root,
-      payload: {
-        scenes: [
           {
-            root: sceneRoot,
-            service: process.env.SERVICE,
-            network: process.env.NETWORK,
+            domain: "principal",
+            service: principal.service,
+            network: principal.network,
+            action: "add-scenes",
+            root: principal.root,
+            payload: {
+              scenes: [
+                {
+                  root: sceneRoot,
+                  service: process.env.SERVICE,
+                  network: process.env.NETWORK,
+                },
+              ],
+            },
           },
-        ],
-      },
-    },
+        ]
+      : []),
     {
       action: "register",
       root: sceneRoot,

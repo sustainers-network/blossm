@@ -201,6 +201,61 @@ describe("Command handler unit tests", () => {
       },
     });
   });
+  it("should return successfully with no role", async () => {
+    const uuid = "some-uuid";
+    const uuidFake = stub()
+      .onFirstCall()
+      .returns(root)
+      .onSecondCall()
+      .returns(uuid);
+    replace(deps, "uuid", uuidFake);
+
+    const token = "some-token";
+    const commandFnFake = fake.returns({ body: { token } });
+
+    const principalContext = {
+      session: contextSession,
+      principal: {
+        root: principalRoot,
+        service: principalService,
+        network: principalNetwork,
+      },
+    };
+    const result = await main({
+      payload: {
+        root: subjectRoot,
+        domain: subjectDomain,
+        service: subjectService,
+        network: subjectNetwork,
+      },
+      context: principalContext,
+      commandFn: commandFnFake,
+    });
+    expect(result).to.deep.equal({
+      events: [
+        {
+          action: "register",
+          payload: {
+            root: subjectRoot,
+            domain: subjectDomain,
+            service: subjectService,
+            network: subjectNetwork,
+          },
+          root,
+          correctNumber: 0,
+        },
+      ],
+      response: {
+        receipt: {
+          scene: {
+            root,
+            service,
+            network,
+          },
+        },
+      },
+    });
+  });
   it("should throw correctly", async () => {
     const errorMessage = "some-error";
     const uuidFake = fake.throws(errorMessage);

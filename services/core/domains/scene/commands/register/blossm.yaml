@@ -8,7 +8,7 @@ payload:
     in:
       - SceneAdmin
       - SceneViewer
-    default: SceneAdmin
+    optional: true
   root: string
   domain: string
   service: string
@@ -36,6 +36,10 @@ testing:
         network: some.network
       - role: SceneViewer
         root: some-root
+        domain: some-domain
+        service: some-service
+        network: some.network
+      - root: some-root
         domain: some-domain
         service: some-service
         network: some.network
