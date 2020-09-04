@@ -26,22 +26,25 @@ testing:
           payload:
             roles:
               - id: some-role-id
-                root: some-role-root
-                service: some-role-service
-                network: some.network
+                subject:
+                  root: some-role-subject-root
+                  service: some-role-subject-service
+                  network: some.network
               - id: some-other-role-id
-                root: some-other-role-root
-                service: some-other-role-service
-                network: some.other-network
+                subject:
+                  root: some-other-role-subject-root
+                  service: some-other-role-subject-service
+                  network: some.other-network
       context:
         network: some.network
         principal:
           root: some-principal-root
       response:
         - id: some-role-id
-          root: some-role-root
-          service: some-role-service
-          network: some.network
+          subject:
+            root: some-role-subject-root
+            service: some-role-subject-service
+            network: some.network
     - pre:
         - domain: principal
           service: core

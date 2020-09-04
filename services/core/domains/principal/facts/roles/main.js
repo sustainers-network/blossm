@@ -3,13 +3,19 @@ module.exports = async ({ query, context, aggregateFn }) => {
 
   const roles = (aggregate.state.roles || []).filter(
     (role) =>
-      role.network == context.network &&
+      role.subject.network == context.network &&
       (!query.includes ||
         query.includes.some(
           (i) =>
-            (!i.root || role.root == "*" || i.root == role.root) &&
-            (!i.domain || role.domain == "*" || i.domain == role.domain) &&
-            (!i.service || role.service == "*" || i.service == role.service)
+            (!i.subject.root ||
+              role.subject.root == "*" ||
+              i.subject.root == role.subject.root) &&
+            (!i.subject.domain ||
+              role.subject.domain == "*" ||
+              i.subject.domain == role.subject.domain) &&
+            (!i.subject.service ||
+              role.subject.service == "*" ||
+              i.subject.service == role.subject.service)
         ))
   );
 

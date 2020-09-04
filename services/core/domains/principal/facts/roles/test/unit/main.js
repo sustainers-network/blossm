@@ -12,13 +12,17 @@ describe("Fact unit tests", () => {
     const root = "some-root";
     const role = {
       id: "some-id",
-      network,
+      subject: {
+        network,
+      },
     };
     const roles = [
       role,
       {
         id: "some-other-id",
-        network: "some-other-network",
+        subject: {
+          network: "some-other-network",
+        },
       },
     ];
 
@@ -48,13 +52,17 @@ describe("Fact unit tests", () => {
     const root = "some-root";
     const role = {
       id: "some-id",
-      network,
+      subject: {
+        network,
+      },
     };
     const roles = [
       role,
       {
         id: "some-other-id",
-        network: "some-other-network",
+        subject: {
+          network: "some-other-network",
+        },
       },
     ];
 
@@ -90,13 +98,17 @@ describe("Fact unit tests", () => {
     const root = "some-root";
     const role = {
       id: "some-id",
-      network,
+      subject: {
+        network,
+      },
     };
     const roles = [
       role,
       {
         id: "some-other-id",
-        network: "some-other-network",
+        subject: {
+          network: "some-other-network",
+        },
       },
     ];
 
@@ -117,7 +129,9 @@ describe("Fact unit tests", () => {
       query: {
         includes: [
           {
-            root: "some-bogus",
+            subject: {
+              root: "some-bogus",
+            },
           },
         ],
       },
@@ -151,14 +165,18 @@ describe("Fact unit tests", () => {
     const root = "some-root";
     const role = {
       id: "some-id",
-      network,
+      subject: {
+        network,
+      },
     };
     const roles = [
       role,
       {
         id: "some-other-id",
-        root: "*",
-        network,
+        subject: {
+          root: "*",
+          network,
+        },
       },
     ];
 
@@ -179,7 +197,9 @@ describe("Fact unit tests", () => {
       query: {
         includes: [
           {
-            root: "some-bogus",
+            subject: {
+              root: "some-bogus",
+            },
           },
         ],
       },
@@ -191,8 +211,10 @@ describe("Fact unit tests", () => {
       response: [
         {
           id: "some-other-id",
-          root: "*",
-          network,
+          subject: {
+            root: "*",
+            network,
+          },
         },
       ],
     });

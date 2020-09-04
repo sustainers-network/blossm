@@ -35,8 +35,6 @@ testing:
     bad:
       - principals: 3
       - principals:
-          - role: some-bogus
-      - principals:
           - root: 3
       - principals:
           - service: 3

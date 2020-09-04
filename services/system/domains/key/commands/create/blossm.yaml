@@ -10,7 +10,7 @@ payload:
   roles:
     - type: string
       in:
-        - NodeAdmin
+        - NodeNetwork
 
 dependencies:
   "@blossm/random-string-of-length": "*"
@@ -30,7 +30,7 @@ testing:
     ok:
       - name: Some-name
         roles:
-          - NodeAdmin
+          - NodeNetwork
     bad:
       - name: 3
       - roles: bad
@@ -71,7 +71,7 @@ testing:
       payload:
         name: some name
         roles:
-          - NodeAdmin
+          - NodeNetwork
       context:
         domain: node
         node:
@@ -90,7 +90,7 @@ testing:
     - payload:
         name: some name
         roles:
-          - NodeAdmin
+          - NodeNetwork
       context:
         domain: bogus
       code: 403
