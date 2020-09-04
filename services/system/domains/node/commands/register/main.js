@@ -16,6 +16,7 @@ module.exports = async ({ payload, context, commandFn }) => {
     domain: "scene",
     service: "core",
     payload: {
+      role: "SceneAdmin",
       root: nodeRoot,
       domain: process.env.DOMAIN,
       service: process.env.SERVICE,

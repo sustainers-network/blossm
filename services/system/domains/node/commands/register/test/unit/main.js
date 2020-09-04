@@ -159,6 +159,7 @@ describe("Command handler unit tests", () => {
       domain: "scene",
       service: "core",
       payload: {
+        role: "SceneAdmin",
         root: nodeRoot,
         domain,
         service,
@@ -320,6 +321,7 @@ describe("Command handler unit tests", () => {
       domain: "scene",
       service: "core",
       payload: {
+        role: "SceneAdmin",
         root: nodeRoot,
         domain,
         service,

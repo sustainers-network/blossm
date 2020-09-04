@@ -8,6 +8,7 @@ payload:
         - type: string
           in:
             - GroupAdmin
+            - GroupMember
       root: string
       service: string
       network: domain
