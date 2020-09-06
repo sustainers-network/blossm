@@ -65,7 +65,8 @@ testing:
           root: some-identity-root
           action: register
           payload:
-            id: some-identity-id
+            id: some-iDENTity-id
+            normalizedId: some-identity-id
             phone: "#+19195551144"
             principal:
               root: some-sub
@@ -83,14 +84,15 @@ testing:
           root: some-other-identity-root
           action: register
           payload:
-            id: some-other-identity-id
+            id: some-oTHEr-identity-id
+            normalizedId: some-other-identity-id
             phone: "#+19195551155"
             principal:
               root: some-principal-root
               service: some-service
               network: some.network
       payload:
-        id: some-other-identity-id
+        id: SoMe-other-identity-id
         phone: "+19195551155"
       context:
         principal:
@@ -160,7 +162,8 @@ testing:
           root: yet-another-identity-root
           action: register
           payload:
-            id: yet-another-identity-id
+            id: yet-ANOTher-identity-id
+            normalizedId: yet-another-identity-id
             phone: "#+19195551177"
             principal:
               root: some-principal-root
@@ -216,7 +219,8 @@ testing:
           root: yet-another-identity-root_1
           action: register
           payload:
-            id: yet-another-identity-id_1
+            id: yet-ANOTher-identity-id_1
+            normalizedId: yet-another-identity-id_1
             phone: "#+19195551177"
             principal:
               root: some-principal-root_1
@@ -227,7 +231,8 @@ testing:
           root: any-identity-root_1
           action: register
           payload:
-            id: doesnt-matter
+            id: doesnt-Matter
+            normalizedId: doesnt-matter
             phone: "#+19195551177"
             principal:
               root: some-other-principal-root_1

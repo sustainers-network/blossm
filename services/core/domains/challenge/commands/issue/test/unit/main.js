@@ -26,7 +26,7 @@ const identity = {
 };
 
 const payloadPhone = "some-payload-phone";
-const id = "some-id";
+const id = "Some-id";
 const payload = {
   phone: payloadPhone,
   id,
@@ -115,8 +115,8 @@ describe("Command handler unit tests", () => {
     expect(compareFake).to.have.been.calledWith(payloadPhone, phone);
     expect(queryAggregatesFnFake).to.have.been.calledWith({
       domain: "identity",
-      key: "id",
-      value: id,
+      key: "normalizedId",
+      value: "some-id",
     });
     expect(createJwtFake).to.have.been.calledWith({
       options: {
@@ -230,8 +230,8 @@ describe("Command handler unit tests", () => {
     expect(compareFake).to.have.been.calledWith(payloadPhone, phone);
     expect(queryAggregatesFnFake).to.have.been.calledWith({
       domain: "identity",
-      key: "id",
-      value: id,
+      key: "normalizedId",
+      value: "some-id",
     });
     expect(createJwtFake).to.have.been.calledWith({
       options: {
@@ -350,8 +350,8 @@ describe("Command handler unit tests", () => {
     expect(compareFake).to.have.been.calledWith(payloadPhone, phone);
     expect(queryAggregatesFnFake).to.have.been.calledWith({
       domain: "identity",
-      key: "id",
-      value: id,
+      key: "normalizedId",
+      value: "some-id",
     });
     expect(createJwtFake).to.have.been.calledWith({
       options: {

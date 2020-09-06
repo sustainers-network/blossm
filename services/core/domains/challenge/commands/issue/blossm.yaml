@@ -101,7 +101,8 @@ testing:
           root: some-identity-root
           action: register
           payload:
-            id: some-id
+            id: some-ID
+            normalizedId: some-id
             phone: "#+19195551144"
             principal:
               root: some-principal
@@ -121,7 +122,8 @@ testing:
           root: some-other-identity-root
           action: register
           payload:
-            id: some-other-id
+            id: some-otHer-id
+            normalizedId: some-other-id
             phone: "#+19195551144"
             principal:
               root: some-principal
@@ -129,7 +131,7 @@ testing:
               network: some.network
       context: {}
       payload:
-        id: some-other-id
+        id: Some-other-id
         phone: "+19195551144"
       response:
         tokens:
@@ -149,7 +151,8 @@ testing:
           root: yet-another-identity-root
           action: register
           payload:
-            id: yet-another-id
+            id: yet-another-Id
+            normalizedId: yet-another-id
             phone: "+19195551144"
             principal:
               root: yet-another-principal

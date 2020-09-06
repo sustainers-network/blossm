@@ -9,7 +9,7 @@ const deps = require("../../deps");
 let clock;
 const now = new Date();
 
-const id = "some-id";
+const id = "some-Id";
 const phone = "some-phone";
 const payload = { id, phone };
 const challenge = "some-challenge";
@@ -135,8 +135,8 @@ describe("Command handler unit tests", () => {
     });
     expect(queryAggregatesFnFake.getCall(0)).to.have.been.calledWith({
       domain: "identity",
-      key: "id",
-      value: id,
+      key: "normalizedId",
+      value: "some-id",
     });
     expect(queryAggregatesFnFake.getCall(1)).to.have.been.calledWith({
       domain: "identity",
@@ -265,8 +265,8 @@ describe("Command handler unit tests", () => {
     });
     expect(queryAggregatesFnFake.getCall(0)).to.have.been.calledWith({
       domain: "identity",
-      key: "id",
-      value: id,
+      key: "normalizedId",
+      value: "some-id",
     });
     expect(queryAggregatesFnFake).to.have.been.calledOnce;
     expect(aggregateFake).to.have.been.calledWith(principalRoot, {
@@ -337,8 +337,8 @@ describe("Command handler unit tests", () => {
     });
     expect(queryAggregatesFnFake.getCall(0)).to.have.been.calledWith({
       domain: "identity",
-      key: "id",
-      value: id,
+      key: "normalizedId",
+      value: "some-id",
     });
     expect(queryAggregatesFnFake.getCall(1)).to.have.been.calledWith({
       domain: "identity",
@@ -436,8 +436,8 @@ describe("Command handler unit tests", () => {
     });
     expect(queryAggregatesFnFake).to.have.been.calledWith({
       domain: "identity",
-      key: "id",
-      value: id,
+      key: "normalizedId",
+      value: "some-id",
     });
     expect(hashFake).to.have.been.calledWith(phone);
     expect(commandFnFake).to.have.been.calledWith({
@@ -466,6 +466,7 @@ describe("Command handler unit tests", () => {
             payload: {
               phone: phoneHash,
               id,
+              normalizedId: "some-id",
               principal: { root: principalRoot, service, network },
             },
           },
@@ -545,7 +546,7 @@ describe("Command handler unit tests", () => {
     });
     expect(queryAggregatesFnFake).to.have.been.calledWith({
       domain: "identity",
-      key: "id",
+      key: "normalizedId",
       value: email,
     });
     expect(hashFake).to.have.been.calledWith(phone);
@@ -576,6 +577,7 @@ describe("Command handler unit tests", () => {
               phone: phoneHash,
               email,
               id: email,
+              normalizedId: email,
               principal: { root: principalRoot, service, network },
             },
           },
@@ -644,8 +646,8 @@ describe("Command handler unit tests", () => {
     });
     expect(queryAggregatesFnFake).to.have.been.calledWith({
       domain: "identity",
-      key: "id",
-      value: id,
+      key: "normalizedId",
+      value: "some-id",
     });
     expect(hashFake).to.have.been.calledWith(phone);
     expect(commandFnFake).to.have.been.calledWith({
@@ -669,6 +671,7 @@ describe("Command handler unit tests", () => {
             payload: {
               phone: phoneHash,
               id,
+              normalizedId: "some-id",
               principal: {
                 root: contextPrincipalRoot,
                 service: contextPrincipalService,

@@ -10,13 +10,14 @@ schema:
   phone: String
   email: String
   id: String
+  normalizedId: String
   principal:
     root: String
     service: String
     network: String
 
 indexes:
-  - id
+  - normalizedId
   - principal.root
   - principal.service
   - principal.network
@@ -31,7 +32,8 @@ testing:
           service: some-principal-service
           network: some.principal-network
         email: some-email
-        id: some-id
+        id: Some-Id
+        normalizedId: some-id
     - action: register
       payload:
         phone: "+19195551133"
@@ -40,7 +42,8 @@ testing:
           service: some-other-principal-service
           network: some.other-principal-network
         email: some-other-email
-        id: some-other-id
+        id: Some-other-Id
+        normalizedId: some-other-id
 
   handlers:
     - action: register
@@ -53,14 +56,16 @@ testing:
               service: some-principal-service
               network: some.principal-network
           payload:
-            id: some-other-id
+            id: Some-Other-id
+            normalizedId: some-other-id
             phone: "+19195551144"
             principal:
               root: some-other-principal-root
               service: some-other-principal-service
               network: some.other-principal-network
           result:
-            id: some-other-id
+            id: Some-Other-id
+            normalizedId: some-other-id
             phone: "+19195551144"
             principal:
               root: some-other-principal-root

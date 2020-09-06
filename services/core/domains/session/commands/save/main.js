@@ -156,6 +156,7 @@ const getEventsForIdentityRegistering = async ({ context, payload }) => {
           phone: hashedPhone,
           ...(deps.emailValidator(payload.id) && { email: payload.id }),
           id: payload.id,
+          normalizedId: payload.id.toLowerCase(),
           principal,
         },
       },
@@ -200,8 +201,8 @@ module.exports = async ({
   // Check to see if there is an identity with the provided id.
   const [identity] = await queryAggregatesFn({
     domain: "identity",
-    key: "id",
-    value: payload.id,
+    key: "normalizedId",
+    value: payload.id.toLowerCase(),
   });
 
   if (identity) {

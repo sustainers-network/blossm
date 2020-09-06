@@ -15,8 +15,8 @@ const determineUpgrade = async (payload, context, queryAggregatesFn) => {
   // If the principal is being upgraded, use a placeholder identity with it instead.
   const [identity] = await queryAggregatesFn({
     domain: "identity",
-    key: "id",
-    value: payload.id,
+    key: "normalizedId",
+    value: payload.id.toLowerCase(),
   });
 
   if (!identity)
