@@ -14,7 +14,12 @@ module.exports = async ({ payload }) => {
   await deps.faasGrip.publish(
     payload.channel,
     new deps.grip.HttpStreamFormat(
-      `event: update\ndata: ${JSON.stringify(payload.view)}\n\n`
+      `event: update\ndata: ${JSON.stringify({
+        ...(payload.view && { view: payload.view }),
+        id: payload.id,
+        trace: payload.trace,
+        type: payload.type,
+      })}\n\n`
     )
   );
 };

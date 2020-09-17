@@ -1,9 +1,11 @@
 module.exports = async (payload) => {
   return {
-    view: {
-      headers: payload.view.headers,
-      body: payload.view.body,
-    },
+    ...(payload.view && {
+      view: payload.view,
+    }),
+    id: payload.id,
+    ...(payload.trace && { trace: payload.trace }),
+    type: payload.type,
     channel: payload.channel,
   };
 };

@@ -14,6 +14,9 @@ const root = "some-root";
 const view = { a: 1 };
 const channel = "some-channel";
 const node = "some-node";
+const type = "some-type";
+const id = "some-id";
+const trace = "some-trace";
 const connection = "some-connection";
 const key = "some-key";
 const context = {
@@ -24,6 +27,9 @@ const context = {
 const payload = {
   view,
   channel,
+  type,
+  id,
+  trace,
 };
 
 const secret = "some-secret";
@@ -64,14 +70,19 @@ describe("Command handler unit tests", () => {
       `https://api.fanout.io/realm/${fanoutRealmId}?iss=${fanoutRealmId}&key=base64:${secret}`
     );
     expect(httpStreamFormatFake).to.have.been.calledWith(
-      `event: update\ndata: ${JSON.stringify(view)}\n\n`
+      `event: update\ndata: ${JSON.stringify({
+        view,
+        id,
+        trace,
+        type,
+      })}\n\n`
     );
     expect(publishFake).to.have.been.calledWith(channel, stream.prototype);
     expect(result).to.deep.equal();
     await main({ payload, context });
     expect(secretFake).to.have.been.calledOnce;
   });
-  it("should return successfully with no context", async () => {
+  it("should return successfully with no context and no view", async () => {
     const secretFake = fake.returns(secret);
     replace(deps, "secret", secretFake);
 
@@ -91,13 +102,24 @@ describe("Command handler unit tests", () => {
     const uuidFake = fake.returns(root);
     replace(deps, "uuid", uuidFake);
     expect(process.env.GRIP_URL).to.not.exist;
-    const result = await main({ payload });
+    const result = await main({
+      payload: {
+        channel,
+        type,
+        id,
+        trace,
+      },
+    });
     expect(secretFake).to.have.been.calledWith("fanout-realm-key");
     expect(process.env.GRIP_URL).to.equal(
       `https://api.fanout.io/realm/${fanoutRealmId}?iss=${fanoutRealmId}&key=base64:${secret}`
     );
     expect(httpStreamFormatFake).to.have.been.calledWith(
-      `event: update\ndata: ${JSON.stringify(view)}\n\n`
+      `event: update\ndata: ${JSON.stringify({
+        id,
+        trace,
+        type,
+      })}\n\n`
     );
     expect(publishFake).to.have.been.calledWith(channel, stream.prototype);
     expect(result).to.deep.equal();
@@ -129,7 +151,12 @@ describe("Command handler unit tests", () => {
       `http://api.fanout.io/realm/${fanoutRealmId}?iss=${fanoutRealmId}&key=base64:${secret}`
     );
     expect(httpStreamFormatFake).to.have.been.calledWith(
-      `event: update\ndata: ${JSON.stringify(view)}\n\n`
+      `event: update\ndata: ${JSON.stringify({
+        view,
+        id,
+        trace,
+        type,
+      })}\n\n`
     );
     expect(publishFake).to.have.been.calledWith(channel, stream.prototype);
     expect(result).to.deep.equal();

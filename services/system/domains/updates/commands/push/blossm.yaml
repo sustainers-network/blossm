@@ -4,9 +4,20 @@ service: system
 
 payload:
   view:
-    headers: object
-    body: object
+    type: object
+    optional: true
   channel: string
+  id: string
+  trace:
+    type:
+      - string
+    optional: true
+  type:
+    type: string
+    in:
+      - create
+      - update
+      - delete
 
 dependencies:
   "grip": "*"
@@ -50,26 +61,40 @@ testing:
           body:
             some: property
         channel: some-channel
+        id: some-id
+        trace:
+          - some-trace
+        type: update
+      - channel: some-channel
+        id: some-id
+        trace:
+          - some-trace
+        type: update
     bad:
       - view: 3
-      - view:
-          headers: 3
-      - view:
-          body: 3
       - channel: 3
+      - type: bogus
+      - id: 4
+      - trace:
+          - 3
 
   normalize:
     - payload:
         view:
           headers: some-headers
           body: some-body
-          other: som-bogus
         channel: some-channel
+        type: some-type
+        id: some-id
+        trace: some-trace
       normalized:
         view:
           headers: some-headers
           body: some-body
         channel: some-channel
+        type: some-type
+        id: some-id
+        trace: some-trace
 
   steps:
     - payload:
@@ -79,6 +104,10 @@ testing:
           body:
             b: 2
         channel: some-channel
+        type: update
+        id: some-id
+        trace:
+          - some-trace
       context:
         node:
           root: some-node-root
