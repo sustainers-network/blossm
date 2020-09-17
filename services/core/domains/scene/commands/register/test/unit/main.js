@@ -126,6 +126,57 @@ describe("Command handler unit tests", () => {
       },
     });
   });
+  it("should return successfully with no role", async () => {
+    const uuid = "some-uuid";
+    const uuidFake = stub()
+      .onFirstCall()
+      .returns(root)
+      .onSecondCall()
+      .returns(uuid);
+    replace(deps, "uuid", uuidFake);
+
+    const tokens = "some-tokens";
+    const newContext = "some-new-context";
+    const commandFnFake = fake.returns({
+      body: { tokens, context: newContext },
+    });
+
+    const result = await main({
+      payload: {
+        root: subjectRoot,
+        domain: subjectDomain,
+        service: subjectService,
+        network: subjectNetwork,
+      },
+      context,
+      commandFn: commandFnFake,
+    });
+    expect(result).to.deep.equal({
+      events: [
+        {
+          action: "register",
+          payload: {
+            root: subjectRoot,
+            domain: subjectDomain,
+            service: subjectService,
+            network: subjectNetwork,
+          },
+          root,
+          correctNumber: 0,
+        },
+      ],
+      response: {
+        receipt: {
+          scene: {
+            root,
+            service,
+            network,
+          },
+        },
+      },
+    });
+    expect(commandFnFake).to.not.have.been.called;
+  });
   it("should return successfully if there's a context principal", async () => {
     const uuid = "some-uuid";
     const uuidFake = stub()

@@ -75,8 +75,8 @@ module.exports = async ({ payload, context, commandFn }) => {
     },
   };
 
-  // If the session already has a principal, no need to upgrade it.
-  if (context.principal) return { events, response };
+  // If the session already has a principal, or no role was added, no need to upgrade it.
+  if (context.principal || !payload.role) return { events, response };
 
   // Upgrade the session for the principal.
   const {

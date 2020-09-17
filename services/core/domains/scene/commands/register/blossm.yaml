@@ -96,6 +96,7 @@ testing:
             device:
               os: some-os
       payload:
+        role: SceneAdmin
         root: some-root
         domain: some-domain
         service: some-service
@@ -125,6 +126,33 @@ testing:
             service:
             network:
         context:
+      code: 202
+    # No role
+    - payload:
+        root: some-root
+        domain: some-domain
+        service: some-service
+        network: some.network
+      context:
+        network: some.network
+        session:
+          root: some-session-root
+          service: some-session-service
+          network: some.session-network
+        principal:
+          root: some-principal-root
+          service: core
+          network: some.other-network
+      claims:
+        iss: some-iss
+        aud: some-aud
+        exp: 9999-12-31T00:00:00.000
+      response:
+        receipt:
+          scene:
+            root:
+            service:
+            network:
       code: 202
     - pre:
         - domain: session
