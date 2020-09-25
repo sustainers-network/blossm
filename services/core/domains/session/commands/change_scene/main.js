@@ -78,14 +78,12 @@ module.exports = async ({ payload, context, claims, aggregateFn }) => {
         },
       },
     ],
-    response: {
-      tokens: [
-        {
-          network: context.network || process.env.NETWORK,
-          type: "access",
-          value: token,
-        },
-      ],
-    },
+    tokens: [
+      {
+        network: context.network || process.env.NETWORK,
+        type: "access",
+        value: token,
+      },
+    ],
   };
 };

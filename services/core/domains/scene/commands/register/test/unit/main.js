@@ -47,10 +47,10 @@ describe("Command handler unit tests", () => {
       .returns(uuid);
     replace(deps, "uuid", uuidFake);
 
-    const tokens = "some-tokens";
+    const _tokens = "some-tokens";
     const newContext = "some-new-context";
     const commandFnFake = fake.returns({
-      body: { tokens, context: newContext },
+      body: { _tokens, context: newContext },
     });
 
     const result = await main({
@@ -98,7 +98,6 @@ describe("Command handler unit tests", () => {
         },
       ],
       response: {
-        tokens,
         context: newContext,
         receipt: {
           principal: {
@@ -113,6 +112,7 @@ describe("Command handler unit tests", () => {
           },
         },
       },
+      tokens: _tokens,
     });
     expect(commandFnFake).to.have.been.calledWith({
       domain: "session",
@@ -135,10 +135,10 @@ describe("Command handler unit tests", () => {
       .returns(uuid);
     replace(deps, "uuid", uuidFake);
 
-    const tokens = "some-tokens";
+    const _tokens = "some-tokens";
     const newContext = "some-new-context";
     const commandFnFake = fake.returns({
-      body: { tokens, context: newContext },
+      body: { _tokens, context: newContext },
     });
 
     const result = await main({

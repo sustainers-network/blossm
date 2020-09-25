@@ -1,8 +1,6 @@
 module.exports = {
-  create: (state, payload) => {
-    return {
-      ...state,
-      ...payload,
-    };
-  },
+  create: (state, payload) => ({
+    ...state,
+    ...payload,
+  }),
 };

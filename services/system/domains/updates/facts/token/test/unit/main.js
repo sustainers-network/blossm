@@ -34,7 +34,7 @@ describe("Fact unit tests", () => {
 
     const result = await main({ claims, context });
 
-    expect(result).to.equal(token);
+    expect(result).to.deep.equal({ response: token });
     expect(createJwtFake).to.have.been.calledWith({
       options: {
         issuer: iss,
@@ -83,7 +83,7 @@ describe("Fact unit tests", () => {
 
     const result = await main({ claims, context });
 
-    expect(result).to.equal(token);
+    expect(result).to.deep.equal({ response: token });
     expect(createJwtFake).to.have.been.calledWith({
       options: {
         issuer: iss,

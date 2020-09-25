@@ -45,6 +45,10 @@ module.exports = async ({ payload, context, aggregateFn }) => {
           name: payload.name,
           network: nodeAggregate.state.network,
           scene: context.scene,
+          domain: {
+            ...context[context.domain],
+            domain: context.domain,
+          },
           principal: {
             root: principalRoot,
             service: "core",

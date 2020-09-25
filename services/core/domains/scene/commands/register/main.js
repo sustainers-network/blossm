@@ -80,7 +80,7 @@ module.exports = async ({ payload, context, commandFn }) => {
 
   // Upgrade the session for the principal.
   const {
-    body: { tokens, context: newContext },
+    body: { _tokens, context: newContext },
   } = await commandFn({
     domain: "session",
     name: "upgrade",
@@ -94,8 +94,8 @@ module.exports = async ({ payload, context, commandFn }) => {
     response: {
       ...response,
       receipt: { ...response.receipt, principal },
-      tokens,
       context: newContext,
     },
+    tokens: _tokens,
   };
 };

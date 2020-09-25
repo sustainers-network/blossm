@@ -83,15 +83,15 @@ testing:
           service: some-principal-service
           network: some-principal-network
       response:
-        tokens:
-          - network:
-            type: challenge
-            value:
         receipt:
           challenge:
             root:
             service:
             network:
+      tokens:
+        - network:
+          type: challenge
+          value:
       code: 202
     # Should return 400 if the context principal is
     # different from the principal in the identity.
@@ -134,15 +134,15 @@ testing:
         id: Some-other-id
         phone: "+19195551144"
       response:
-        tokens:
-          - network:
-            type: challenge
-            value:
         receipt:
           challenge:
             root:
             service:
             network:
+      tokens:
+        - network:
+          type: challenge
+          value:
       code: 202
       # Should return 400 if the phone number is not correct.
     - pre:

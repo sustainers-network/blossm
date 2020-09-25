@@ -11,6 +11,8 @@ const now = new Date();
 const root = "some-root";
 const context = { session: { root } };
 
+const network = "some-network";
+process.env.NETWORK = network;
 describe("Command handler unit tests", () => {
   beforeEach(() => {
     clock = useFakeTimers(now.getTime());
@@ -36,6 +38,7 @@ describe("Command handler unit tests", () => {
           },
         },
       ],
+      revoke: [{ type: "access", network }],
     });
   });
   it("should throw correctly if aggregate has already been terminated", async () => {

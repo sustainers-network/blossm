@@ -18,5 +18,8 @@ module.exports = async ({ context, aggregateFn }) => {
         payload: { terminated: deps.stringDate() },
       },
     ],
+    revoke: [
+      { type: "access", network: context.network || process.env.NETWORK },
+    ],
   };
 };

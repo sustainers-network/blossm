@@ -3,8 +3,8 @@ const { MILLISECONDS_IN_HOUR } = require("@blossm/duration-consts");
 
 const ONE_HOUR = MILLISECONDS_IN_HOUR;
 
-module.exports = ({ context, claims }) =>
-  deps.createJwt({
+module.exports = async ({ context, claims }) => ({
+  response: await deps.createJwt({
     options: {
       issuer: claims.iss,
       subject: claims.sub,
@@ -26,4 +26,5 @@ module.exports = ({ context, claims }) =>
         version: "1",
         project: process.env.GCP_PROJECT,
       }),
-  });
+  }),
+});

@@ -43,7 +43,7 @@ describe("Command handler unit tests", () => {
 
     replace(deps, "uuid", uuidFake);
 
-    const tokens = "some-tokens";
+    const _tokens = "some-tokens";
     const principalRoot = "some-principal-root";
     const principalService = "some-principal-service";
     const principalNetwork = "some-principal-network";
@@ -56,7 +56,7 @@ describe("Command handler unit tests", () => {
       .onFirstCall()
       .returns({
         body: {
-          tokens,
+          _tokens,
           context: newContext,
           receipt: {
             principal: {
@@ -132,7 +132,6 @@ describe("Command handler unit tests", () => {
         },
       ],
       response: {
-        tokens,
         context: newContext,
         receipt: {
           node: { root: nodeRoot, service, network },
@@ -153,6 +152,7 @@ describe("Command handler unit tests", () => {
           },
         },
       },
+      tokens: _tokens,
     });
     expect(commandFnFake.getCall(0)).to.have.been.calledWith({
       name: "register",
@@ -196,13 +196,13 @@ describe("Command handler unit tests", () => {
     const groupService = "some-group-service";
     const groupNetwork = "some-group-network";
 
-    const tokens = "some-tokens";
+    const _tokens = "some-tokens";
 
     const commandFnFake = stub()
       .onFirstCall()
       .returns({
         body: {
-          tokens,
+          _tokens,
           receipt: {
             scene: {
               root: sceneRoot,
@@ -300,7 +300,6 @@ describe("Command handler unit tests", () => {
         },
       ],
       response: {
-        tokens,
         receipt: {
           node: { root: nodeRoot, service, network },
           scene: {
@@ -315,6 +314,7 @@ describe("Command handler unit tests", () => {
           },
         },
       },
+      tokens: _tokens,
     });
     expect(commandFnFake.getCall(0)).to.have.been.calledWith({
       name: "register",

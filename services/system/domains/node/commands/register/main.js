@@ -7,7 +7,7 @@ module.exports = async ({ payload, context, commandFn }) => {
   // Register the scene.
   const {
     body: {
-      tokens,
+      _tokens,
       context: newContext,
       receipt: { principal, scene },
     },
@@ -77,7 +77,6 @@ module.exports = async ({ payload, context, commandFn }) => {
       },
     ],
     response: {
-      ...(tokens && { tokens }),
       ...(newContext && { context: newContext }),
       receipt: {
         ...(principal && { principal }),
@@ -90,5 +89,6 @@ module.exports = async ({ payload, context, commandFn }) => {
         scene,
       },
     },
+    ...(_tokens && { tokens: _tokens }),
   };
 };

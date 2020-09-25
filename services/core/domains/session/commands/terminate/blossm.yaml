@@ -37,6 +37,9 @@ testing:
       context:
         session:
           root: some-root
+      revoke:
+        - type: access
+          network:
       code: 202
     - pre:
         - domain: session

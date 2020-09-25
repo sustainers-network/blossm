@@ -80,10 +80,6 @@ testing:
           agent: some-agent
       ip: some-ip
       response:
-        tokens:
-          - network:
-            type: access
-            value:
         receipt:
           session:
             root:
@@ -100,6 +96,10 @@ testing:
             type: mobile
             platform: ios
             agent: some-agent
+      tokens:
+        - network:
+          type: access
+          value:
       code: 202
     - payload:
         device:
@@ -110,10 +110,6 @@ testing:
         network: some.network
       ip: some-ip
       response:
-        tokens:
-          - network: some.network
-            type: access
-            value:
         receipt:
           session:
             root:
@@ -130,6 +126,10 @@ testing:
             type: mobile
             platform: ios
             agent: some-agent
+      tokens:
+        - network: some.network
+          type: access
+          value:
 
       code: 202
 

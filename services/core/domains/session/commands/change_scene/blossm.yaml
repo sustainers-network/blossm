@@ -76,11 +76,10 @@ testing:
       context:
         session:
           root: some-root
-      response:
-        tokens:
-          - network:
-            type: access
-            value:
+      tokens:
+        - network:
+          type: access
+          value:
       code: 202
     - pre:
         - domain: principal

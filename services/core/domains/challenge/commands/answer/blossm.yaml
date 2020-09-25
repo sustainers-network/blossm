@@ -83,11 +83,14 @@ testing:
           service: some-service
           network: some.network
       response:
-        tokens:
-          - network:
-            type: access
-            value:
         context:
+      tokens:
+        - network:
+          type: access
+          value:
+      revoke:
+        - type: challenge
+          network:
       code: 202
     - pre:
         - domain: challenge
@@ -126,11 +129,14 @@ testing:
           service: some-service
           network: some.network
       response:
-        tokens:
-          - network:
-            type: access
-            value:
         context:
+      tokens:
+        - network:
+          type: access
+          value:
+      revoke:
+        - type: challenge
+          network:
       code: 202
     - pre:
         - domain: challenge

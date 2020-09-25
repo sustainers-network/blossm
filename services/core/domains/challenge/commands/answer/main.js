@@ -32,12 +32,16 @@ module.exports = async ({ payload, context, aggregateFn, commandFn }) => {
     ...(challengeAggregate.state.events || []),
   ];
 
+  const revoke = [
+    { type: "challenge", network: context.network || process.env.NETWORK },
+  ];
+
   // If there isn't a need to upgrade the context, no need to return a token.
-  if (!challengeAggregate.state.upgrade) return { events };
+  if (!challengeAggregate.state.upgrade) return { events, revoke };
 
   // Upgrade the session with the principal specified in the challenge.
   const {
-    body: { tokens, context: newContext },
+    body: { _tokens, context: newContext },
   } = await commandFn({
     domain: "session",
     name: "upgrade",
@@ -45,5 +49,10 @@ module.exports = async ({ payload, context, aggregateFn, commandFn }) => {
     payload: challengeAggregate.state.upgrade,
   });
 
-  return { events, response: { tokens, context: newContext } };
+  return {
+    events,
+    response: { context: newContext },
+    tokens: _tokens,
+    revoke,
+  };
 };

@@ -35,7 +35,7 @@ const context = {
 const newContext = "some-new-context";
 const service = "some-service";
 const network = "some-network";
-const tokens = "some-tokens";
+const _tokens = "some-tokens";
 const project = "some-projectl";
 
 process.env.SERVICE = service;
@@ -60,7 +60,7 @@ describe("Command handler unit tests", () => {
     });
 
     const commandFnFake = fake.returns({
-      body: { tokens, context: newContext },
+      body: { _tokens, context: newContext },
     });
 
     const result = await main({
@@ -80,7 +80,14 @@ describe("Command handler unit tests", () => {
           root: contextChallenge,
         },
       ],
-      response: { tokens, context: newContext },
+      response: { context: newContext },
+      tokens: _tokens,
+      revoke: [
+        {
+          type: "challenge",
+          network,
+        },
+      ],
     });
     expect(aggregateFake).to.have.been.calledWith(contextChallenge);
     expect(commandFnFake).to.have.been.calledWith({
@@ -116,6 +123,12 @@ describe("Command handler unit tests", () => {
             answered: deps.stringDate(),
           },
           root: contextChallenge,
+        },
+      ],
+      revoke: [
+        {
+          type: "challenge",
+          network,
         },
       ],
     });

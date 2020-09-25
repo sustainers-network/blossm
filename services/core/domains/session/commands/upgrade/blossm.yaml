@@ -82,16 +82,16 @@ testing:
           service: core
           network: sustainers.network
       response:
-        tokens:
-          - network:
-            type: access
-            value:
         context:
           some: context
           principal:
             root: some-principal-root
             service: some-principal-service
             network: some.principal-network
+      tokens:
+        - network:
+          type: access
+          value:
       code: 202
     - pre:
         - domain: session

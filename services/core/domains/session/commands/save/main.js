@@ -255,7 +255,7 @@ module.exports = async ({
 
   const {
     body: {
-      tokens,
+      _tokens,
       receipt: { challenge },
     },
     statusCode,
@@ -283,12 +283,12 @@ module.exports = async ({
 
   return {
     response: {
-      tokens,
       receipt: {
         challenge,
         ...(receiptIdentity && { identity: receiptIdentity }),
       },
     },
     statusCode,
+    tokens: _tokens,
   };
 };

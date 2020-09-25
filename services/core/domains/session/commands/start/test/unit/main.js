@@ -55,7 +55,6 @@ describe("Command handler unit tests", () => {
         },
       ],
       response: {
-        tokens: [{ network, type: "access", value: token }],
         context: {
           network,
           session: {
@@ -76,6 +75,7 @@ describe("Command handler unit tests", () => {
           },
         },
       },
+      tokens: [{ network, type: "access", value: token }],
     });
     expect(createJwtFake).to.have.been.calledWith({
       options: {
@@ -151,7 +151,6 @@ describe("Command handler unit tests", () => {
         },
       ],
       response: {
-        tokens: [{ network: nodeNetwork, type: "access", value: token }],
         context: {
           network: nodeNetwork,
           session: {
@@ -172,6 +171,7 @@ describe("Command handler unit tests", () => {
           },
         },
       },
+      tokens: [{ network: nodeNetwork, type: "access", value: token }],
     });
     expect(createJwtFake).to.have.been.calledWith({
       options: {
@@ -244,7 +244,6 @@ describe("Command handler unit tests", () => {
         },
       ],
       response: {
-        tokens: [{ network, type: "access", value: token }],
         receipt: {
           session: {
             root,
@@ -265,6 +264,7 @@ describe("Command handler unit tests", () => {
           },
         },
       },
+      tokens: [{ network, type: "access", value: token }],
     });
     expect(createJwtFake).to.have.been.calledWith({
       options: {

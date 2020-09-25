@@ -3,9 +3,11 @@ service: system
 
 commands:
   - name: push
-    context: node
+    # context: node
+    # TODO revisit
     privileges:
-      - create
+      none
+      # - create
 
 whitelist:
   - "127.0.0.1"

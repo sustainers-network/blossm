@@ -102,7 +102,6 @@ describe("Command handler unit tests", () => {
         },
       ],
       response: {
-        tokens: [{ network, type: "challenge", value: token }],
         receipt: {
           challenge: {
             root,
@@ -111,6 +110,7 @@ describe("Command handler unit tests", () => {
           },
         },
       },
+      tokens: [{ network, type: "challenge", value: token }],
     });
     expect(compareFake).to.have.been.calledWith(payloadPhone, phone);
     expect(queryAggregatesFnFake).to.have.been.calledWith({
@@ -217,7 +217,6 @@ describe("Command handler unit tests", () => {
         },
       ],
       response: {
-        tokens: [{ network: contextNetwork, type: "challenge", value: token }],
         receipt: {
           challenge: {
             root,
@@ -226,6 +225,7 @@ describe("Command handler unit tests", () => {
           },
         },
       },
+      tokens: [{ network: contextNetwork, type: "challenge", value: token }],
     });
     expect(compareFake).to.have.been.calledWith(payloadPhone, phone);
     expect(queryAggregatesFnFake).to.have.been.calledWith({
@@ -337,7 +337,6 @@ describe("Command handler unit tests", () => {
         },
       ],
       response: {
-        tokens: [{ network, type: "challenge", value: token }],
         receipt: {
           challenge: {
             root,
@@ -346,6 +345,7 @@ describe("Command handler unit tests", () => {
           },
         },
       },
+      tokens: [{ network, type: "challenge", value: token }],
     });
     expect(compareFake).to.have.been.calledWith(payloadPhone, phone);
     expect(queryAggregatesFnFake).to.have.been.calledWith({
@@ -441,7 +441,6 @@ describe("Command handler unit tests", () => {
         },
       ],
       response: {
-        tokens: [{ network, type: "challenge", value: token }],
         receipt: {
           challenge: {
             root,
@@ -450,6 +449,7 @@ describe("Command handler unit tests", () => {
           },
         },
       },
+      tokens: [{ network, type: "challenge", value: token }],
     });
     expect(createJwtFake).to.have.been.calledWith({
       options: {

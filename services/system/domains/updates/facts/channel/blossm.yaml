@@ -23,6 +23,7 @@ testing:
       context:
         some: context
       code: 200
+      resposne: connected
     - query:
         name: some-name
         source: some-source
@@ -31,6 +32,7 @@ testing:
       context:
         some: context
       code: 200
+      resposne: connected
 
 #don't change
 procedure: fact

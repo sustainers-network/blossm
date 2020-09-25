@@ -64,10 +64,6 @@ testing:
         aud: some-aud
         exp: 9999-12-31T00:00:00.000
       response:
-        tokens:
-          - network:
-            type: access
-            value:
         context:
         receipt:
           principal:
@@ -86,6 +82,10 @@ testing:
             root:
             service: core
             network:
+      tokens:
+        - network:
+          type: access
+          value:
       code: 202
     - payload:
         network: some.network

@@ -54,13 +54,6 @@ module.exports = async ({ payload, context = {}, ip }) => {
       },
     ],
     response: {
-      tokens: [
-        {
-          network: context.network || process.env.NETWORK,
-          type: "access",
-          value: token,
-        },
-      ],
       context: newContext,
       receipt: {
         session: {
@@ -70,5 +63,12 @@ module.exports = async ({ payload, context = {}, ip }) => {
         },
       },
     },
+    tokens: [
+      {
+        network: context.network || process.env.NETWORK,
+        type: "access",
+        value: token,
+      },
+    ],
   };
 };

@@ -137,6 +137,10 @@ describe("Command handler unit tests", () => {
             name: payload.name,
             network: nodeStateNetwork,
             scene,
+            domain: {
+              domain: "node",
+              ...node,
+            },
             principal: {
               root: principalRoot,
               service: "core",

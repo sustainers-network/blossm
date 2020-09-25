@@ -110,10 +110,6 @@ testing:
           network: some.network
       code: 202
       response:
-        tokens:
-          - network:
-            type: challenge
-            value:
         receipt:
           challenge:
             root:
@@ -123,6 +119,10 @@ testing:
             root:
             service:
             network:
+      tokens:
+        - network:
+          type: challenge
+          value:
     # Return successfully if saving a new id with a context that has
     # a principal that doesn't yet belong to an identity.
     - pre:
@@ -178,15 +178,15 @@ testing:
           service: core
           network: sustainers.network
       response:
-        tokens:
-          - network:
-            type: challenge
-            value:
         receipt:
           challenge:
             root:
             service:
             network:
+      tokens:
+        - network:
+          type: challenge
+          value:
       code: 202
       # Should return 400 if the principal in the context belongs to a different identity.
     - pre:

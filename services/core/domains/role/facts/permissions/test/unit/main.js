@@ -78,7 +78,12 @@ describe("Fact unit tests", () => {
     } catch (err) {
       expect(err).to.equal(error);
       expect(messageFake).to.have.been.calledWith(
-        "There's no role with this id in this network."
+        "There's no role with this id in this network.",
+        {
+          info: {
+            id,
+          },
+        }
       );
     }
   });

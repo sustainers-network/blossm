@@ -115,7 +115,7 @@ describe("Command handler unit tests", () => {
           root: sessionRoot,
         },
       ],
-      response: { tokens: [{ network, type: "access", value: token }] },
+      tokens: [{ network, type: "access", value: token }],
     });
     expect(aggregateFake).to.have.been.calledWith(sub, {
       domain: "principal",
@@ -226,9 +226,7 @@ describe("Command handler unit tests", () => {
           root: sessionRoot,
         },
       ],
-      response: {
-        tokens: [{ network: contextNetwork, type: "access", value: token }],
-      },
+      tokens: [{ network: contextNetwork, type: "access", value: token }],
     });
     expect(aggregateFake).to.have.been.calledWith(sub, {
       domain: "principal",

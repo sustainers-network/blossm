@@ -21,8 +21,6 @@ payload:
 
 dependencies:
   "grip": "*"
-  "faas-grip": "*"
-  "@blossm/uuid": "*"
   "@blossm/gcp-secret": "*"
 
 devDependencies:

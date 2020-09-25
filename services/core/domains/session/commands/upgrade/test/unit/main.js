@@ -93,7 +93,6 @@ describe("Command handler unit tests", () => {
         },
       ],
       response: {
-        tokens: [{ network, type: "access", value: token }],
         context: {
           ...context,
           principal: {
@@ -103,6 +102,7 @@ describe("Command handler unit tests", () => {
           },
         },
       },
+      tokens: [{ network, type: "access", value: token }],
     });
     expect(aggregateFake).to.have.been.calledWith(root);
     expect(createJwtFake).to.have.been.calledWith({
@@ -169,12 +169,12 @@ describe("Command handler unit tests", () => {
         },
       ],
       response: {
-        tokens: [{ network, type: "access", value: token }],
         context: {
           ...context,
           a: 1,
         },
       },
+      tokens: [{ network, type: "access", value: token }],
     });
     expect(aggregateFake).to.have.been.calledWith(root);
     expect(createJwtFake).to.have.been.calledWith({
@@ -246,7 +246,6 @@ describe("Command handler unit tests", () => {
         },
       ],
       response: {
-        tokens: [{ network: contextNetwork, type: "access", value: token }],
         context: {
           ...context,
           network: contextNetwork,
@@ -257,6 +256,7 @@ describe("Command handler unit tests", () => {
           },
         },
       },
+      tokens: [{ network: contextNetwork, type: "access", value: token }],
     });
     expect(aggregateFake).to.have.been.calledWith(root);
     expect(createJwtFake).to.have.been.calledWith({

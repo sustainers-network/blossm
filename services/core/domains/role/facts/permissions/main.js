@@ -11,7 +11,12 @@ module.exports = async ({ context, query, queryAggregatesFn }) => {
 
   if (!role)
     throw deps.badRequestError.message(
-      "There's no role with this id in this network."
+      "There's no role with this id in this network.",
+      {
+        info: {
+          id: query.id,
+        },
+      }
     );
 
   return { response: role.state.permissions };

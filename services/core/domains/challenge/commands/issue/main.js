@@ -130,13 +130,6 @@ module.exports = async ({
       },
     ],
     response: {
-      tokens: [
-        {
-          network: context.network || process.env.NETWORK,
-          type: "challenge",
-          value: token,
-        },
-      ],
       receipt: {
         challenge: {
           root,
@@ -145,5 +138,12 @@ module.exports = async ({
         },
       },
     },
+    tokens: [
+      {
+        network: context.network || process.env.NETWORK,
+        type: "challenge",
+        value: token,
+      },
+    ],
   };
 };
