@@ -37,6 +37,7 @@ describe("Command handler unit tests", () => {
   beforeEach(() => {
     delete require.cache[require.resolve("../../main.js")];
     main = require("../../main.js");
+    delete process.env.GRIP_URL;
     delete process.env.NODE_ENV;
   });
   afterEach(() => {
@@ -47,66 +48,127 @@ describe("Command handler unit tests", () => {
     replace(deps, "secret", secretFake);
 
     const stream = function () {};
-    const publishHttpStreamFake = fake();
-    const streamResult = {
-      publishHttpStream: publishHttpStreamFake,
-    };
+    const streamResult = "some-stream";
     stream.prototype.constructor = streamResult;
-    const gripPubControlFake = fake.returns(streamResult);
+    const httpStreamFormatFake = fake.returns(streamResult);
     replace(deps, "grip", {
-      GripPubControl: gripPubControlFake,
+      HttpStreamFormat: httpStreamFormatFake,
+    });
+
+    const publishFake = fake();
+    replace(deps, "faasGrip", {
+      publish: publishFake,
     });
 
     expect(process.env.GRIP_URL).to.not.exist;
-    await main({ payload, context });
+    const result = await main({ payload, context });
     expect(secretFake).to.have.been.calledWith("fanout-realm-key");
-    expect(gripPubControlFake).to.have.been.calledWith({
-      control_uri: `https://api.fanout.io/realm/${fanoutRealmId}`,
-      control_iss: fanoutRealmId,
-      key: Buffer.from(secret, "base64"),
-    });
-    expect(publishHttpStreamFake).to.have.been.calledWith(channel, {
-      view,
-      id,
-      trace,
-      type,
-    });
+    expect(process.env.GRIP_URL).to.equal(
+      `https://api.fanout.io/realm/${fanoutRealmId}?iss=${fanoutRealmId}&key=base64:${secret}`
+    );
+    expect(httpStreamFormatFake).to.have.been.calledWith(
+      // `event: update\ndata: ${JSON.stringify({
+      //   view,
+      //   id,
+      //   trace,
+      //   type,
+      // })}\n\n`
+      `data: ${JSON.stringify({
+        view,
+        id,
+        trace,
+        type,
+      })}\n\n`
+    );
+    expect(publishFake).to.have.been.calledWith(channel, stream.prototype);
+    expect(result).to.deep.equal();
+    await main({ payload, context });
+    expect(secretFake).to.have.been.calledOnce;
   });
-  it("should return successfully with optionals omitted", async () => {
+  it("should return successfully with no context and no view", async () => {
     const secretFake = fake.returns(secret);
     replace(deps, "secret", secretFake);
 
     const stream = function () {};
-    const publishHttpStreamFake = fake();
-    const streamResult = {
-      publishHttpStream: publishHttpStreamFake,
-    };
+    const streamResult = "some-stream";
     stream.prototype.constructor = streamResult;
-    const gripPubControlFake = fake.returns(streamResult);
+    const httpStreamFormatFake = fake.returns(streamResult);
     replace(deps, "grip", {
-      GripPubControl: gripPubControlFake,
+      HttpStreamFormat: httpStreamFormatFake,
+    });
+
+    const publishFake = fake();
+    replace(deps, "faasGrip", {
+      publish: publishFake,
     });
 
     expect(process.env.GRIP_URL).to.not.exist;
-    await main({
+    const result = await main({
       payload: {
         channel,
         type,
         id,
         trace,
       },
-      context,
     });
     expect(secretFake).to.have.been.calledWith("fanout-realm-key");
-    expect(gripPubControlFake).to.have.been.calledWith({
-      control_uri: `https://api.fanout.io/realm/${fanoutRealmId}`,
-      control_iss: fanoutRealmId,
-      key: Buffer.from(secret, "base64"),
+    expect(process.env.GRIP_URL).to.equal(
+      `https://api.fanout.io/realm/${fanoutRealmId}?iss=${fanoutRealmId}&key=base64:${secret}`
+    );
+    expect(httpStreamFormatFake).to.have.been.calledWith(
+      // `event: update\ndata: ${JSON.stringify({
+      //   id,
+      //   trace,
+      //   type,
+      // })}\n\n`
+      `data: ${JSON.stringify({
+        id,
+        trace,
+        type,
+      })}\n\n`
+    );
+    expect(publishFake).to.have.been.calledWith(channel, stream.prototype);
+    expect(result).to.deep.equal();
+    await main({ payload, context });
+    expect(secretFake).to.have.been.calledOnce;
+  });
+  it("should return successfully in local env", async () => {
+    const secretFake = fake.returns(secret);
+    replace(deps, "secret", secretFake);
+
+    const stream = function () {};
+    const streamResult = "some-stream";
+    stream.prototype.constructor = streamResult;
+    const httpStreamFormatFake = fake.returns(streamResult);
+    replace(deps, "grip", {
+      HttpStreamFormat: httpStreamFormatFake,
     });
-    expect(publishHttpStreamFake).to.have.been.calledWith(channel, {
-      id,
-      trace,
-      type,
+
+    const publishFake = fake();
+    replace(deps, "faasGrip", {
+      publish: publishFake,
     });
+
+    process.env.NODE_ENV = "local";
+    const result = await main({ payload, context });
+    expect(process.env.GRIP_URL).to.equal(
+      `http://api.fanout.io/realm/${fanoutRealmId}?iss=${fanoutRealmId}&key=base64:${secret}`
+    );
+    expect(httpStreamFormatFake).to.have.been.calledWith(
+      // `event: update\ndata: ${JSON.stringify({
+      //   view,
+      //   id,
+      //   trace,
+      //   type,
+      // })}\n\n`
+      `data: ${JSON.stringify({
+        view,
+        id,
+        trace,
+        type,
+      })}\n\n`
+    );
+    expect(publishFake).to.have.been.calledWith(channel, stream.prototype);
+    expect(result).to.deep.equal();
   });
 });

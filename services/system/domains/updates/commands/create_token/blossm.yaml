@@ -1,4 +1,4 @@
-name: token
+name: create-token
 domain: updates
 service: system
 
@@ -18,6 +18,8 @@ testing:
       context:
         some: context
       code: 200
+      response:
+        token:
 
 #don't change
-procedure: fact
+procedure: command

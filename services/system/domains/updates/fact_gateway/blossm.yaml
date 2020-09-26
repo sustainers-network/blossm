@@ -3,8 +3,7 @@ service: system
 
 facts:
   - name: channel
-    privileges: none
-  - name: token
+    allowsQueryToken: true
     privileges: none
 
 whitelist:

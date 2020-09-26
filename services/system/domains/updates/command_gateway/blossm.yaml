@@ -2,6 +2,8 @@ domain: updates
 service: system
 
 commands:
+  - name: create-token
+    privileges: none
   - name: push
     # context: node
     # TODO revisit

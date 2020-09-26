@@ -8,7 +8,7 @@ const project = "some-project";
 
 process.env.GCP_PROJECT = project;
 
-describe("Fact unit tests", () => {
+describe("Command unit tests", () => {
   afterEach(() => {
     restore();
   });
@@ -34,7 +34,7 @@ describe("Fact unit tests", () => {
 
     const result = await main({ claims, context });
 
-    expect(result).to.deep.equal({ response: token });
+    expect(result).to.deep.equal({ response: { token } });
     expect(createJwtFake).to.have.been.calledWith({
       options: {
         issuer: iss,
@@ -83,7 +83,7 @@ describe("Fact unit tests", () => {
 
     const result = await main({ claims, context });
 
-    expect(result).to.deep.equal({ response: token });
+    expect(result).to.deep.equal({ response: { token } });
     expect(createJwtFake).to.have.been.calledWith({
       options: {
         issuer: iss,
