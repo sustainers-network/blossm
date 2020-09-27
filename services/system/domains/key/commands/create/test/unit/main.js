@@ -30,7 +30,6 @@ describe("Command handler unit tests", () => {
     const roleRoot2 = "some-role-root";
     const name = "some-name";
     const nodeRoot = "some-node-root";
-    const nodeDomain = "some-node-domain";
     const nodeService = "some-node-service";
     const nodeNetwork = "some-node-network";
     const sceneRoot = "some-scene-root";
@@ -63,7 +62,6 @@ describe("Command handler unit tests", () => {
 
     const node = {
       root: nodeRoot,
-      domain: nodeDomain,
       service: nodeService,
       network: nodeNetwork,
     };
@@ -138,8 +136,8 @@ describe("Command handler unit tests", () => {
             network: nodeStateNetwork,
             scene,
             domain: {
-              domain: "node",
               ...node,
+              name: "node",
             },
             principal: {
               root: principalRoot,

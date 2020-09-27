@@ -17,8 +17,9 @@ schema:
     root: String
     service: String
     network: String
-  h:
+  domain:
     root: String
+    name: String
     service: String
     network: String
   secret: String
@@ -33,8 +34,9 @@ testing:
           root: some-scene-root
           service: some-scene-service
           network: some.scene-network
-        h:
+        domain:
           root: some-domain-root
+          name: some-domain-name
           service: some-domain-service
           network: some.domain-network
         principal:
@@ -50,8 +52,9 @@ testing:
           root: some-other-scene-root
           service: some-other-scene-service
           network: some.other-scene-network
-        h:
+        domain:
           root: some-other-domain-root
+          name: some-other-domain-name
           service: some-other-domain-service
           network: some.other-domain-network
         principal:
@@ -70,8 +73,9 @@ testing:
               root: some-scene-root
               service: some-scene-service
               network: some.scene-network
-            h:
+            domain:
               root: some-domain-root
+              name: some-domain-name
               service: some-domain-service
               network: some.domain-network
             principal:
@@ -86,8 +90,9 @@ testing:
               root: some-other-scene-root
               service: some-other-scene-service
               network: some.other-scene-network
-            h:
+            domain:
               root: some-other-domain-root
+              name: some-other-domain-name
               service: some-other-domain-service
               network: some.other-domain-network
             principal:
@@ -102,8 +107,9 @@ testing:
               root: some-other-scene-root
               service: some-other-scene-service
               network: some.other-scene-network
-            h:
+            domain:
               root: some-other-domain-root
+              name: some-other-domain-name
               service: some-other-domain-service
               network: some.other-domain-network
             principal:

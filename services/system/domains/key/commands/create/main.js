@@ -47,7 +47,7 @@ module.exports = async ({ payload, context, aggregateFn }) => {
           scene: context.scene,
           domain: {
             ...context[context.domain],
-            domain: context.domain,
+            name: context.domain,
           },
           principal: {
             root: principalRoot,

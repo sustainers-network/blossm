@@ -2,6 +2,10 @@ network: sustainers.network
 # Once a day at 5 am
 blockSchedule: "0 5 * * *"
 vendors:
+  cache:
+    redis:
+      ip:
+        production: 10.79.5.20
   cloud:
     gcp:
       projects:
@@ -65,3 +69,4 @@ defaults:
   viewStore: mongodb
   eventStore: mongodb
   cloud: gcp
+  cache: redis
