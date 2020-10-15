@@ -3,7 +3,6 @@ service: system
 
 facts:
   - name: channel
-    allowsQueryToken: true
     privileges: none
 
 whitelist:

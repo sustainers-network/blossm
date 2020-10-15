@@ -1,5 +1,3 @@
-module.exports = async (payload) => {
-  return {
-    key: payload.key,
-  };
-};
+module.exports = (payload) => ({
+  key: payload.key,
+});

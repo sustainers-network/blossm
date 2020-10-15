@@ -47,9 +47,9 @@ vendors:
         staging: blossm
         development: blossm
       hosts:
-        production: view-store-xpbhz.gcp.mongodb.net
-        sandbox: view-store-fzyij.gcp.mongodb.net
-        staging: view-store-ahi18.gcp.mongodb.net
+        production: view-store.xpbhz.gcp.mongodb.net
+        sandbox: view-store.fzyij.gcp.mongodb.net
+        staging: view-store.ahi18.gcp.mongodb.net
         development: view-store.sebjf.gcp.mongodb.net
       protocol: mongodb+srv
   eventStore:
@@ -62,7 +62,7 @@ vendors:
       hosts:
         production: event-store-pri.7iksa.gcp.mongodb.net
         sandbox: event-store-pri.dyntm.gcp.mongodb.net
-        staging: event-store-zhvxy.gcp.mongodb.net
+        staging: event-store.zhvxy.gcp.mongodb.net
         development: event-store.7kjnk.gcp.mongodb.net
       protocol: mongodb+srv
 defaults:
