@@ -1,5 +1,5 @@
 # The Sustainer's Network 
-## An implementation of the Blossm Core network
+## An implementation of the Blossm base layer 
 
 ## TODOs
 
