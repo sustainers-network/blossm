@@ -1,0 +1,88 @@
+#https://dev.to/i_maka/google-cloud-functions-sending-emails-using-gmail-smtp-and-nodemailer-1lij
+
+name: send
+domain: email
+service: comms
+
+memory: 256Mi
+
+payload:
+  from:
+    type: string
+    default: mail
+  to:
+    type: email
+    title: to email
+  subject: string
+  message: string
+
+dependencies:
+  "nodemailer": "*"
+  "@blossm/gcp-secret": "*"
+
+devDependencies:
+  "mocha": "^7.1.0"
+  "chai": "^4.2.0"
+  "sinon": "^7.3.2"
+  "sinon-chai": "^3.3.0"
+
+env:
+  production:
+    GMAIL_USER: "joao@sustainers.network"
+    GMAIL_CLIENT_ID: "112047717228966536603"
+  sandbox:
+    GMAIL_USER: "joao@sustainers.network"
+    GMAIL_CLIENT_ID: "112047717228966536603"
+  staging:
+    GMAIL_USER: "joao@sustainers.network"
+    GMAIL_CLIENT_ID: "112047717228966536603"
+  development:
+    GMAIL_USER: "joao@sustainers.network"
+    GMAIL_CLIENT_ID: "112047717228966536603"
+
+testing:
+  validate:
+    ok:
+      - subject: some subject
+        message: some message
+        from: from
+        to: to@email.com
+      - subject: some subject
+        message: some message
+        to: to@email.com
+    bad:
+      - message:
+          a: 1
+      - subject:
+          a: 1
+      - from: 1
+      - to: bad
+
+  normalize:
+    - payload:
+        from: some
+        to: some@email.com
+        message: some message
+        subject: some subject
+      normalized:
+        from: some
+        to: some@email.com
+        message: some message
+        subject: some subject
+
+  steps:
+    - payload:
+        from: some-from
+        to: joao@roof.io
+        subject: some subject
+        message: some message
+      response:
+        receipt:
+          email:
+            root:
+            service:
+            network:
+      code: 202
+
+#don't change
+procedure: command

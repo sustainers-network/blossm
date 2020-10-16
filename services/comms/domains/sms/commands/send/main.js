@@ -19,7 +19,6 @@ module.exports = async ({ payload }) => {
     body: payload.message,
   });
 
-  // Send the token to the requester so they can access the answer command.
   return {
     events: [
       {

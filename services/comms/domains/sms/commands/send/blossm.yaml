@@ -13,7 +13,6 @@ payload:
 
 dependencies:
   "@blossm/phone-number": "*"
-  "@blossm/duration-consts": "*"
   "@blossm/gcp-secret": "*"
   "@blossm/twilio-sms": "*"
 
@@ -56,7 +55,6 @@ testing:
         message: some message
 
   steps:
-    # Should return 409 if the id isn't found.
     - payload:
         message: some message
         to: "(919) 555 1144"

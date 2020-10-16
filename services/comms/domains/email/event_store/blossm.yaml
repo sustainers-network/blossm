@@ -1,0 +1,50 @@
+domain: email
+service: comms
+
+public: false
+
+actions:
+  - send
+
+schema:
+  from: String
+  to: String
+  subject: String
+  message: String
+
+testing:
+  examples:
+    - action: send
+      payload:
+        from: some-from
+        to: some-to
+        subject: some-subject
+        message: some-message
+    - action: send
+      payload:
+        from: some-from
+        to: some-to
+        subject: some-subject
+        message: some-message
+
+  handlers:
+    - action: send
+      examples:
+        - state:
+            from: some-from
+            to: some-to
+            subject: some-subject
+            message: some-message
+          payload:
+            from: some-other-from
+            to: some-other-to
+            subject: some-other-subject
+            message: some-other-message
+          result:
+            from: some-other-from
+            to: some-other-to
+            subject: some-other-subject
+            message: some-other-message
+
+#don't change
+procedure: event-store
