@@ -31,12 +31,11 @@ vendors:
         development: development-roles-271815
       defaults:
         region: us-central1
-        timeout: 900s
+        timeout: 120s
         timeoutOverrides: {}
-        memory: 512Mi
+        memory: 128Mi
         memoryOverrides:
-          event-store: 1Gi
-          event-handler: 512Mi
+          event-store: 512Gi
           projection: 512Mi
           view-store: 512Mi
   viewStore:

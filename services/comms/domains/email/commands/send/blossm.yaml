@@ -28,16 +28,16 @@ devDependencies:
 
 env:
   production:
-    GMAIL_USER: "joao@sustainers.network"
+    GMAIL_USER: "bot@sustainers.network"
     GMAIL_CLIENT_ID: "112047717228966536603"
   sandbox:
-    GMAIL_USER: "joao@sustainers.network"
+    GMAIL_USER: "bot@sustainers.network"
     GMAIL_CLIENT_ID: "112047717228966536603"
   staging:
-    GMAIL_USER: "joao@sustainers.network"
+    GMAIL_USER: "bot@sustainers.network"
     GMAIL_CLIENT_ID: "112047717228966536603"
   development:
-    GMAIL_USER: "joao@sustainers.network"
+    GMAIL_USER: "bot@sustainers.network"
     GMAIL_CLIENT_ID: "112047717228966536603"
 
 testing:
@@ -72,10 +72,12 @@ testing:
 
   steps:
     - payload:
-        from: some-from
+        from: auth
         to: joao@roof.io
         subject: some subject
         message: some message
+      context:
+        network: roof.top
       response:
         receipt:
           email:

@@ -19,7 +19,7 @@ module.exports = async ({ payload, context, generateRootFn }) => {
   });
 
   await transporter.sendMail({
-    from: `${payload.from || "mail"}@${context.network}`,
+    from: `"${context.network}" <${payload.from}@${context.network}>`,
     to: payload.to,
     subject: payload.subject,
     text: payload.message,

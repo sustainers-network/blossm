@@ -94,7 +94,7 @@ describe("Command handler unit tests", () => {
       },
     });
     expect(sendMailFake).to.have.been.calledWith({
-      from: `${from}@${contextNetwork}`,
+      from: `"${contextNetwork}" <${from}@${contextNetwork}>`,
       to,
       subject,
       text: message,
