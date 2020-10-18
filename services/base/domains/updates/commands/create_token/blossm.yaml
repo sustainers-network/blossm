@@ -1,0 +1,25 @@
+name: create-token
+domain: updates
+service: base
+
+dependencies:
+  "@blossm/jwt": "*"
+  "@blossm/gcp-kms": "*"
+  "@blossm/duration-consts": "*"
+  "@blossm/datetime": "*"
+
+testing:
+  steps:
+    - claims:
+        iss: some-iss
+        sub: some-sub
+        exp: 9999-12-31T00:00:00.000
+        aud: some-aud
+      context:
+        some: context
+      code: 200
+      response:
+        token:
+
+#don't change
+procedure: command

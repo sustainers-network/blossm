@@ -7,8 +7,5 @@ commands:
     privileges:
       - create
 
-whitelist:
-  - "127.0.0.1"
-
 #don't change
 procedure: command-gateway

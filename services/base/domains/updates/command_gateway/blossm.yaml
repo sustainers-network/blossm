@@ -1,0 +1,15 @@
+domain: updates
+service: base
+
+commands:
+  - name: create-token
+    privileges: none
+  - name: push
+    # context: node
+    # TODO revisit
+    privileges:
+      none
+      # - create
+
+#don't change
+procedure: command-gateway

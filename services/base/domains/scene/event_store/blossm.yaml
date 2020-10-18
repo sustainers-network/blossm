@@ -1,0 +1,42 @@
+domain: scene
+service: base
+
+public: true
+
+actions:
+  - register
+  - delete
+
+schema:
+  deleted: Date
+  root: String
+  domain: String
+  service: String
+  network: String
+
+testing:
+  examples:
+    - action: register
+      payload:
+        root: some-scene-root
+        domain: some-domain
+        service: some-service
+        network: some.network
+    - action: register
+      payload:
+        root: some-other-scene-root
+        domain: some-other-domain
+        service: some-other-service
+        network: some.other-network
+
+  handlers:
+    - action: register
+      examples:
+        - payload:
+            root: some-scene-root
+            domain: some-domain
+            service: some-service
+            network: some.network
+
+#don't change
+procedure: event-store

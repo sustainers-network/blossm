@@ -79,6 +79,7 @@ testing:
       context:
         network: roof.top
       response:
+        info:
         receipt:
           email:
             root:

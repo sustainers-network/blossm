@@ -1,0 +1,46 @@
+name: deleted
+domain: scene
+service: base
+
+contexts:
+  - scene
+
+testing:
+  normalize:
+    - payload: {}
+      normalized: {}
+
+  dependencies:
+    - domain: scene
+      procedure: event-store
+      service: base
+
+  steps:
+    - pre:
+        - domain: scene
+          service: base
+          root: some-scene-root
+          action: delete
+          payload:
+            deleted: 2020-01-03T00:02:12.000Z
+      context:
+        scene:
+          root: some-scene-root
+      response: true
+    - pre:
+        - domain: scene
+          service: base
+          root: some-other-scene-root
+          action: register
+          payload: {}
+      context:
+        scene:
+          root: some-other-scene-root
+      response: false
+    - context:
+        scene:
+          root: some-missing-scene-root
+      code: 404
+
+#don't change
+procedure: fact

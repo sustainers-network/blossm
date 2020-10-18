@@ -1,0 +1,68 @@
+domain: account
+service: base
+
+public: false
+
+actions:
+  - register
+
+schema:
+  email: String
+  password: String
+  principal:
+    root: String
+    service: String
+    network: String
+
+indexes:
+  - email
+  - principal.root
+  - principal.service
+  - principal.network
+
+testing:
+  examples:
+    - action: register
+      payload:
+        email: some@email.com
+        principal:
+          root: some-principal
+          service: some-principal-service
+          network: some.principal-network
+        password: some-password
+    - action: register
+      payload:
+        email: some@otheremail.com
+        principal:
+          root: some-other-principal
+          service: some-other-principal-service
+          network: some.other-principal-network
+        password: some-other-password
+
+  handlers:
+    - action: register
+      examples:
+        - state:
+            email: some@email.com
+            password: some-password
+            principal:
+              root: some-principal-root
+              service: some-principal-service
+              network: some.principal-network
+          payload:
+            email: some-other@email.com
+            password: some-other-password
+            principal:
+              root: some-other-principal-root
+              service: some-other-principal-service
+              network: some.other-principal-network
+          result:
+            email: some-other@email.com
+            password: some-other-password
+            principal:
+              root: some-other-principal-root
+              service: some-other-principal-service
+              network: some.other-principal-network
+
+#don't change
+procedure: event-store

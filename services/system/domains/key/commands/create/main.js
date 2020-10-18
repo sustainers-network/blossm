@@ -24,7 +24,7 @@ module.exports = async ({ payload, context, aggregateFn }) => {
     events: [
       {
         domain: "principal",
-        service: "core",
+        service: "base",
         action: "add-roles",
         payload: {
           roles: payload.roles.map((role) => ({
@@ -51,7 +51,7 @@ module.exports = async ({ payload, context, aggregateFn }) => {
           },
           principal: {
             root: principalRoot,
-            service: "core",
+            service: "base",
             network: process.env.NETWORK,
           },
           secret: hash,

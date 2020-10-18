@@ -1,0 +1,10 @@
+SceneAdmin:
+  title: Scene Admin
+  permissions:
+    - base:scene:delete
+    - base:scene:read
+
+SceneViewer:
+  title: Scene Viewer
+  permissions:
+    - base:scene:read

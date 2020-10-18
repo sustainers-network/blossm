@@ -35,6 +35,9 @@ const context = {
 const main = require("../../main");
 
 describe("Command handler unit tests", () => {
+  beforeEach(() => {
+    process.env.NODE_ENV = "not-local";
+  });
   afterEach(() => {
     restore();
   });
@@ -42,12 +45,14 @@ describe("Command handler unit tests", () => {
     const secretFake = fake.returns(secret);
     replace(deps, "secret", secretFake);
 
-    const sendMailFake = fake();
+    const info = "some-info";
+    const sendMailFake = fake.returns(info);
     const createTransportFake = fake.returns({
       sendMail: sendMailFake,
     });
     replace(deps, "nodemailer", {
       createTransport: createTransportFake,
+      getTestMessageUrl: fake(),
     });
 
     const generateRootFake = fake.returns(root);
@@ -72,6 +77,7 @@ describe("Command handler unit tests", () => {
         },
       ],
       response: {
+        info,
         receipt: {
           email: {
             root,
@@ -91,6 +97,81 @@ describe("Command handler unit tests", () => {
         user: gmailUser,
         serviceClient: gmailClientId,
         privateKey: `some-secret\n`,
+      },
+    });
+    expect(sendMailFake).to.have.been.calledWith({
+      from: `"${contextNetwork}" <${from}@${contextNetwork}>`,
+      to,
+      subject,
+      text: message,
+    });
+  });
+  it("should return successfully in local env", async () => {
+    const info = "some-info";
+    const sendMailFake = fake.returns(info);
+    const createTransportFake = fake.returns({
+      sendMail: sendMailFake,
+    });
+    const user = "some-user";
+    const pass = "some-pass";
+    const host = "some-host";
+    const port = "some-port";
+    const secure = "some-secure";
+    const createTestAccountFake = fake.returns({
+      smtp: {
+        host,
+        port,
+        secure,
+      },
+      user,
+      pass,
+    });
+    replace(deps, "nodemailer", {
+      createTransport: createTransportFake,
+      createTestAccount: createTestAccountFake,
+      getTestMessageUrl: fake(),
+    });
+
+    const generateRootFake = fake.returns(root);
+
+    process.env.NODE_ENV = "local";
+    const result = await main({
+      payload,
+      context,
+      generateRootFn: generateRootFake,
+    });
+
+    expect(result).to.deep.equal({
+      events: [
+        {
+          action: "send",
+          root,
+          payload: {
+            from,
+            to,
+            subject,
+            message,
+          },
+        },
+      ],
+      response: {
+        info,
+        receipt: {
+          email: {
+            root,
+            service,
+            network,
+          },
+        },
+      },
+    });
+    expect(createTransportFake).to.have.been.calledWith({
+      host,
+      port,
+      secure,
+      auth: {
+        user,
+        pass,
       },
     });
     expect(sendMailFake).to.have.been.calledWith({

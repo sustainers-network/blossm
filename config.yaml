@@ -35,7 +35,7 @@ vendors:
         timeoutOverrides: {}
         memory: 128Mi
         memoryOverrides:
-          event-store: 512Gi
+          event-store: 512Mi
           projection: 512Mi
           view-store: 512Mi
   viewStore:

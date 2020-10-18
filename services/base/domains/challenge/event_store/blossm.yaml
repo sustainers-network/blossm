@@ -1,0 +1,77 @@
+domain: challenge
+service: base
+
+public: false
+
+actions:
+  - issue
+  - answer
+
+schema:
+  code: String
+  upgrade: Object
+  issued: Date
+  answered: String
+  expires: Date
+  events:
+    - Object
+  claims:
+    exp: Date
+    iss: String
+    sub: String
+    aud: String
+
+devDependencies:
+  "localenv": "^0.2.2"
+  "mocha": "^7.1.0"
+  "chai": "^4.2.0"
+  "@blossm/request": "*"
+  "@blossm/uuid": "*"
+
+testing:
+  examples:
+    - action: issue
+      payload:
+        issued: 2020-01-03T00:02:12.000Z
+        upgrade:
+          principal:
+            root: some-root
+            service: some-principal-service
+            network: some.principal-network
+        expires: 2020-01-03T00:02:15.000Z
+        events:
+          - anything: goes
+        claims:
+          exp: 2020-01-03T00:02:15.000Z
+          aud: some-audience
+          sub: some-subject
+          iss: 2020-01-03T00:02:15.000Z
+    - action: answer
+      payload:
+        code: "234567"
+
+  handlers:
+    - action: issue
+      examples:
+        - payload:
+            issued: 2020-01-03T00:02:12.000Z
+            upgrade:
+              principal:
+                root: some-root
+                service: some-principal-service
+                network: some.principal-network
+            expires: 2020-01-03T00:02:15.000Z
+            events:
+              - any: thing
+            claims:
+              exp: 2020-01-03T00:02:15.000Z
+              aud: some-audience
+              sub: some-subject
+              iss: 2020-01-03T00:02:15.000Z
+    - action: answer
+      examples:
+        - payload:
+            code: "123456"
+
+#don't change
+procedure: event-store

@@ -1,0 +1,15 @@
+domain: session
+service: base
+
+commands:
+  - name: start
+    protection: context
+  - name: save
+    privileges: none
+  - name: terminate
+    privileges: none
+  - name: change-scene
+    privileges: none
+
+#don't change
+procedure: command-gateway

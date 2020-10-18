@@ -1,5 +1,5 @@
 # The Sustainer's Network 
-## An implementation of the Blossm base layer 
+## An implementation of the Blossm base layer that is working towards tying in (Sustainer's Money)[https://github.com/joaoritter/sustainers.money]
 
 ## TODOs
 
@@ -9,9 +9,8 @@
 
 #### Code 
 
-- [ ]  Change the 'identity' domain to 'account'.
 - [ ]  Add wallet functionality as a service in a way that identities can make use of.
-- [ ]  Change from username + phone based authentication to email + password and ENS + password.
+- [ ]  Add ENS accounts.
 
 #### Design
 

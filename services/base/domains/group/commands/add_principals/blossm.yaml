@@ -1,0 +1,136 @@
+name: add-principals
+domain: group
+service: base
+
+payload:
+  principals:
+    - roles:
+        - type: string
+          in:
+            - GroupAdmin
+            - GroupMember
+      root: string
+      service: string
+      network: domain
+
+dependencies:
+  "@blossm/uuid": "*"
+  "@blossm/errors": "*"
+
+devDependencies:
+  "mocha": "^7.1.0"
+  "chai": "^4.2.0"
+  "sinon": "^7.3.2"
+  "sinon-chai": "^3.3.0"
+
+testing:
+  validate:
+    context:
+      network: some.network
+    ok:
+      - principals:
+          - roles:
+              - GroupAdmin
+            root: some-root
+            service: some-service
+            network: some.network
+    bad:
+      - principals: 3
+      - principals:
+          - roles:
+              - some-bogus
+      - principals:
+          - roles: some-bogus
+      - principals:
+          - root: 3
+      - principals:
+          - service: 3
+      - principals:
+          - network: 3
+      - principals:
+          - network: some-bad-network
+
+  normalize:
+    - payload:
+        principals:
+          - roles:
+              - some-role
+              - some-role
+              - some-other-role
+            root: some-root
+            service: some-service
+            network: some.network
+            bogus: some-bogus
+      normalized:
+        principals:
+          - roles:
+              - some-role
+              - some-other-role
+            root: some-root
+            service: some-service
+            network: some.network
+
+  dependencies:
+    - domain: principal
+      service: base
+      procedure: event-store
+
+  steps:
+    - pre:
+        - domain: group
+          service: base
+          root: some-group-root
+          action: add-networks
+          payload:
+            networks:
+              - some.group-network
+            principals: []
+      payload:
+        principals:
+          - roles:
+              - GroupAdmin
+            root: some-principal-root
+            service: base
+            network: some.group-network
+      context:
+        network: some.group-network
+      root: some-group-root
+      code: 202
+    - payload:
+        principals:
+          - roles:
+              - GroupAdmin
+            root: some-principal-root
+            service: some-principal-service
+            network: some.network
+      context:
+        network: some.network
+      response:
+        receipt:
+          group:
+            root:
+            service:
+            network:
+      code: 202
+    - pre:
+        - domain: group
+          service: base
+          root: some-other-group-root
+          action: add-networks
+          payload:
+            networks: []
+            principals: []
+      payload:
+        principals:
+          - roles:
+              - GroupAdmin
+            root: some-principal-root
+            service: base
+            network: some.group-network
+      context:
+        network: some.group-network
+      root: some-other-group-root
+      code: 403
+
+#don't change
+procedure: command

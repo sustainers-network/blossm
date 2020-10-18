@@ -1,0 +1,12 @@
+domain: challenge
+service: base
+
+commands:
+  - name: issue
+    privileges: none
+  - name: answer
+    privileges: none
+    key: challenge
+
+#don't change
+procedure: command-gateway

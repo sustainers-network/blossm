@@ -33,20 +33,20 @@ testing:
   dependencies:
     - name: register
       domain: scene
-      service: core
+      service: base
       procedure: command
     - name: add-principals
       domain: group
-      service: core
+      service: base
       procedure: command
     - domain: principal
-      service: core
+      service: base
       procedure: event-store
 
   steps:
     - pre:
         - domain: session
-          service: core
+          service: base
           root: some-session-root
           action: start
           payload:
@@ -80,7 +80,7 @@ testing:
             network:
           scene:
             root:
-            service: core
+            service: base
             network:
       tokens:
         - network:
@@ -97,7 +97,7 @@ testing:
           network: some.other-session-network
         principal:
           root: some-principal-root
-          service: core
+          service: base
           network: local.network
       claims:
         iss: some-iss
@@ -115,7 +115,7 @@ testing:
             network:
           scene:
             root:
-            service: core
+            service: base
             network:
       code: 202
 

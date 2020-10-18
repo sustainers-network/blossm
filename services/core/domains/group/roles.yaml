@@ -1,9 +1,0 @@
-GroupAdmin:
-  title: Group Admin
-  permissions:
-    - core:group:update
-
-GroupMember:
-  title: Group Member
-  permissions:
-    - core:group:read

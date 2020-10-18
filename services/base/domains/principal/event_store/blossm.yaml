@@ -1,0 +1,318 @@
+domain: principal
+service: base
+
+public: true
+
+actions:
+  - add-roles
+  - remove-roles
+  - add-scenes
+  - remove-scenes
+  - add-groups
+  - remove-groups
+
+schema:
+  roles:
+    - id: String
+      subject:
+        root: String
+        domain: String
+        service: String
+        network: String
+  scenes:
+    - root: String
+      service: String
+      network: String
+  groups:
+    - root: String
+      service: String
+      network: String
+
+dependencies:
+  "@blossm/array-difference": "*"
+
+testing:
+  examples:
+    - action: add-roles
+      payload:
+        roles:
+          - id: some-role
+            subject:
+              root: some-role-subject-root
+              domain: some-role-subject-domain
+              service: some-role-subject-service
+              network: some.role-subject-network
+          - id: some-other-role
+            subject:
+              root: some-other-role-subject-root
+              domain: some-other-role-subject-domain
+              service: some-other-role-subject-service
+              network: some.other-role-subject-network
+    - action: remove-roles
+      payload:
+        roles:
+          - id: some-role
+            subject:
+              root: some-role-subject-root
+              domain: some-role-subject-domain
+              service: some-role-subject-service
+              network: some.role-subject-network
+    - action: add-scenes
+      payload:
+        scenes:
+          - root: some-scene
+            service: some-scene-service
+            network: some.scene-network
+    - action: remove-scenes
+      payload:
+        scenes:
+          - root: some-scene
+            service: some-scene-service
+            network: some.scene-network
+    - action: add-groups
+      payload:
+        groups:
+          - root: some-group
+            service: some-group-service
+            network: some.group-network
+    - action: remove-groups
+      payload:
+        groups:
+          - root: some-group
+            service: some-group-service
+            network: some.group-network
+
+  handlers:
+    - action: add-roles
+      examples:
+        - state:
+            roles:
+              - id: some-role
+                subject:
+                  root: some-role-subject-root
+                  domain: some-role-subject-domain
+                  service: some-role-subject-service
+                  network: some.role-subject-network
+          payload:
+            roles:
+              - id: some-role
+                subject:
+                  root: some-role-subject-root
+                  domain: some-role-subject-domain
+                  service: some-role-subject-service
+                  network: some.role-subject-network
+              - id: some-other-role
+                subject:
+                  root: some-other-role-subject-root
+                  domain: some-other-role-subject-domain
+                  service: some-other-role-subject-service
+                  network: some.other-role-subject-network
+          result:
+            roles:
+              - id: some-role
+                subject:
+                  root: some-role-subject-root
+                  domain: some-role-subject-domain
+                  service: some-role-subject-service
+                  network: some.role-subject-network
+              - id: some-other-role
+                subject:
+                  root: some-other-role-subject-root
+                  domain: some-other-role-subject-domain
+                  service: some-other-role-subject-service
+                  network: some.other-role-subject-network
+        - state:
+            roles:
+              - id: some-role
+                subject:
+                  root: some-role-subject-root
+                  domain: some-role-subject-domain
+                  service: some-role-subject-service
+                  network: some.role-subject-network
+          payload:
+            roles:
+              - id: some-other-role
+                subject:
+                  root: some-other-role-subject-root
+                  domain: some-other-role-subject-domain
+                  service: some-other-role-subject-service
+                  network: some.other-role-subject-network
+          result:
+            roles:
+              - id: some-role
+                subject:
+                  root: some-role-subject-root
+                  domain: some-role-subject-domain
+                  service: some-role-subject-service
+                  network: some.role-subject-network
+              - id: some-other-role
+                subject:
+                  root: some-other-role-subject-root
+                  domain: some-other-role-subject-domain
+                  service: some-other-role-subject-service
+                  network: some.other-role-subject-network
+        - state: {}
+          payload:
+            roles:
+              - id: some-role
+                subject:
+                  root: some-role-subject-root
+                  domain: some-role-subject-domain
+                  service: some-role-subject-service
+                  network: some.role-subject-network
+          result:
+            roles:
+              - id: some-role
+                subject:
+                  root: some-role-subject-root
+                  domain: some-role-subject-domain
+                  service: some-role-subject-service
+                  network: some.role-subject-network
+    - action: remove-roles
+      examples:
+        - state:
+            roles:
+              - id: some-role
+                subject:
+                  root: some-role-subject-root
+                  domain: some-role-subject-domain
+                  service: some-role-subject-service
+                  network: some.role-subject-network
+              - id: some-other-role
+                subject:
+                  root: some-other-role-subject-root
+                  domain: some-other-role-subject-domain
+                  service: some-other-role-subject-service
+                  network: some.other-role-subject-network
+          payload:
+            roles:
+              - id: some-role
+                subject:
+                  root: some-role-subject-root
+                  domain: some-role-subject-domain
+                  service: some-role-subject-service
+                  network: some.role-subject-network
+          result:
+            roles:
+              - id: some-other-role
+                subject:
+                  root: some-other-role-subject-root
+                  domain: some-other-role-subject-domain
+                  service: some-other-role-subject-service
+                  network: some.other-role-subject-network
+        - state: {}
+          payload:
+            roles:
+              - id: some-role
+                subject:
+                  root: some-role-subject-root
+                  domain: some-role-subject-domain
+                  service: some-role-subject-service
+                  network: some.role-subject-network
+          result:
+            roles: []
+    - action: add-scenes
+      examples:
+        - state:
+            scenes:
+              - root: some-scene
+                service: some-scene-service
+                network: some.scene-network
+          payload:
+            scenes:
+              - root: some-scene
+                service: some-scene-service
+                network: some.scene-network
+              - root: some-other-scene
+                service: some-other-scene-service
+                network: some.other-scene-network
+          result:
+            scenes:
+              - root: some-scene
+                service: some-scene-service
+                network: some.scene-network
+              - root: some-other-scene
+                service: some-other-scene-service
+                network: some.other-scene-network
+    - action: remove-scenes
+      examples:
+        - state:
+            scenes:
+              - root: some-scene
+                service: some-scene-service
+                network: some.scene-network
+              - root: some-other-scene
+                service: some-other-scene-service
+                network: some.other-scene-network
+          payload:
+            scenes:
+              - root: some-scene
+                service: some-scene-service
+                network: some.scene-network
+          result:
+            scenes:
+              - root: some-other-scene
+                service: some-other-scene-service
+                network: some.other-scene-network
+        - state: {}
+          payload:
+            scenes:
+              - root: some-scene
+                service: some-scene-service
+                network: some.scene-network
+          result:
+            scenes: []
+    - action: add-groups
+      examples:
+        - state:
+            groups:
+              - root: some-group
+                service: some-group-service
+                network: some.group-network
+          payload:
+            groups:
+              - root: some-group
+                service: some-group-service
+                network: some.group-network
+              - root: some-other-group
+                service: some-other-group-service
+                network: some.other-group-network
+          result:
+            groups:
+              - root: some-group
+                service: some-group-service
+                network: some.group-network
+              - root: some-other-group
+                service: some-other-group-service
+                network: some.other-group-network
+    - action: remove-groups
+      examples:
+        - state:
+            groups:
+              - root: some-group
+                service: some-group-service
+                network: some.group-network
+              - root: some-other-group
+                service: some-other-group-service
+                network: some.other-group-network
+          payload:
+            groups:
+              - root: some-group
+                service: some-group-service
+                network: some.group-network
+          result:
+            groups:
+              - root: some-other-group
+                service: some-other-group-service
+                network: some.other-group-network
+        - state: {}
+          payload:
+            groups:
+              - root: some-group
+                service: some-group-service
+                network: some.group-network
+          result:
+            groups: []
+
+#don't change
+procedure: event-store

@@ -14,7 +14,7 @@ module.exports = async ({ payload, context, commandFn }) => {
   } = await commandFn({
     name: "register",
     domain: "scene",
-    service: "core",
+    service: "base",
     payload: {
       role: "SceneAdmin",
       root: nodeRoot,
@@ -31,7 +31,7 @@ module.exports = async ({ payload, context, commandFn }) => {
   } = await commandFn({
     name: "add-principals",
     domain: "group",
-    service: "core",
+    service: "base",
     payload: {
       principals: [
         {

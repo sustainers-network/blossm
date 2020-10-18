@@ -1,0 +1,9 @@
+domain: role
+service: base
+
+facts:
+  - name: permissions
+    privileges: none
+
+#don't change
+procedure: fact-gateway

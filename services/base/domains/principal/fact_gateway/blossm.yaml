@@ -1,0 +1,11 @@
+domain: principal
+service: base
+
+facts:
+  - name: roles
+    privileges: none
+  - name: groups
+    privileges: none
+
+#don't change
+procedure: fact-gateway

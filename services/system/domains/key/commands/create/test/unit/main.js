@@ -103,7 +103,7 @@ describe("Command handler unit tests", () => {
       events: [
         {
           domain: "principal",
-          service: "core",
+          service: "base",
           action: "add-roles",
           payload: {
             roles: [
@@ -141,7 +141,7 @@ describe("Command handler unit tests", () => {
             },
             principal: {
               root: principalRoot,
-              service: "core",
+              service: "base",
               network,
             },
             secret: hash,

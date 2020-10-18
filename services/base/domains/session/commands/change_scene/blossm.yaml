@@ -1,0 +1,125 @@
+name: change-scene
+domain: session
+service: base
+
+contexts:
+  - session
+
+payload:
+  scene: string
+
+dependencies:
+  "@blossm/jwt": "*"
+  "@blossm/gcp-kms": "*"
+  "@blossm/datetime": "*"
+  "@blossm/errors": "*"
+
+devDependencies:
+  "mocha": "^7.1.0"
+  "chai": "^4.2.0"
+  "sinon": "^7.3.2"
+  "sinon-chai": "^3.3.0"
+  "chai-datetime": "^1.5.0"
+
+testing:
+  validate:
+    ok:
+      - scene: some-scene-root
+    bad:
+      - scene:
+          a: 1
+
+  normalize:
+    - payload:
+        scene: some-scene-root
+      normalized:
+        scene: some-scene-root
+
+  dependencies:
+    - domain: scene
+      procedure: event-store
+      service: base
+    - domain: principal
+      procedure: event-store
+      service: base
+
+  steps:
+    - pre:
+        - domain: session
+          service: base
+          root: some-root
+          action: start
+          payload: {}
+        - domain: scene
+          service: base
+          root: some-scene-root
+          action: register
+          payload:
+            domain: some-scene-domain
+            root: some-scene-root
+        - domain: principal
+          service: base
+          root: some-principal-root
+          action: add-scenes
+          payload:
+            scenes:
+              - root: some-scene-root
+                service: some-service
+                network: some.network
+      payload:
+        scene: some-scene-root
+      claims:
+        iss: some-iss
+        aud: some-aud
+        sub: some-principal-root
+        exp: 20000
+      context:
+        session:
+          root: some-root
+      tokens:
+        - network:
+          type: access
+          value:
+      code: 202
+    - pre:
+        - domain: principal
+          service: base
+          root: some-other-principal-root
+          action: add-scenes
+          payload:
+            scenes:
+              - root: bogus
+                service: some-service
+                network: some.network
+      payload:
+        scene: some-scene-root
+      claims:
+        iss: some-iss
+        aud: some-aud
+        sub: some-other-principal-root
+        exp: 20000
+      context:
+        session:
+          root: some-root
+      code: 403
+    - pre:
+        - domain: session
+          service: base
+          root: some-root
+          action: terminate
+          payload:
+            terminated: 2019-12-31T00:00:00.000Z
+      payload:
+        scene: some-scene-root
+      context:
+        session:
+          root: some-root
+      claims:
+        iss: some-iss
+        aud: some-aud
+        sub: some-principal-root
+        exp: 20000
+      code: 400
+
+#don't change
+procedure: command

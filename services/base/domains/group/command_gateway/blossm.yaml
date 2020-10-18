@@ -1,0 +1,11 @@
+domain: group
+service: base
+
+commands:
+  - name: add-principals
+    privileges: none
+  - name: remove-principals
+    privileges: none
+
+#don't change
+procedure: command-gateway

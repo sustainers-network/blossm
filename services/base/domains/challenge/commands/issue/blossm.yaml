@@ -1,0 +1,156 @@
+name: issue
+domain: challenge
+service: base
+
+# For now, challenges can only be issued by email.
+payload:
+  email: email
+  password: string
+
+dependencies:
+  "@blossm/jwt": "*"
+  "@blossm/gcp-kms": "*"
+  "@blossm/duration-consts": "*"
+  "@blossm/datetime": "*"
+  "@blossm/random-int-of-length": "*"
+  "@blossm/errors": "*"
+  "@blossm/crypt": "*"
+
+devDependencies:
+  "mocha": "^7.1.0"
+  "chai": "^4.2.0"
+  "sinon": "^7.3.2"
+  "sinon-chai": "^3.3.0"
+  "chai-datetime": "^1.5.0"
+
+testing:
+  validate:
+    ok:
+      - email: some@email.com
+        password: some-password
+    bad:
+      - email: bad
+      - password: 919
+
+  normalize:
+    - payload:
+        email: Some@email.com
+        password: some-password
+      normalized:
+        email: some@email.com
+        password: some-password
+
+  dependencies:
+    - domain: account
+      procedure: event-store
+      service: base
+    - domain: challenge
+      procedure: event-store
+      service: base
+    - name: send
+      domain: email
+      procedure: command
+      service: comms
+
+  steps:
+    # Should return 409 if the email isn't found.
+    - payload:
+        email: some@email.com
+        password: some-password
+      code: 409
+    # Should return successfully if upgrading a principal.
+    - options:
+        upgrade:
+          principal:
+            root: some-principal-root
+            service: some-principal-service
+            network: some.principal-network
+      payload:
+        email: some@email.com
+        password: some-password
+      context:
+        principal:
+          root: some-principal-root
+          service: some-principal-service
+          network: some-principal-network
+      response:
+        receipt:
+          challenge:
+            root:
+            service:
+            network:
+      tokens:
+        - network:
+          type: challenge
+          value:
+      code: 202
+    # Should return 400 if the context principal is
+    # different from the principal in the account.
+    - pre:
+        - domain: account
+          service: base
+          root: some-account-root
+          action: register
+          payload:
+            email: some@email.com
+            normalizedId: some-id
+            password: "#some-password"
+            principal:
+              root: some-principal
+              service: some-service
+              network: some.network
+      payload:
+        email: some@email.com
+        password: some-password
+      context:
+        principal:
+          root: some-context-principal-root
+      code: 400
+    # Should return successfully if challenging an existing account correctly.
+    - pre:
+        - domain: account
+          service: base
+          root: some-other-account-root
+          action: register
+          payload:
+            email: some@otheremail.com
+            password: "#some-password"
+            principal:
+              root: some-principal
+              service: some-service
+              network: some.network
+      context: {}
+      payload:
+        password: "some-password"
+        email: some@otheremail.com
+      response:
+        receipt:
+          challenge:
+            root:
+            service:
+            network:
+      tokens:
+        - network:
+          type: challenge
+          value:
+      code: 202
+      # Should return 400 if the password is not correct.
+    - pre:
+        - domain: account
+          service: core
+          root: yet-another-account-root
+          action: register
+          payload:
+            email: yet@anotheremail.com
+            password: "#some-password"
+            principal:
+              root: yet-another-principal
+              service: some-service
+              network: some.network
+      payload:
+        email: yet@anotheremail.com
+        password: "some-bogus"
+      code: 400
+
+#don't change
+procedure: command

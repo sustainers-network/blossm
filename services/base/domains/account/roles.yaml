@@ -1,0 +1,4 @@
+AccountAdmin:
+  title: Account Admin
+  permissions:
+    - base:account:create

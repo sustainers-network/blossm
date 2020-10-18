@@ -6,8 +6,8 @@ const deps = require("../../deps");
 
 const payloadNetwork = "some-payload-network";
 const payload = { network: payloadNetwork };
-const identity = "some-identity";
-const context = { identity };
+const account = "some-account";
+const context = { account };
 
 const newContextPrincipalRoot = "some-new-context-principal-root";
 const newContextPrincipalService = "some-new-context-principal-service";
@@ -157,7 +157,7 @@ describe("Command handler unit tests", () => {
     expect(commandFnFake.getCall(0)).to.have.been.calledWith({
       name: "register",
       domain: "scene",
-      service: "core",
+      service: "base",
       payload: {
         role: "SceneAdmin",
         root: nodeRoot,
@@ -169,7 +169,7 @@ describe("Command handler unit tests", () => {
     expect(commandFnFake.getCall(1)).to.have.been.calledWith({
       name: "add-principals",
       domain: "group",
-      service: "core",
+      service: "base",
       payload: {
         principals: [
           {
@@ -319,7 +319,7 @@ describe("Command handler unit tests", () => {
     expect(commandFnFake.getCall(0)).to.have.been.calledWith({
       name: "register",
       domain: "scene",
-      service: "core",
+      service: "base",
       payload: {
         role: "SceneAdmin",
         root: nodeRoot,
@@ -331,7 +331,7 @@ describe("Command handler unit tests", () => {
     expect(commandFnFake.getCall(1)).to.have.been.calledWith({
       name: "add-principals",
       domain: "group",
-      service: "core",
+      service: "base",
       payload: {
         principals: [
           {

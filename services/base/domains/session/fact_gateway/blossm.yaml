@@ -1,0 +1,9 @@
+domain: session
+service: base
+
+facts:
+  - name: terminated
+    privileges: none
+
+#don't change
+procedure: fact-gateway

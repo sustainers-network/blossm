@@ -1,0 +1,246 @@
+name: save
+domain: session
+service: base
+
+# This command must be issued from a session.
+contexts:
+  - session
+
+payload:
+  # The email to save the session to.
+  email: email
+  # The password to save the session with.
+  password: string
+
+dependencies:
+  "@blossm/array-difference": "*"
+  "@blossm/email-validator": "*"
+  "@blossm/crypt": "*"
+  "@blossm/errors": "*"
+
+devDependencies:
+  "mocha": "^7.1.0"
+  "chai": "^4.2.0"
+  "sinon": "^7.3.2"
+  "sinon-chai": "^3.3.0"
+  "chai-datetime": "^1.5.0"
+
+testing:
+  validate:
+    ok:
+      - email: some@email.com
+        password: some-password
+    bad:
+      - email: bad
+      - password: 1
+
+  normalize:
+    - payload:
+        email: Some@email.com
+        password: some-password
+      normalized:
+        email: some@email.com
+        password: some-password
+
+  dependencies:
+    - domain: principal
+      procedure: event-store
+      service: base
+    - domain: account
+      procedure: event-store
+      service: base
+    - domain: challenge
+      name: issue
+      procedure: command
+      service: base
+
+  steps:
+    # Should return 409 if the password is wrong.
+    - pre:
+        - domain: account
+          service: base
+          root: some-account-root
+          action: register
+          payload:
+            email: some@accountemail.com
+            password: "#some-password"
+            principal:
+              root: some-sub
+              service: some-service
+              network: some.network
+      payload:
+        email: some@accountemail.com
+        password: some-bogus
+      code: 409
+
+    # Should return an empty response if saving isn't necessary.
+    - pre:
+        - domain: account
+          service: base
+          root: some-other-account-root
+          action: register
+          payload:
+            email: some-other@accountemail.com
+            password: "#some-other-password"
+            principal:
+              root: some-principal-root
+              service: some-service
+              network: some.network
+      payload:
+        email: some-other@accountemail.com
+        password: "some-other-password"
+      context:
+        principal:
+          root: some-principal-root
+          service: some-service
+          network: some.network
+      code: 204
+    # Returns successfully if saving a new account.
+    - payload:
+        email: new@email.com
+        password: "a-password"
+      context:
+        principal:
+          root: some-principal-root
+          service: some-service
+          network: some.network
+      code: 202
+      response:
+        receipt:
+          challenge:
+            root:
+            service:
+            network:
+          account:
+            root:
+            service:
+            network:
+      tokens:
+        - network:
+          type: challenge
+          value:
+    # Return successfully if saving a new email with a context that has
+    # a principal that doesn't yet belong to an account.
+    - pre:
+        - domain: principal
+          service: base
+          root: some-principal-root
+          action: add-roles
+          payload:
+            roles:
+              - id: some-role
+                subject:
+                  root: some-root
+                  domain: some-domain
+                  service: some-service
+                  network: some.network
+            groups:
+              - root: some-group-root
+                service: some-group-service
+                network: some.network
+        - domain: principal
+          service: base
+          root: some-other-principal-root
+          action: add-roles
+          payload:
+            roles:
+              - id: some-other-role
+                root: some-other-root
+                domain: some-domain
+                service: some-service
+                network: some.network
+            groups:
+              - root: some-other-group-root
+                service: some-other-group-service
+                network: some.network
+        - domain: account
+          service: base
+          root: yet-another-account-root
+          action: register
+          payload:
+            email: yet-another@accountemail.com
+            password: "#yet-another-password"
+            principal:
+              root: some-principal-root
+              service: some-service
+              network: some.network
+      payload:
+        email: yet-another@accountemail.com
+        password: "yet-another-password"
+      context:
+        principal:
+          root: some-other-principal-root
+          service: base
+          network: sustainers.network
+      response:
+        receipt:
+          challenge:
+            root:
+            service:
+            network:
+      tokens:
+        - network:
+          type: challenge
+          value:
+      code: 202
+    # Should return 400 if the principal in the context belongs to a different account.
+    - pre:
+        - domain: principal
+          service: base
+          root: some-principal-root_1
+          action: add-roles
+          payload:
+            roles:
+              - id: some-role
+                subject:
+                  root: some-role-subject-root
+                  domain: some-domain
+                  service: some-service
+                  network: some.network
+        - domain: principal
+          service: base
+          root: some-other-principal-root_1
+          action: add-roles
+          payload:
+            roles:
+              - id: some-other-role
+                subject:
+                  root: some-role-subject-root
+                  domain: some-domain
+                  service: some-service
+                  network: some.network
+        - domain: account
+          service: base
+          root: yet-another-account-root_1
+          action: register
+          payload:
+            email: yet-another@account-id1.com
+            password: "#a-great-password"
+            principal:
+              root: some-principal-root_1
+              service: some-service
+              network: some.network
+        - domain: account
+          service: base
+          root: any-account-root_1
+          action: register
+          payload:
+            email: doesnt-Matter@email.com
+            password: "#a-great-password"
+            principal:
+              root: some-other-principal-root_1
+              service: some-service
+              network: some.network
+      payload:
+        email: yet-another@account-id1.com
+        password: a-great-password
+      claims:
+      context:
+        principal:
+          root: some-other-principal-root_1
+          service: some-service
+          network: some.network
+      code: 400
+
+#don't change
+procedure: command

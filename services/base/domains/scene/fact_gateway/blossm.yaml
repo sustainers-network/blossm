@@ -1,0 +1,9 @@
+domain: scene
+service: base
+
+facts:
+  - name: deleted
+    privileges: none
+
+#don't change
+procedure: fact-gateway

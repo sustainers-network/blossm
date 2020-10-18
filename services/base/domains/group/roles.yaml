@@ -1,0 +1,9 @@
+GroupAdmin:
+  title: Group Admin
+  permissions:
+    - base:group:update
+
+GroupMember:
+  title: Group Member
+  permissions:
+    - base:group:read

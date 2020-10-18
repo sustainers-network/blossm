@@ -7,8 +7,5 @@ facts:
     privileges:
       - read
 
-whitelist:
-  - "127.0.0.1"
-
 #don't change
 procedure: fact-gateway

@@ -1,0 +1,133 @@
+name: add-scenes
+domain: principal
+service: base
+
+payload:
+  scenes:
+    - roles:
+        - type: string
+          in:
+            - SceneAdmin
+      root: string
+      service: string
+      network: domain
+
+dependencies:
+  "@blossm/errors": "*"
+
+testing:
+  validate:
+    ok:
+      - scenes:
+          - roles:
+              - SceneAdmin
+            root: some-root
+            service: some-service
+            network: some.network
+    bad:
+      - scenes:
+          a: 1
+      - scenes:
+          - roles: 3
+      - scenes:
+          - roles:
+              - some-bogus
+      - scenes:
+          - roles: some-bogus
+      - scenes:
+          - root: 3
+      - scenes:
+          - service: 3
+      - scenes:
+          - root: some-root
+            service: some-service
+            network: some-whack-network
+
+  normalize:
+    - payload:
+        scenes:
+          - roles:
+              - some-roles
+            root: some-root
+            service: some-service
+            network: some-network
+            bogus: some-bogus
+      normalized:
+        scenes:
+          - roles:
+              - some-roles
+            root: some-root
+            service: some-service
+            network: some-network
+
+  dependencies:
+    - domain: scene
+      service: base
+      procedure: event-store
+
+  steps:
+    - pre:
+        - domain: principal
+          service: base
+          root: some-root
+          action: add-scenes
+          payload:
+            scenes: []
+        - domain: scene
+          service: base
+          root: some-scene-root
+          action: register
+          payload:
+            network: some.context-network
+      payload:
+        scenes:
+          - roles:
+              - SceneAdmin
+            root: some-scene-root
+            service: some-scene-service
+            network: some.scene-network
+      context:
+        network: some.context-network
+      root: some-root
+      code: 202
+    - payload:
+        scenes:
+          - roles:
+              - SceneAdmin
+            root: some-scene-root
+            service: some-scene-service
+            network: some.scene-network
+      context:
+        network: some.scene-network
+      root: some-root
+      code: 204
+    - pre:
+        - domain: scene
+          service: base
+          root: another-scene-root
+          action: register
+          payload:
+            network: some.context-network
+      payload:
+        scenes:
+          - roles:
+              - SceneAdmin
+            root: another-scene-root
+            service: some-scene-service
+            network: some.scene-network
+      context:
+        network: some.whacky-scene-network
+      root: some-root
+      code: 403
+    - payload:
+        scenes:
+          - roles:
+              - SceneAdmin
+            root: bogus-scene-root
+            service: some-scene-service
+            network: some.scene-network
+      root: some-root
+      code: 404
+
+#don't change
+procedure: command
