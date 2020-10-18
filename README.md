@@ -1,5 +1,6 @@
-#### The Sustainer's Network 
-##### An implementation of the Blossm base layer that is working towards tying in (Sustainer's Money)[https://github.com/joaoritter/sustainers.money]
+#### Sustainer's Network 
+###### An implementation of the Blossm base layer that is working towards tying in [Sustainer's Money](https://github.com/joaoritter/sustainers.money)
+
 
 <!-- ## TODOs
 
