@@ -3,13 +3,14 @@ service: base
 
 commands:
   - name: start
+    # The same as "none", but if there **is** a token, parse out its context.
     protection: context
-  - name: save
-    privileges: none
-  - name: terminate
-    privileges: none
-  - name: change-scene
-    privileges: none
+  # - name: save
+  #   privileges: none
+  # - name: terminate
+  #   privileges: none
+  # - name: change-scene
+  #   privileges: none
 
 #don't change
 procedure: command-gateway
