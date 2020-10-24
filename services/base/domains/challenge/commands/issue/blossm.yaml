@@ -137,7 +137,7 @@ testing:
       # Should return 400 if the password is not correct.
     - pre:
         - domain: account
-          service: core
+          service: base
           root: yet-another-account-root
           action: register
           payload:
@@ -149,7 +149,7 @@ testing:
               network: some.network
       payload:
         email: yet@anotheremail.com
-        password: "some-bogus"
+        password: some-bogus
       code: 400
 
 #don't change

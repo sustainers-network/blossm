@@ -32,12 +32,7 @@ vendors:
       defaults:
         region: us-central1
         timeout: 120s
-        timeoutOverrides: {}
-        memory: 128Mi
-        memoryOverrides:
-          event-store: 512Mi
-          projection: 512Mi
-          view-store: 512Mi
+        memory: 512Mi
   viewStore:
     mongodb:
       users:
@@ -69,3 +64,5 @@ defaults:
   eventStore: mongodb
   cloud: gcp
   cache: redis
+
+defaultEnv: production

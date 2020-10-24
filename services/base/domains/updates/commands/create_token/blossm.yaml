@@ -9,6 +9,7 @@ dependencies:
   "@blossm/datetime": "*"
 
 testing:
+  store: false
   steps:
     - claims:
         iss: some-iss
