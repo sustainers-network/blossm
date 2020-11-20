@@ -11,6 +11,7 @@ module.exports = async ({ root, aggregateFn }) => {
       scene: aggregate.state.scene,
       principal: aggregate.state.principal,
       network: aggregate.state.network,
+      domain: aggregate.state.domain,
     },
   };
 };

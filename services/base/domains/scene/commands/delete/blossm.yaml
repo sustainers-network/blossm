@@ -103,7 +103,7 @@ testing:
       context:
         principal:
           root: some-principal-root
-      code: 400
+      code: 204
 
 #don't change
 procedure: command

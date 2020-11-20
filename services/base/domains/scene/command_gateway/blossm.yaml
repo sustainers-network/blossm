@@ -5,8 +5,13 @@ commands:
   - name: register
     privileges: none
   - name: delete
-    privileges:
-      - delete
+    privileges: none
+
+    # TODO this should be reactivated once the old server is deprecated.
+    # Right now, the old server needs to be able to call delete as opposed
+    # to it being user generated.
+    # privileges:
+    #   - delete
 
 #don't change
 procedure: command-gateway

@@ -13,6 +13,7 @@ describe("Fact unit tests", () => {
     const scene = "some-scene";
     const principal = "some-principal";
     const network = "some-network";
+    const domain = "some-domain";
 
     const aggregateFake = fake.returns({
       state: {
@@ -20,6 +21,7 @@ describe("Fact unit tests", () => {
         scene,
         principal,
         network,
+        domain,
       },
     });
     const result = await main({ root, aggregateFn: aggregateFake });
@@ -34,6 +36,7 @@ describe("Fact unit tests", () => {
         scene,
         principal,
         network,
+        domain,
       },
     });
   });

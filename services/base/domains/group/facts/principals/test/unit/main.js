@@ -28,6 +28,18 @@ describe("Fact unit tests", () => {
     expect(aggregateFake).to.have.been.calledWith(root);
     expect(result).to.deep.equal({ response: returnedPrincipals });
   });
+  it("should return successfully with no state principals", async () => {
+    const root = "some-root";
+
+    const aggregateFake = fake.returns({
+      state: {},
+    });
+
+    const result = await main({ root, aggregateFn: aggregateFake });
+
+    expect(aggregateFake).to.have.been.calledWith(root);
+    expect(result).to.deep.equal({ response: [] });
+  });
   it("should stream successfully", async () => {
     const root = "some-root";
     const principals = [];

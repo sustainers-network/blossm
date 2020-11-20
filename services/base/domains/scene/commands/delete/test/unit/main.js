@@ -72,29 +72,16 @@ describe("Command handler unit tests", () => {
       service: "base",
     });
   });
-  it("should throw correctly if aggregate has already been deleted", async () => {
+  it("should return correctly if aggregate has already been deleted", async () => {
     const aggregateFake = fake.returns({
       state: { deleted: deps.stringDate() },
     });
-    const error = "some-error";
-    const messageFake = fake.returns(error);
-    replace(deps, "badRequestError", {
-      message: messageFake,
+    const response = await main({
+      context,
+      payload: { scene: { root: sceneRoot } },
+      aggregateFn: aggregateFake,
     });
-    try {
-      await main({
-        context,
-        payload: { scene: { root: sceneRoot } },
-        aggregateFn: aggregateFake,
-      });
-      //shouldn't get called
-      expect(2).to.equal(3);
-    } catch (e) {
-      expect(messageFake).to.have.been.calledWith(
-        "This scene has already been deleted."
-      );
-      expect(e).to.equal(error);
-    }
+    expect(response).to.be.undefined;
   });
   it("should throw correctly if scene isn't accessible.", async () => {
     const payload = {
@@ -119,6 +106,41 @@ describe("Command handler unit tests", () => {
               network: sceneNetwork,
             },
           ],
+        },
+      });
+    const error = "some-error";
+    const messageFake = fake.returns(error);
+    replace(deps, "forbiddenError", {
+      message: messageFake,
+    });
+    try {
+      await main({ context, payload, aggregateFn: aggregateFake });
+      //shouldn't get called
+      expect(2).to.equal(3);
+    } catch (e) {
+      expect(messageFake).to.have.been.calledWith(
+        "This scene isn't accessible."
+      );
+      expect(e).to.equal(error);
+    }
+  });
+  it("should throw correctly if principal has no scenes", async () => {
+    const payload = {
+      scene: {
+        root: sceneRoot,
+        service: sceneService,
+        network: sceneNetwork,
+      },
+    };
+    const aggregateFake = stub()
+      .onFirstCall()
+      .returns({
+        state: {},
+      })
+      .onSecondCall()
+      .returns({
+        state: {
+          scenes: [],
         },
       });
     const error = "some-error";
