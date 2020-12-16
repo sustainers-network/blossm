@@ -2,12 +2,7 @@ name: open
 domain: connection
 service: system
 
-payload:
-  key:
-    type: string
-    in:
-      - access
-      - challenge
+payload: {}
 
 dependencies:
   "@blossm/jwt": "*"
@@ -25,22 +20,6 @@ devDependencies:
 
 testing:
   store: false
-
-  validate:
-    ok:
-      - key: access
-      - key: challenge
-    bad:
-      - key: 3
-      - key: some-bogus
-
-  normalize:
-    - payload:
-        key: access
-      normalized:
-        key: access
-
-  dependencies:
 
   steps:
     - payload:

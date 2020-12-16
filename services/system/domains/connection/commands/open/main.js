@@ -4,7 +4,7 @@ const NINETY_DAYS = 90 * MILLISECONDS_IN_DAY;
 
 const deps = require("./deps");
 
-module.exports = async ({ payload, context }) => {
+module.exports = async ({ context }) => {
   const root = deps.uuid();
 
   const token = await deps.createJwt({
@@ -28,7 +28,7 @@ module.exports = async ({ payload, context }) => {
       deps.sign({
         message,
         ring: "jwt",
-        key: payload.key,
+        key: "access",
         location: "global",
         version: "1",
         project: process.env.GCP_PROJECT,
@@ -37,7 +37,7 @@ module.exports = async ({ payload, context }) => {
 
   return {
     response: {
-      token: { network: process.env.NETWORK, key: payload.key, value: token },
+      token: { network: process.env.NETWORK, key: "access", value: token },
       receipt: {
         connection: {
           root,

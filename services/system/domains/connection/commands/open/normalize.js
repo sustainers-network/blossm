@@ -1,3 +1,1 @@
-module.exports = (payload) => ({
-  key: payload.key,
-});
+module.exports = () => ({});

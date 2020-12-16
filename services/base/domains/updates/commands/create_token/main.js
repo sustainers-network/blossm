@@ -22,7 +22,7 @@ module.exports = async ({ context, claims }) => ({
         deps.sign({
           message,
           ring: "jwt",
-          key: "access",
+          key: "updates",
           location: "global",
           version: "1",
           project: process.env.GCP_PROJECT,

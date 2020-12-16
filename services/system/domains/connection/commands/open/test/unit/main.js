@@ -13,11 +13,9 @@ const principal = {
   root: principalRoot,
 };
 const scene = "some-scene";
-const key = "some-key";
 const context = {
   principal,
   scene,
-  key,
 };
 
 const domain = "some-domain";
@@ -25,11 +23,6 @@ const service = "some-service";
 const network = "some-network";
 const token = "some-token";
 const project = "some-projectl";
-
-const payloadKey = "some-payload-key";
-const payload = {
-  key: payloadKey,
-};
 
 process.env.DOMAIN = domain;
 process.env.SERVICE = service;
@@ -57,13 +50,12 @@ describe("Command handler unit tests", () => {
     replace(deps, "uuid", uuidFake);
 
     const result = await main({
-      payload,
       context,
     });
 
     expect(result).to.deep.equal({
       response: {
-        token: { network, key: payloadKey, value: token },
+        token: { network, value: token, key: "access" },
         receipt: { connection: { root, service, network } },
       },
     });
@@ -92,7 +84,7 @@ describe("Command handler unit tests", () => {
           signFake.calledWith({
             message,
             ring: "jwt",
-            key: payload.key,
+            key: "access",
             location: "global",
             version: "1",
             project,

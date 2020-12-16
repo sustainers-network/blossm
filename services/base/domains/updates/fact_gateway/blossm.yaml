@@ -4,6 +4,7 @@ service: base
 facts:
   - name: channel
     privileges: none
+    key: updates
 
 allow:
   - "*"

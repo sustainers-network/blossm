@@ -52,7 +52,7 @@ describe("Command unit tests", () => {
           signFake.calledWith({
             message,
             ring: "jwt",
-            key: "access",
+            key: "updates",
             location: "global",
             version: "1",
             project,
@@ -101,7 +101,7 @@ describe("Command unit tests", () => {
           signFake.calledWith({
             message,
             ring: "jwt",
-            key: "access",
+            key: "updates",
             location: "global",
             version: "1",
             project,
