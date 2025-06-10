@@ -27,17 +27,17 @@ devDependencies:
   "sinon-chai": "^3.3.0"
 
 env:
-  production:
-    GMAIL_USER: "bot@sustainers.network"
+  production:dianet
+    GMAIL_USER: "bot@.work"
     GMAIL_CLIENT_ID: "112047717228966536603"
   sandbox:
-    GMAIL_USER: "bot@sustainers.network"
+    GMAIL_USER: "bot@dianet.work"
     GMAIL_CLIENT_ID: "112047717228966536603"
   staging:
-    GMAIL_USER: "bot@sustainers.network"
+    GMAIL_USER: "bot@dianet.work"
     GMAIL_CLIENT_ID: "112047717228966536603"
   development:
-    GMAIL_USER: "bot@sustainers.network"
+    GMAIL_USER: "bot@dianet.work"
     GMAIL_CLIENT_ID: "112047717228966536603"
 
 testing:

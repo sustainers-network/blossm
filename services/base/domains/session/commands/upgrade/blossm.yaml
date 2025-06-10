@@ -80,7 +80,7 @@ testing:
         session:
           root: some-root
           service: base
-          network: sustainers.network
+          network: dianet.work
       response:
         context:
           some: context
@@ -109,7 +109,7 @@ testing:
         session:
           root: yet-another-root
           service: base
-          network: sustainers.network
+          network: dianet.work
       code: 400
 
 #don't change

@@ -1,19 +1,19 @@
 {
-  "name": "sustainers.network",
-  "description": "The Sustainer's Network blossm codebase",
+  "name": "dianet.work",
+  "description": "The Dia blossm codebase",
   "version": "0.0.0",
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sustainers-network/blossm.git"
+    "url": "git+https://github.com/mejango/dia.git"
   },
-  "author": "blossm.network",
+  "author": "dianet.work",
   "bugs": {
-    "url": "https://github.com/sustainers-network/blossm/issues"
+    "url": "https://github.com/mejango/dia/issues"
   },
-  "homepage": "https://github.com/sustainers-network/blossm#readme",
+  "homepage": "https://github.com/mejango/dia#readme",
   "engines": {
-    "node": ">= 10.16.0"
+    "node": ">= 20.19.0"
   },
   "scripts": {
     "precommit": "lint-staged",
@@ -42,7 +42,7 @@
     ]
   },
   "dependencies": {
-    "@blossm/cli": "^0.0.1200",
+    "@blossm/cli": "^0.0.1838",
     "global": "^4.4.0"
   }
 }

@@ -171,7 +171,7 @@ testing:
         principal:
           root: some-other-principal-root
           service: base
-          network: sustainers.network
+          network: dianet.work
       response:
         receipt:
           challenge:

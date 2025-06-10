@@ -1,4 +1,4 @@
-network: sustainers.network
+network: dianet.work
 # Once a day at 5 am
 blockSchedule: "0 5 * * *"
 vendors:
@@ -9,26 +9,26 @@ vendors:
   cloud:
     gcp:
       projects:
-        production: production-271815
-        sandbox: sandbox-271815
-        staging: staging-271815
-        development: development-271815
+        production: production-462319
+        sandbox: playground-462319
+        staging: staging-462319
+        development: development-462319
       computeUrlIds:
-        production: 7d5greqv6q
-        sandbox: fvvz6qfa2a
-        staging: ki43cyps3a
-        development: 75tpixyafq
+        production: 
+        sandbox: 
+        staging: 
+        development: 
       dnsZone: network
       secretsBuckets:
-        production: production-secrets-271815
-        sandbox: sandbox-secrets-271815
-        staging: staging-secrets-271815
-        development: development-secrets-271815
+        production: production-secrets-462319
+        sandbox: sandbox-secrets-462319
+        staging: staging-secrets-462319
+        development: development-secrets-462319
       rolesBuckets:
-        production: production-roles-271815
-        sandbox: sandbox-roles-271815
-        staging: staging-roles-271815
-        development: development-roles-271815
+        production: production-roles-462319
+        sandbox: sandbox-roles-462319
+        staging: staging-roles-462319
+        development: development-roles-462319
       defaults:
         region: us-central1
         timeout: 120s
@@ -44,7 +44,7 @@ vendors:
         production: view-store.xpbhz.gcp.mongodb.net
         sandbox: view-store.fzyij.gcp.mongodb.net
         staging: view-store.ahi18.gcp.mongodb.net
-        development: view-store.sebjf.gcp.mongodb.net
+        development: view-store.y8mw0ub.gcp.mongodb.net
       protocol: mongodb+srv
   eventStore:
     mongodb:
@@ -57,7 +57,7 @@ vendors:
         production: event-store-pri.7iksa.gcp.mongodb.net
         sandbox: event-store-pri.dyntm.gcp.mongodb.net
         staging: event-store.zhvxy.gcp.mongodb.net
-        development: event-store.7kjnk.gcp.mongodb.net
+        development: event-store.czxzvwh.mongodb.net
       protocol: mongodb+srv
 defaults:
   viewStore: mongodb
@@ -65,4 +65,4 @@ defaults:
   cloud: gcp
   cache: redis
 
-defaultEnv: production
+defaultEnv: development
