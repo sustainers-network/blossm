@@ -1,7 +1,11 @@
-const { expect } = require("chai").use(require("sinon-chai"));
-const { restore, fake } = require("sinon");
+import * as chai from "chai";
+import sinonChai from "sinon-chai";
+import { restore, fake } from "sinon";
 
-const main = require("../../main");
+import main from "../../main.js";
+
+chai.use(sinonChai);
+const { expect } = chai;
 
 describe("Command handler unit tests", () => {
   afterEach(() => {

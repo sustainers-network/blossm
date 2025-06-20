@@ -1,6 +1,6 @@
-const deps = require("./deps");
+import deps from "./deps.js";
 
-module.exports = async ({ context, query, queryAggregatesFn }) => {
+export default async ({ context, query, queryAggregatesFn }) => {
   const networkRoles = await queryAggregatesFn({
     domain: process.env.DOMAIN,
     key: "network",

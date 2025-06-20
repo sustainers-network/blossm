@@ -1,7 +1,7 @@
 domain: node
 service: system
 
-public: true
+isPublic: true
 
 actions:
   - register

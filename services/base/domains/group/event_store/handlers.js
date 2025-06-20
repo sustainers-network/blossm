@@ -1,5 +1,6 @@
-const difference = require("@blossm/array-difference");
-module.exports = {
+import difference from "@blossm/array-difference";
+
+export default {
   "add-principals": (state, payload) => {
     state.principals = state.principals || [];
     return {

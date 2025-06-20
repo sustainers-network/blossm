@@ -1,9 +1,9 @@
-const deps = require("./deps");
-const { MILLISECONDS_IN_HOUR } = require("@blossm/duration-consts");
+import deps from "./deps.js";
+import { MILLISECONDS_IN_HOUR } from "@blossm/duration-consts";
 
 const ONE_HOUR = MILLISECONDS_IN_HOUR;
 
-module.exports = async ({ context, claims }) => ({
+export default async ({ context, claims }) => ({
   response: {
     token: await deps.createJwt({
       options: {

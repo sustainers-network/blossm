@@ -11,7 +11,7 @@
  *
  */
 
-module.exports = async (payload) => {
+export default async (payload) => {
   return {
     name: payload.name.toLowerCase(),
   };

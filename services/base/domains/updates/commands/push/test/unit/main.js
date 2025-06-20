@@ -1,9 +1,14 @@
-const { expect } = require("chai")
-  .use(require("chai-datetime"))
-  .use(require("sinon-chai"));
-const { restore, fake, replace } = require("sinon");
+import * as chai from "chai";
+import chaiDateTime from "chai-datetime";
+import sinonChai from "sinon-chai";
+import { restore, fake, replace } from "sinon";
 
-const deps = require("../../deps");
+import deps from "../../deps.js";
+
+chai.use(chaiDateTime);
+chai.use(sinonChai);
+const { expect } = chai;
+
 let main;
 
 const fanoutRealmId = "some-fanout-realm-id";

@@ -1,4 +1,4 @@
-module.exports = async ({ payload, root, aggregateFn }) => {
+export default async ({ payload, root, aggregateFn }) => {
   const existingRoles = [];
   const principalAggregate = await aggregateFn(root);
 

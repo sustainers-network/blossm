@@ -1,7 +1,7 @@
 domain: key
 service: system
 
-public: false
+isPublic: false
 
 actions:
   - create

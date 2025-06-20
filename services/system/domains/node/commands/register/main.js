@@ -1,6 +1,6 @@
-const deps = require("./deps");
+import deps from "./deps.js";
 
-module.exports = async ({ payload, context, commandFn }) => {
+export default async ({ payload, context, commandFn }) => {
   // Create new roots for the node.
   const nodeRoot = deps.uuid();
 

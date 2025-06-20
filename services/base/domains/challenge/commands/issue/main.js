@@ -1,9 +1,9 @@
-const {
+import {
   MILLISECONDS_IN_HOUR,
   SECONDS_IN_MINUTE,
-} = require("@blossm/duration-consts");
+} from "@blossm/duration-consts";
 
-const deps = require("./deps");
+import deps from "./deps.js";
 
 const ONE_HOUR = MILLISECONDS_IN_HOUR;
 const THREE_MINUTES = 3 * SECONDS_IN_MINUTE;
@@ -48,7 +48,7 @@ const determineUpgrade = async (payload, context, queryAggregatesFn) => {
   };
 };
 
-module.exports = async ({
+export default async ({
   payload,
   context,
   claims,

@@ -1,4 +1,4 @@
-module.exports = async (payload) => {
+export default async (payload) => {
   return {
     scenes: payload.scenes.map((scene) => {
       return {

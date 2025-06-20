@@ -1,7 +1,11 @@
-const { expect } = require("chai").use(require("sinon-chai"));
-const { restore, replace, fake } = require("sinon");
+import * as chai from "chai";
+import sinonChai from "sinon-chai";
+import { restore, replace, fake } from "sinon";
 
-const deps = require("../../deps");
+import deps from "../../deps.js";
+
+chai.use(sinonChai);
+const { expect } = chai;
 
 const root = "some-root";
 const to = "some-to";
@@ -21,7 +25,7 @@ process.env.SERVICE = service;
 process.env.NETWORK = network;
 process.env.TWILIO_SENDING_PHONE_NUMBER = sendingPhoneNumber;
 
-const main = require("../../main");
+const main = require("../../main.js");
 
 describe("Command handler unit tests", () => {
   afterEach(() => {

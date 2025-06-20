@@ -1,7 +1,7 @@
 domain: scene
 service: base
 
-public: true
+isPublic: true
 
 actions:
   - register

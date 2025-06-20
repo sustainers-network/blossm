@@ -1,9 +1,13 @@
-const { expect } = require("chai").use(require("sinon-chai"));
-const { restore, fake, replace } = require("sinon");
+import * as chai from "chai";
+import sinonChai from "sinon-chai";
+import { restore, fake, replace } from "sinon";
 
-const kms = require("@google-cloud/kms");
+chai.use(sinonChai);
+const { expect } = chai;
 
-const main = require("../../main");
+import kms from "@google-cloud/kms";
+
+import main from "../../main.js";
 
 const pem = "some-pem";
 const algorithm = "EC_SIGN_P256_SHA256";

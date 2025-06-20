@@ -1,4 +1,4 @@
-module.exports = async (payload) => ({
+export default async (payload) => ({
   principals: payload.principals.map((principal) => ({
     roles: [...new Set(principal.roles)],
     root: principal.root,

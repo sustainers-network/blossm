@@ -1,5 +1,7 @@
-const { string: stringDate } = require("@blossm/datetime");
-const { badRequest } = require("@blossm/errors");
+import { string as stringDate } from "@blossm/datetime";
+import { badRequest } from "@blossm/errors";
 
-exports.stringDate = stringDate;
-exports.badRequestError = badRequest;
+export default {
+  stringDate,
+  badRequestError: badRequest,
+};

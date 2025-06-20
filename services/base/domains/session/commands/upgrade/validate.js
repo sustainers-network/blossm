@@ -1,6 +1,6 @@
-const { findError, string, object, domain } = require("@blossm/validator");
+import { findError, string, object, domain } from "@blossm/validator";
 
-module.exports = (payload) => {
+export default (payload) => {
   console.log({ payload });
   for (const key in payload) {
     const error = findError([

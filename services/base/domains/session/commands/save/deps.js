@@ -1,11 +1,13 @@
-const difference = require("@blossm/array-difference");
-const { hash, compare } = require("@blossm/crypt");
-const emailValidator = require("@blossm/email-validator");
-const { invalidArgument, badRequest } = require("@blossm/errors");
+import difference from "@blossm/array-difference";
+import { hash, compare } from "@blossm/crypt";
+import { validate as emailValidator } from "@blossm/email-validator";
+import { invalidArgument, badRequest } from "@blossm/errors";
 
-exports.difference = difference;
-exports.hash = hash;
-exports.compare = compare;
-exports.emailValidator = emailValidator;
-exports.invalidArgumentError = invalidArgument;
-exports.badRequestError = badRequest;
+export default {
+  difference,
+  hash,
+  compare,
+  emailValidator,
+  invalidArgumentError: invalidArgument,
+  badRequestError: badRequest,
+};

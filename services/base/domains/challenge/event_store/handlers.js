@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   issue: (state, payload) => {
     return {
       ...state,

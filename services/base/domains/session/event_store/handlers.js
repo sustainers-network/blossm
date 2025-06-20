@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   start: (state, payload) => ({
     ...state,
     ...payload,

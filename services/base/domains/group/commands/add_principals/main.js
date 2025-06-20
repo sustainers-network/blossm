@@ -1,8 +1,8 @@
-const deps = require("./deps");
+import deps from "./deps.js";
 
 const principalLimit = 100;
 
-module.exports = async ({ context, payload, root, aggregateFn }) => {
+export default async ({ context, payload, root, aggregateFn }) => {
   const nonDuplicatedPrincipals = [];
   if (root) {
     const groupAggregate = await aggregateFn(root);

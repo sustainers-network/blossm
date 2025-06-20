@@ -1,7 +1,9 @@
-const grip = require("grip");
-const faasGrip = require("faas-grip");
-const { get: secret } = require("@blossm/gcp-secret");
+import grip from "grip";
+import faasGrip from "faas-grip";
+import { get as secret } from "@blossm/gcp-secret";
 
-exports.grip = grip;
-exports.faasGrip = faasGrip;
-exports.secret = secret;
+export default {
+  grip,
+  faasGrip,
+  secret,
+};

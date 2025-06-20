@@ -22,7 +22,8 @@ const standardizedAlgorithm = (algorithm) => {
       return false;
   }
 };
-module.exports = async () => {
+
+export default async () => {
   if (cache) return { response: cache };
 
   const client = new kms.KeyManagementServiceClient();

@@ -1,6 +1,8 @@
-const { string: stringDate, moment } = require("@blossm/datetime");
-const { invalidArgument } = require("@blossm/errors");
+import { string as stringDate, moment } from "@blossm/datetime";
+import { invalidArgument } from "@blossm/errors";
 
-exports.stringDate = stringDate;
-exports.moment = moment;
-exports.invalidArgumentError = invalidArgument;
+export default {
+    stringDate,
+    moment,
+    invalidArgumentError: invalidArgument
+}

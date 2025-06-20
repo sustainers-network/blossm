@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   send: (state, payload) => ({
     ...state,
     ...payload,

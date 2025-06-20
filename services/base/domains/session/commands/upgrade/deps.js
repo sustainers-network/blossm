@@ -1,15 +1,17 @@
-const { create: createJwt } = require("@blossm/jwt");
-const { sign } = require("@blossm/gcp-kms");
-const {
-  string: stringDate,
+import { create as createJwt } from "@blossm/jwt";
+import { sign } from "@blossm/gcp-kms";
+import {
+  string as stringDate,
   fineTimestamp,
   stringFromDate,
-} = require("@blossm/datetime");
-const { badRequest } = require("@blossm/errors");
+} from "@blossm/datetime";
+import { badRequest } from "@blossm/errors";
 
-exports.createJwt = createJwt;
-exports.sign = sign;
-exports.stringDate = stringDate;
-exports.fineTimestamp = fineTimestamp;
-exports.stringFromDate = stringFromDate;
-exports.badRequestError = badRequest;
+export default {
+  createJwt,
+  sign,
+  stringDate,
+  fineTimestamp,
+  stringFromDate,
+  badRequestError: badRequest,
+};

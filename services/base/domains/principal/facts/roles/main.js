@@ -1,4 +1,4 @@
-module.exports = async ({ query, context, aggregateFn }) => {
+export default async ({ query, context, aggregateFn }) => {
   const aggregate = await aggregateFn(context.principal.root);
 
   const roles = (aggregate.state.roles || []).filter(

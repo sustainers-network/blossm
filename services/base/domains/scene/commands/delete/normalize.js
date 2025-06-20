@@ -1,4 +1,4 @@
-module.exports = (payload) => ({
+export default (payload) => ({
   scene: {
     root: payload.scene.root,
     service: payload.scene.service,

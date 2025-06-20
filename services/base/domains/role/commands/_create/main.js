@@ -12,10 +12,10 @@
  *
  */
 
-//const deps = require("./deps");
+// import deps from "./deps.js";
 
 //Consider making the root the role name.
-module.exports = async ({ payload, root, context, aggregateFn }) => {
+export default async ({ payload, root, context, aggregateFn }) => {
   //eslint-disable-next-line no-console
   console.log("Do something with: ", {
     payload,

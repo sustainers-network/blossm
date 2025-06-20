@@ -1,6 +1,6 @@
-const { format } = require("@blossm/phone-number");
+import { format } from "@blossm/phone-number";
 
-module.exports = async (payload) => ({
+export default async (payload) => ({
   to: format(payload.to),
   message: payload.message,
 });

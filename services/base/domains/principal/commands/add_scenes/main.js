@@ -1,6 +1,6 @@
-const deps = require("./deps");
+import deps from "./deps.js";
 
-module.exports = async ({ payload, context, root, aggregateFn }) => {
+export default async ({ payload, context, root, aggregateFn }) => {
   const nonDuplicatedScenes = [];
   const principalAggregate = await aggregateFn(root);
   for (const scene of payload.scenes) {

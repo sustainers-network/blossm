@@ -1,4 +1,4 @@
-module.exports = async ({ root, aggregateFn, streamFn }) => {
+export default async ({ root, aggregateFn, streamFn }) => {
   const aggregate = await aggregateFn(root);
 
   const principals = aggregate.state.principals || [];

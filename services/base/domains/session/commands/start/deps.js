@@ -1,7 +1,9 @@
-const { create: createJwt } = require("@blossm/jwt");
-const { sign } = require("@blossm/gcp-kms");
-const uuid = require("@blossm/uuid");
+import { create as createJwt } from "@blossm/jwt";
+import { sign } from "@blossm/gcp-kms";
+import uuid from "@blossm/uuid";
 
-exports.createJwt = createJwt;
-exports.sign = sign;
-exports.uuid = uuid;
+export default {
+  createJwt,
+  sign,
+  uuid,
+};

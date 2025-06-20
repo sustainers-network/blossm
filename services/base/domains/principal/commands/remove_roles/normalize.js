@@ -1,4 +1,4 @@
-module.exports = async (payload) => {
+export default async (payload) => {
   return {
     roles: (payload.roles || []).map((role) => ({
       id: role.id,

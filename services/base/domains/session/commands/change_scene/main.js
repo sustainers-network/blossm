@@ -1,6 +1,6 @@
-const deps = require("./deps");
+import deps from "./deps.js";
 
-module.exports = async ({ payload, context, claims, aggregateFn }) => {
+export default async ({ payload, context, claims, aggregateFn }) => {
   // Get aggregates for the principal, this session, and the context to be switched in to.
   const [principalAggregate, aggregate, sceneAggregate] = await Promise.all([
     aggregateFn(claims.sub, {

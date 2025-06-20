@@ -1,7 +1,9 @@
-const uuid = require("@blossm/uuid");
-const sms = require("@blossm/twilio-sms");
-const { get: secret } = require("@blossm/gcp-secret");
+import uuid from "@blossm/uuid";
+import sms from "@blossm/twilio-sms";
+import { get as secret } from "@blossm/gcp-secret";
 
-exports.uuid = uuid;
-exports.sms = sms;
-exports.secret = secret;
+export default {
+  uuid,
+  sms,
+  secret,
+};

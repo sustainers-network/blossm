@@ -1,8 +1,8 @@
-const deps = require("./deps");
+import deps from "./deps.js";
 
 let sms;
 
-module.exports = async ({ payload }) => {
+export default async ({ payload }) => {
   const root = deps.uuid();
 
   // Lazily load up the sms connection.

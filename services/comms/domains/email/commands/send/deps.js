@@ -1,5 +1,7 @@
-const nodemailer = require("nodemailer");
-const { get: secret } = require("@blossm/gcp-secret");
+import nodemailer from "nodemailer";
+import { get as secret } from "@blossm/gcp-secret";
 
-exports.nodemailer = nodemailer;
-exports.secret = secret;
+export default {
+  nodemailer,
+  secret,
+};

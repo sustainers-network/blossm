@@ -1,6 +1,6 @@
-const deps = require("./deps");
+import deps from "./deps.js";
 
-module.exports = async ({ payload, context, aggregateFn }) => {
+export default async ({ payload, context, aggregateFn }) => {
   const node = context.domain == "node" && context.node;
 
   if (!node)

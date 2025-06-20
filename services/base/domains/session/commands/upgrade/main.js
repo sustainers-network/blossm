@@ -1,6 +1,6 @@
-const deps = require("./deps");
+import deps from "./deps.js";
 
-module.exports = async ({ payload, context, claims, aggregateFn }) => {
+export default async ({ payload, context, claims, aggregateFn }) => {
   // If there's nothing to upgrade to, dont save events.
   if (!Object.keys(payload).length) return;
 

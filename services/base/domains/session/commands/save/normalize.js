@@ -1,4 +1,4 @@
-module.exports = (payload) => ({
+export default (payload) => ({
   email: payload.email.toLowerCase(),
   password: payload.password,
 });

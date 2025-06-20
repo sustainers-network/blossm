@@ -1,6 +1,6 @@
-const deps = require("./deps");
+import deps from "./deps.js";
 
-module.exports = async ({ query, context }) => {
+export default async ({ query, context }) => {
   // 2k padding for old browsers
   const padding = new Array(2048);
   const body = `:${padding.join(" ")}\n\n`;

@@ -1,4 +1,4 @@
-module.exports = async (payload) => ({
+export default async (payload) => ({
   from: payload.from,
   to: payload.to,
   message: payload.message,

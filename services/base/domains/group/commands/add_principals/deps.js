@@ -1,6 +1,8 @@
-const uuid = require("@blossm/uuid");
-const { forbidden, badRequest } = require("@blossm/errors");
+import uuid from "@blossm/uuid";
+import { forbidden, badRequest } from "@blossm/errors";
 
-exports.uuid = uuid;
-exports.forbiddenError = forbidden;
-exports.badRequestError = badRequest;
+export default {
+  uuid,
+  forbiddenError: forbidden,
+  badRequestError: badRequest,
+};

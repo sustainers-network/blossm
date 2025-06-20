@@ -5,7 +5,8 @@ vendors:
   cache:
     redis:
       ip:
-        production: 10.79.5.20
+        production: 10.32.54.245:6379
+        development: 10.32.54.245:6379
   cloud:
     gcp:
       projects:
@@ -17,7 +18,7 @@ vendors:
         production: 
         sandbox: 
         staging: 
-        development: 
+        development: 360683954392
       dnsZone: network
       secretsBuckets:
         production: production-secrets-462319
@@ -41,10 +42,10 @@ vendors:
         staging: blossm
         development: blossm
       hosts:
-        production: view-store.xpbhz.gcp.mongodb.net
-        sandbox: view-store.fzyij.gcp.mongodb.net
-        staging: view-store.ahi18.gcp.mongodb.net
-        development: view-store.y8mw0ub.gcp.mongodb.net
+        production: view-store-pri.xpbhz.gcp.mongodb.net
+        sandbox: view-store-pri.fzyij.gcp.mongodb.net
+        staging: view-store-pri.ahi18.gcp.mongodb.net
+        development: view-store-pri.y8mw0ub.gcp.mongodb.net
       protocol: mongodb+srv
   eventStore:
     mongodb:
@@ -56,8 +57,8 @@ vendors:
       hosts:
         production: event-store-pri.7iksa.gcp.mongodb.net
         sandbox: event-store-pri.dyntm.gcp.mongodb.net
-        staging: event-store.zhvxy.gcp.mongodb.net
-        development: event-store.czxzvwh.mongodb.net
+        staging: event-store-pri.zhvxy.gcp.mongodb.net
+        development: event-store-pri.czxzvwh.mongodb.net
       protocol: mongodb+srv
 defaults:
   viewStore: mongodb

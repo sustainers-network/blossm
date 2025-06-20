@@ -1,8 +1,12 @@
-const { expect } = require("chai").use(require("sinon-chai"));
-const { restore, replace, fake, stub } = require("sinon");
+import * as chai from "chai";
+import sinonChai from "sinon-chai";
+import { restore, replace, fake, stub } from "sinon";
 
-const main = require("../../main");
-const deps = require("../../deps");
+import main from "../../main.js";
+import deps from "../../deps.js";
+
+chai.use(sinonChai);
+const { expect } = chai;
 
 const contextNetwork = "some-context-network";
 

@@ -1,7 +1,9 @@
-const command = require("@blossm/command-rpc");
-const uuid = require("@blossm/uuid");
-const gcpToken = require("@blossm/gcp-token");
+import command from "@blossm/command-rpc";
+import uuid from "@blossm/uuid";
+import gcpToken from "@blossm/gcp-token";
 
-exports.command = command;
-exports.uuid = uuid;
-exports.gcpToken = gcpToken;
+export default {
+  command,
+  uuid,
+  gcpToken,
+};

@@ -1,9 +1,11 @@
-const { create: createJwt } = require("@blossm/jwt");
-const { sign } = require("@blossm/gcp-kms");
-const uuid = require("@blossm/uuid");
-const { string: stringDate } = require("@blossm/datetime");
+import { create as createJwt } from "@blossm/jwt";
+import { sign } from "@blossm/gcp-kms";
+import uuid from "@blossm/uuid";
+import { string as stringDate } from "@blossm/datetime";
 
-exports.createJwt = createJwt;
-exports.sign = sign;
-exports.uuid = uuid;
-exports.stringDate = stringDate;
+export default {
+  createJwt,
+  sign,
+  uuid,
+  stringDate,
+};

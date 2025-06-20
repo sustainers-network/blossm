@@ -1,7 +1,7 @@
-const deps = require("./deps");
+import deps from "./deps.js";
 
 //TODO make sure requesting principal has permissions.
-module.exports = async ({
+export default async ({
   context,
   payload,
   root,

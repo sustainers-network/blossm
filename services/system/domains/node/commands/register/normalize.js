@@ -1,3 +1,3 @@
-module.exports = (payload) => ({
+export default (payload) => ({
   network: payload.network.toLowerCase(),
 });

@@ -1,4 +1,4 @@
-module.exports = async (payload) => {
+export default async (payload) => {
   return {
     device: {
       type: payload.device.type,

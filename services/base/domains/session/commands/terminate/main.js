@@ -1,6 +1,6 @@
-const deps = require("./deps");
+import deps from "./deps.js";
 
-module.exports = async ({ context, aggregateFn }) => {
+export default async ({ context, aggregateFn }) => {
   // Get the aggregate for this session.
   const aggregate = await aggregateFn(context.session.root);
 

@@ -1,4 +1,4 @@
-module.exports = async ({ payload, root, aggregateFn }) => {
+export default async ({ payload, root, aggregateFn }) => {
   const nonDuplicatedRoles = [];
   const principalAggregate = await aggregateFn(root);
   for (const role of payload.roles) {

@@ -1,10 +1,10 @@
-const { MILLISECONDS_IN_DAY } = require("@blossm/duration-consts");
+import { MILLISECONDS_IN_DAY } from "@blossm/duration-consts";
 
 const NINETY_DAYS = 90 * MILLISECONDS_IN_DAY;
 
-const deps = require("./deps");
+import deps from "./deps.js";
 
-module.exports = async ({ context }) => {
+export default async ({ context }) => {
   const root = deps.uuid();
 
   const token = await deps.createJwt({

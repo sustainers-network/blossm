@@ -1,7 +1,7 @@
 domain: principal
 service: base
 
-public: true
+isPublic: true
 
 actions:
   - add-roles

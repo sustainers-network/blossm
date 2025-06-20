@@ -1,4 +1,4 @@
-module.exports = async ({ root, aggregateFn }) => {
+export default async ({ root, aggregateFn }) => {
   const aggregate = await aggregateFn(root, {
     domain: "key",
     service: "system",

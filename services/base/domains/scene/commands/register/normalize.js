@@ -1,4 +1,4 @@
-module.exports = async (payload) => ({
+export default async (payload) => ({
   ...(payload.role && { role: payload.role }),
   root: payload.root,
   domain: payload.domain,

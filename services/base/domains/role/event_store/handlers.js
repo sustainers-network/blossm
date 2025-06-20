@@ -1,6 +1,6 @@
-const difference = require("@blossm/array-difference");
+import difference from "@blossm/array-difference";
 
-module.exports = {
+export default {
   create: (state, payload) => {
     return {
       ...state,

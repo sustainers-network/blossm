@@ -1,4 +1,4 @@
-module.exports = (payload) => {
+export default (payload) => {
   const normalizedPayload = {};
   for (const key in payload) {
     if (typeof payload[key] != "object") continue;

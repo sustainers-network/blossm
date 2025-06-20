@@ -1,7 +1,7 @@
-const deps = require("./deps");
+import deps from "./deps.js";
 
 // Internal requests will have no context.
-module.exports = async ({ payload }) => {
+export default async ({ payload }) => {
   // Lazily set the environment variable.
   if (!process.env.GRIP_URL) {
     process.env.GRIP_URL = `${

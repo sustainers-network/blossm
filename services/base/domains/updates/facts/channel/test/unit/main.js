@@ -1,8 +1,12 @@
-const { expect } = require("chai").use(require("sinon-chai"));
-const { restore, fake, replace } = require("sinon");
+import * as chai from "chai";
+import sinonChai from "sinon-chai";
+import { restore, fake, replace } from "sinon";
 
-const main = require("../../main");
-const deps = require("../../deps");
+import main from "../../main.js";
+import deps from "../../deps.js";
+
+chai.use(sinonChai);
+const { expect } = chai;
 
 const name = "some-name";
 const key = "some-key";

@@ -1,7 +1,7 @@
 domain: session
 service: base
 
-public: false
+isPublic: false
 
 actions:
   - start

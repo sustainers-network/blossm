@@ -1,7 +1,11 @@
-const { expect } = require("chai").use(require("sinon-chai"));
-const { restore, replace, fake } = require("sinon");
+import * as chai from "chai";
+import sinonChai from "sinon-chai";
+import { restore, replace, fake } from "sinon";
 
-const deps = require("../../deps");
+import deps from "../../deps.js";
+
+chai.use(sinonChai);
+const { expect } = chai;
 
 const root = "some-root";
 const from = "some-from";
@@ -32,7 +36,7 @@ const context = {
   network: contextNetwork,
 };
 
-const main = require("../../main");
+const main = require("../../main.js");
 
 describe("Command handler unit tests", () => {
   beforeEach(() => {

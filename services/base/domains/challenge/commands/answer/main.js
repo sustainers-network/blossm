@@ -1,6 +1,6 @@
-const deps = require("./deps");
+import deps from "./deps.js";
 
-module.exports = async ({ payload, context, aggregateFn, commandFn }) => {
+export default async ({ payload, context, aggregateFn, commandFn }) => {
   const root = context.challenge.root;
 
   // Look for the challenge being answered.

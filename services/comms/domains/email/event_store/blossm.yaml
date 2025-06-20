@@ -1,7 +1,7 @@
 domain: email
 service: comms
 
-public: false
+isPublic: false
 
 actions:
   - send

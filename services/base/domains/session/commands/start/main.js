@@ -1,10 +1,10 @@
-const { MILLISECONDS_IN_DAY } = require("@blossm/duration-consts");
+import { MILLISECONDS_IN_DAY } from "@blossm/duration-consts";
 
 const NINETY_DAYS = 90 * MILLISECONDS_IN_DAY;
 
-const deps = require("./deps");
+import deps from "./deps.js";
 
-module.exports = async ({ payload, context = {}, ip }) => {
+export default async ({ payload, context = {}, ip }) => {
   // Create the root for this session.
   const root = deps.uuid();
 

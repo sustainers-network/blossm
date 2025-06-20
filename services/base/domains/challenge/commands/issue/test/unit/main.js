@@ -1,9 +1,13 @@
-const { expect } = require("chai")
-  .use(require("chai-datetime"))
-  .use(require("sinon-chai"));
+import * as chai from "chai";
+import chaiDateTime from "chai-datetime";
+import sinonChai from "sinon-chai";
 const { restore, replace, fake, match, useFakeTimers } = require("sinon");
 
-const deps = require("../../deps");
+const deps = require("../../deps.js");
+
+chai.use(chaiDateTime);
+chai.use(sinonChai);
+const { expect } = chai;
 
 let clock;
 const now = new Date();
@@ -48,7 +52,7 @@ process.env.SERVICE = service;
 process.env.NETWORK = network;
 process.env.GCP_PROJECT = project;
 
-const main = require("../../main");
+const main = require("../../main.js");
 
 describe("Command handler unit tests", () => {
   beforeEach(() => {

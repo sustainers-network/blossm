@@ -1,4 +1,4 @@
-module.exports = async (payload) => ({
+export default async (payload) => ({
   ...(payload.view && {
     view: payload.view,
   }),

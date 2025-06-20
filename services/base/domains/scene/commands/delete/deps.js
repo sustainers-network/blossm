@@ -1,6 +1,8 @@
-const { string: stringDate } = require("@blossm/datetime");
-const { forbidden, badRequest } = require("@blossm/errors");
+import { string as stringDate } from "@blossm/datetime";
+import { forbidden, badRequest } from "@blossm/errors";
 
-exports.stringDate = stringDate;
-exports.forbiddenError = forbidden;
-exports.badRequestError = badRequest;
+export default {
+  stringDate,
+  forbiddenError: forbidden,
+  badRequestError: badRequest,
+};

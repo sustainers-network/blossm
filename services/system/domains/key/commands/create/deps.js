@@ -1,9 +1,11 @@
-const randomStringOfLength = require("@blossm/random-string-of-length");
-const { hash } = require("@blossm/crypt");
-const uuid = require("@blossm/uuid");
-const { forbidden } = require("@blossm/errors");
+import randomStringOfLength from "@blossm/random-string-of-length";
+import { hash } from "@blossm/crypt";
+import uuid from "@blossm/uuid";
+import { forbidden } from "@blossm/errors";
 
-exports.randomStringOfLength = randomStringOfLength;
-exports.hash = hash;
-exports.uuid = uuid;
-exports.forbiddenError = forbidden;
+export default {
+  randomStringOfLength,
+  hash,
+  uuid,
+  forbiddenError: forbidden,
+};

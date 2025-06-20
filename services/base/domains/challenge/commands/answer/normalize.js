@@ -1,4 +1,4 @@
-module.exports = (payload) => {
+export default (payload) => {
   return {
     code: payload.code,
   };

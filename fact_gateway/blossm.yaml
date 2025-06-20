@@ -3,8 +3,8 @@ facts:
     protection: none
 
 devDependencies:
-  "mocha": "^7.1.0"
-  "chai": "^4.2.0"
+  "mocha": "^11.6.0"
+  "chai": "^5.2.0"
 
 #don't change
 procedure: fact-gateway

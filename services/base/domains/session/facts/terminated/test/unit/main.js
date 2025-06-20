@@ -1,7 +1,8 @@
-const { expect } = require("chai").use(require("sinon-chai"));
-const { restore, fake } = require("sinon");
+import * as chai from "chai";
+import sinonChai from "sinon-chai";
+import { restore, fake } from "sinon";
 
-const main = require("../../main");
+import main from "../../main.js";
 
 const sessionRoot = "some-session-root";
 const session = {

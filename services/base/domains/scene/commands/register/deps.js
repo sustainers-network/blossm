@@ -1,3 +1,5 @@
-const uuid = require("@blossm/uuid");
+import uuid from "@blossm/uuid";
 
-exports.uuid = uuid;
+export default {
+  uuid,
+};

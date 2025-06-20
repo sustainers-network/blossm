@@ -1,4 +1,4 @@
-const deps = require("./deps");
+import deps from "./deps.js";
 
 const mergeGroups = async ({
   sessionPrincipalAggregate,
@@ -193,7 +193,7 @@ const getEventsForAccountRegistering = async ({
   };
 };
 
-module.exports = async ({
+export default async ({
   payload,
   context,
   commandFn,

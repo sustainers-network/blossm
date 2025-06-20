@@ -1,4 +1,4 @@
-module.exports = async ({ context, aggregateFn }) => {
+export default async ({ context, aggregateFn }) => {
   const aggregate = await aggregateFn(context.scene.root);
   return { response: aggregate.state.deleted != undefined };
 };
