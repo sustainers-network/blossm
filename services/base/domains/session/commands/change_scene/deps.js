@@ -1,5 +1,5 @@
 import { create as createJwt } from "@blossm/jwt";
-import { sign } from "@blossm/gcp-kms";
+import gcpKms from "@blossm/gcp-kms";
 import {
   fineTimestamp,
   stringFromDate,
@@ -9,7 +9,7 @@ import { badRequest, forbidden } from "@blossm/errors";
 
 export default {
   createJwt,
-  sign,
+  sign: gcpKms.sign,
   fineTimestamp,
   stringFromDate,
   badRequestError: badRequest,

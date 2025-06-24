@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
-import { get as secret } from "@blossm/gcp-secret";
+import gcpSecret from "@blossm/gcp-secret";
 
 export default {
   nodemailer,
-  secret,
+  secret: gcpSecret.get,
 };
