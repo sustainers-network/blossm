@@ -1,0 +1,123 @@
+domain: account
+service: core
+
+isPublic: true
+
+actions:
+  - register
+  - set-password
+
+schema:
+  emailHmac: String
+  emailEncrypted: String
+  password: String
+  principal:
+    root: String
+    service: String
+    network: String
+
+indexes:
+  - emailHmac
+  - principal.root
+  - principal.service
+  - principal.network
+
+testing:
+  examples:
+    - action: register
+      payload:
+        emailHmac: some-email-hmac
+        emailEncrypted: some-encrypted-email
+        principal:
+          root: some-principal
+          service: some-principal-service
+          network: some.principal-network
+        password: some-password
+    - action: register
+      payload:
+        principal:
+          root: some-other-principal
+          service: some-other-principal-service
+          network: some.other-principal-network
+        password: some-other-password
+    - action: register
+      payload:
+        emailHmac: yet-another-email-hmac
+        emailEncrypted: yet-another-encrypted-email
+        principal:
+          root: yet-other-principal
+          service: yet-other-principal-service
+          network: yet.other-principal-network
+
+  handlers:
+    - action: register
+      examples:
+        - state:
+            emailHmac: some-email-hmac
+            emailEncrypted: some-encrypted-email
+            password: some-password
+            principal:
+              root: some-principal-root
+              service: some-principal-service
+              network: some.principal-network
+          payload:
+            emailHmac: some-other-email-hmac
+            emailEncrypted: some-other-encrypted-email
+            password: some-other-password
+            principal:
+              root: some-other-principal-root
+              service: some-other-principal-service
+              network: some.other-principal-network
+          result:
+            emailHmac: some-other-email-hmac
+            emailEncrypted: some-other-encrypted-email
+            password: some-other-password
+            principal:
+              root: some-other-principal-root
+              service: some-other-principal-service
+              network: some.other-principal-network
+        - state:
+            emailHmac: some-email-hmac
+            emailEncrypted: some-encrypted-email
+            principal:
+              root: some-principal-root
+              service: some-principal-service
+              network: some.principal-network
+          payload:
+            emailHmac: some-other-email-hmac
+            emailEncrypted: some-other-encrypted-email
+            password: some-other-password
+            principal:
+              root: some-other-principal-root
+              service: some-other-principal-service
+              network: some.other-principal-network
+          result:
+            emailHmac: some-other-email-hmac
+            emailEncrypted: some-other-encrypted-email
+            password: some-other-password
+            principal:
+              root: some-other-principal-root
+              service: some-other-principal-service
+              network: some.other-principal-network
+    - action: set-password
+      examples:
+        - state:
+            emailHmac: some-email-hmac
+            emailEncrypted: some-encrypted-email
+            principal:
+              root: some-principal-root
+              service: some-principal-service
+              network: some.principal-network
+          payload:
+            password: new-password-hash
+          result:
+            emailHmac: some-email-hmac
+            emailEncrypted: some-encrypted-email
+            password: new-password-hash
+            principal:
+              root: some-principal-root
+              service: some-principal-service
+              network: some.principal-network
+
+#don't change
+procedure: event-store

@@ -1,0 +1,95 @@
+name: set-password
+domain: account
+service: core
+
+# This command must be issued from an account context
+# and requires core:account:update permission
+contexts:
+  - account
+
+payload:
+  # The new password to set
+  password: string
+
+dependencies:
+  "@blossm/crypt": "*"
+  "@blossm/errors": "*"
+
+devDependencies:
+  "mocha": "^11.6.0"
+  "chai": "^5.2.0"
+  "sinon": "^21.0.0"
+  "sinon-chai": "^4.0.0"
+  "chai-datetime": "^1.8.1"
+
+testing:
+  validate:
+    ok:
+      - password: some-password
+    bad:
+      - password: 123
+      - password: ""
+
+  normalize:
+    - payload:
+        password: SomePassword123
+      normalized:
+        password: SomePassword123
+
+  dependencies:
+    - domain: account
+      procedure: event-store
+      service: core
+
+  steps:
+    # Should return 400 if account already has a password
+    - pre:
+        - domain: account
+          service: core
+          root: some-account-root
+          action: register
+          payload:
+            email: some@email.com
+            password: existing-password
+            principal:
+              root: some-principal
+              service: some-service
+              network: some.network
+      payload:
+        password: new-password
+      context:
+        account:
+          root: some-account-root
+          service: some-service
+          network: some.network
+      code: 400
+
+    # Should return successfully if account doesn't have a password
+    - pre:
+        - domain: account
+          service: core
+          root: some-account-root
+          action: register
+          payload:
+            email: some@email.com
+            principal:
+              root: some-principal
+              service: some-service
+              network: some.network
+      payload:
+        password: new-password
+      context:
+        account:
+          root: some-account-root
+          service: some-service
+          network: some.network
+      code: 202
+      response:
+        receipt:
+          account:
+            root: some-account-root
+            service: some-service
+            network: some.network
+
+#don't change
+procedure: command 

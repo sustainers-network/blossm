@@ -1,4 +1,4 @@
-const kms = require("@google-cloud/kms");
+import kms from "@google-cloud/kms";
 
 let cache;
 

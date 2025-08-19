@@ -1,0 +1,75 @@
+domain: eth-address
+service: wallet
+
+isPublic: false
+
+actions:
+  - create
+
+schema:
+  name: String
+  publicAddress: String
+  principal:
+    root: String
+    service: String
+    network: String
+  privateKey: String
+
+indexes:
+  - name
+  - principal.root
+  - principal.service
+  - principal.network
+  - publicAddress
+  
+
+testing:
+  examples:
+    - action: create-evm
+      payload:
+        name: some-name
+        publicAddress: some-public-address
+        privateKey: some-private-key
+        principal:
+          root: some-principal-root
+          service: some-principal-service
+          network: some.principal-network
+    - action: create-evm
+      payload:
+        publicAddress: some-other-public-address
+        privateKey: some-other-private-key
+        principal:
+          root: some-other-principal-root
+          service: some-other-principal-service
+          network: some.other-principal-network
+
+  handlers:
+    - action: create-evm
+      examples:
+        - state:
+            name: some-name
+            publicAddress: some-public-address
+            privateKey: some-private-key
+            principal:
+              root: some-principal-root
+              service: some-principal-service
+              network: some.principal-network
+          payload:
+            name: some-other-name
+            publicAddress: some-other-public-address
+            privateKey: some-other-private-key
+            principal:
+              root: some-other-principal-root
+              service: some-other-principal-service
+              network: some.other-principal-network
+          result:
+            name: some-other-name
+            publicAddress: some-other-public-address
+            privateKey: some-other-private-key
+            principal:
+              root: some-other-principal-root
+              service: some-other-principal-service
+              network: some.other-principal-network
+
+#don't change
+procedure: event-store 

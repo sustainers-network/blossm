@@ -2,9 +2,5 @@ facts:
   - name: public-key
     protection: none
 
-devDependencies:
-  "mocha": "^11.6.0"
-  "chai": "^5.2.0"
-
 #don't change
 procedure: fact-gateway

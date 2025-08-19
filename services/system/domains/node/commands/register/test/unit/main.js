@@ -161,7 +161,7 @@ describe("Command handler unit tests", () => {
     expect(commandFnFake.getCall(0)).to.have.been.calledWith({
       name: "register",
       domain: "scene",
-      service: "base",
+      service: "core",
       payload: {
         role: "SceneAdmin",
         root: nodeRoot,
@@ -173,7 +173,7 @@ describe("Command handler unit tests", () => {
     expect(commandFnFake.getCall(1)).to.have.been.calledWith({
       name: "add-principals",
       domain: "group",
-      service: "base",
+      service: "core",
       payload: {
         principals: [
           {
@@ -323,7 +323,7 @@ describe("Command handler unit tests", () => {
     expect(commandFnFake.getCall(0)).to.have.been.calledWith({
       name: "register",
       domain: "scene",
-      service: "base",
+      service: "core",
       payload: {
         role: "SceneAdmin",
         root: nodeRoot,
@@ -335,7 +335,7 @@ describe("Command handler unit tests", () => {
     expect(commandFnFake.getCall(1)).to.have.been.calledWith({
       name: "add-principals",
       domain: "group",
-      service: "base",
+      service: "core",
       payload: {
         principals: [
           {

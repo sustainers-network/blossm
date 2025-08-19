@@ -1,12 +1,11 @@
 module.exports = {
   env: {
-    commonjs: true,
     es6: true,
-    node: true,
     mocha: true
   },
   parserOptions: {
-    ecmaVersion: 2018
+    ecmaVersion: "latest",
+    sourceType: "module"
   },
   extends: ["eslint:recommended", "prettier"],
   plugins: ["import", "prettier"],

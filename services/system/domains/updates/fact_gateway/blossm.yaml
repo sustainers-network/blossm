@@ -1,0 +1,13 @@
+domain: updates
+service: system
+
+facts:
+  - name: channel
+    privileges: none
+    key: updates
+
+allow:
+  - "*"
+
+#don't change
+procedure: fact-gateway

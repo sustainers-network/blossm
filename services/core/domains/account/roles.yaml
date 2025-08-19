@@ -1,0 +1,5 @@
+AccountAdmin:
+  title: Account Admin
+  permissions:
+    - core:account:create
+    - core:account:update

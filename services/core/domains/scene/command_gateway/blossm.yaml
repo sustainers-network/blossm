@@ -1,0 +1,12 @@
+domain: scene
+service: core
+
+commands:
+  - name: register
+    privileges: none
+  - name: delete
+    privileges:
+      - delete
+
+#don't change
+procedure: command-gateway

@@ -1,0 +1,9 @@
+domain: eth-address
+service: wallet
+
+commands:
+  - name: create
+    privileges: none
+
+#don't change
+procedure: command-gateway

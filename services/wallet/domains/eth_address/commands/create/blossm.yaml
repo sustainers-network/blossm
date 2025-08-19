@@ -1,0 +1,64 @@
+name: create
+domain: eth-address
+service: wallet
+
+contexts:
+  - principal
+
+payload:
+  name:
+    type: string
+    optional: true
+
+dependencies:
+  "ethers": "^6.8.1"
+  "@blossm/gcp-secret": "*"
+  "@blossm/errors": "*"
+
+devDependencies:
+  "mocha": "^11.6.0"
+  "chai": "^5.2.0"
+  "sinon": "^21.0.0"
+  "sinon-chai": "^4.0.0"
+  "chai-datetime": "^1.8.1"
+
+validate:
+  ok:
+    - name: some-name
+    - name: ""
+  bad:
+    - name: 123
+    - name: some-name-that-is-too-long-and-should-be-rejected
+
+testing:
+  normalize:
+    - payload:
+        name: some-name
+      normalized:
+        name: some-name
+
+  dependencies:
+    - domain: address
+      procedure: event-store
+      service: wallet
+
+  steps:
+    # Should return successfully when context principal is provided
+    - pre: []
+      payload:
+        name: some-name
+      context:
+        principal:
+          root: some-principal-root
+          service: some-service
+          network: some.network
+      code: 202
+      response:
+        receipt:
+          address:
+            root: 
+            service:
+            network:
+
+#don't change
+procedure: command 

@@ -1,5 +1,5 @@
 export default {
-  send: (state, payload) => ({
+  "send-auth-code": (state, payload) => ({
     ...state,
     ...payload,
   }),

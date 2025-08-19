@@ -4,9 +4,12 @@ blockSchedule: "0 5 * * *"
 vendors:
   cache:
     redis:
-      ip:
-        production: 10.32.54.245:6379
-        development: 10.32.54.245:6379
+      host:
+        production: 10.114.134.203
+        development: 10.114.134.203
+      port:
+        production: 6379
+        development: 6379
   cloud:
     gcp:
       projects:

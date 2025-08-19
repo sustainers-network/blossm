@@ -1,0 +1,75 @@
+name: send-auth-code
+domain: email
+service: comms
+
+memory: 256Mi
+
+payload:
+  from:
+    type: string
+    default: mail
+  to:
+    type: email
+    title: to email
+  subject: string
+  message: string
+
+dependencies:
+  "nodemailer": "7.0.4"
+  "@blossm/gcp-secret": "*"
+
+devDependencies:
+  "mocha": "^11.6.0"
+  "chai": "^5.2.0"
+  "sinon": "^21.0.0"
+  "sinon-chai": "^4.0.0"
+
+testing:
+  validate:
+    ok:
+      - subject: some subject
+        message: some message
+        from: from
+        to: to@email.com
+      - subject: some subject
+        message: some message
+        to: to@email.com
+    bad:
+      - message:
+          a: 1
+      - subject:
+          a: 1
+      - from: 1
+      - to: bad
+
+  normalize:
+    - payload:
+        from: some
+        to: some@email.com
+        message: some message
+        subject: some subject
+      normalized:
+        from: some
+        to: some@email.com
+        message: some message
+        subject: some subject
+
+  steps:
+    - payload:
+        from: auth
+        to: jango@dianet.work
+        subject: some subject
+        message: some message
+      context:
+        network: dianet.work
+      response:
+        info:
+        receipt:
+          email:
+            root:
+            service:
+            network:
+      code: 202
+
+#don't change
+procedure: command

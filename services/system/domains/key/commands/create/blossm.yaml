@@ -54,7 +54,7 @@ testing:
 
   dependencies:
     - domain: principal
-      service: base
+      service: core
       procedure: event-store
     - domain: node
       service: system

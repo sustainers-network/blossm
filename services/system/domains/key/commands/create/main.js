@@ -24,7 +24,7 @@ export default async ({ payload, context, aggregateFn }) => {
     events: [
       {
         domain: "principal",
-        service: "base",
+        service: "core",
         action: "add-roles",
         payload: {
           roles: payload.roles.map((role) => ({
@@ -51,7 +51,7 @@ export default async ({ payload, context, aggregateFn }) => {
           },
           principal: {
             root: principalRoot,
-            service: "base",
+            service: "core",
             network: process.env.NETWORK,
           },
           secret: hash,

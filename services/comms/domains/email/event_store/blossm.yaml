@@ -4,7 +4,7 @@ service: comms
 isPublic: false
 
 actions:
-  - send
+  - send-auth-code
 
 schema:
   from: String
@@ -14,13 +14,13 @@ schema:
 
 testing:
   examples:
-    - action: send
+    - action: send-auth-code
       payload:
         from: some-from
         to: some-to
         subject: some-subject
         message: some-message
-    - action: send
+    - action: send-auth-code
       payload:
         from: some-from
         to: some-to
@@ -28,7 +28,7 @@ testing:
         message: some-message
 
   handlers:
-    - action: send
+    - action: send-auth-code
       examples:
         - state:
             from: some-from

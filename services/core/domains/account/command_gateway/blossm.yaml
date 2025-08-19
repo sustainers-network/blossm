@@ -1,0 +1,9 @@
+domain: account
+service: core
+
+commands:
+  - name: set-password
+    privileges: none
+
+#don't change
+procedure: command-gateway 
