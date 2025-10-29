@@ -1,0 +1,123 @@
+name: transact
+domain: eth-address
+service: wallet
+
+contexts:
+  - principal
+
+payload:
+  destinationAddress:
+    type: string
+    required: true
+  abi:
+    type: array
+    required: true
+  chainIds:
+    type: array
+    required: true
+  functionName:
+    type: string
+    required: true
+  parameters:
+    type: array
+    required: true
+  value:
+    type: string
+    optional: true
+    default: "0"
+  gasLimit:
+    type: string
+    optional: true
+    default: "8000000"
+
+dependencies:
+  "viem": "^2.38.0"
+  "@blossm/gcp-kms": "*"
+  "@blossm/errors": "*"
+  "@blossm/erc2771": "*"
+  "@blossm/relayr": "*"
+  "@blossm/contract-addresses-trusted-forwarder": "*"
+  "@blossm/contract-abis-trusted-forwarder": "*"
+  "@blossm/providers": "*"
+
+devDependencies:
+  "mocha": "^11.6.0"
+  "chai": "^5.2.0"
+  "sinon": "^21.0.0"
+  "sinon-chai": "^4.0.0"
+  "chai-datetime": "^1.8.1"
+
+validate:
+  ok:
+    - destinationAddress: "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6"
+      abi: []
+      chainIds: [1]
+      functionName: "transfer"
+      parameters: ["0x1234567890123456789012345678901234567890", "1000000000000000000"]
+      value: "0"
+    - destinationAddress: "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6"
+      abi: []
+      chainIds: [1, 137, 42161]
+      functionName: "mint"
+      parameters: ["0x1234567890123456789012345678901234567890", 100]
+  bad:
+    - destinationAddress: "invalid-address"
+      abi: []
+      chainIds: [1]
+      functionName: "transfer"
+      parameters: []
+    - destinationAddress: "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6"
+      abi: "not-an-array"
+      chainIds: [1]
+      functionName: "transfer"
+      parameters: []
+
+testing:
+  normalize:
+    - payload:
+        destinationAddress: "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6"
+        abi: []
+        chainIds: 1
+        functionName: "transfer"
+        parameters: ["0x1234567890123456789012345678901234567890", "1000000000000000000"]
+        value: "0"
+      normalized:
+        destinationAddress: "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6"
+        abi: []
+        chainIds: [1]
+        functionName: "transfer"
+        parameters: ["0x1234567890123456789012345678901234567890", "1000000000000000000"]
+        value: "0"
+
+  dependencies:
+    - domain: address
+      procedure: event-store
+      service: wallet
+
+  steps:
+    # Should return successfully when all required parameters are provided
+    - pre: []
+      payload:
+        destinationAddress: "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6"
+        abi: []
+        chainIds: [1]
+        functionName: "transfer"
+        parameters: ["0x1234567890123456789012345678901234567890", "1000000000000000000"]
+        value: "0"
+      context:
+        principal:
+          root: some-principal-root
+          service: some-service
+          network: some.network
+      code: 202
+      response:
+        receipt:
+          transactionHash:
+          chainId:
+          status:
+
+#don't change
+procedure: command
+
+
+

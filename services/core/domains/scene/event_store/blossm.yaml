@@ -9,34 +9,59 @@ actions:
 
 schema:
   deleted: Date
-  root: String
-  domain: String
-  service: String
-  network: String
+  subject:
+    domain: String
+    root: String
+    service: String
+    network: String
+  group:
+    root: String
+    service: String
+    network: String
 
 testing:
   examples:
     - action: register
       payload:
-        root: some-scene-root
-        domain: some-domain
-        service: some-service
-        network: some.network
+        subject:
+          domain: some-domain
+          root: some-scene-root
+          service: some-service
+          network: some.network
+        group:
+          root: some-group-root
+          service: some-group-service
+          network: some.group-network
     - action: register
       payload:
-        root: some-other-scene-root
-        domain: some-other-domain
-        service: some-other-service
-        network: some.other-network
+        subject:
+          domain: some-other-domain
+          root: some-other-scene-root
+          service: some-other-service
+          network: some.other-network
+        group:
+          root: some-other-group-root
+          service: some-other-group-service
+          network: some.other-group-network
 
   handlers:
     - action: register
       examples:
         - payload:
-            root: some-scene-root
-            domain: some-domain
-            service: some-service
-            network: some.network
+            subject:
+              domain: some-domain
+              root: some-scene-root
+              service: some-service
+              network: some.network
+            group:
+              root: some-group-root
+              service: some-group-service
+              network: some.group-network
+    - action: delete
+      examples:
+        - payload:
+            deleted: 2025-01-01T00:00:00.000Z
+
 
 #don't change
 procedure: event-store

@@ -35,6 +35,8 @@ testing:
         password: some-password
     - action: register
       payload:
+        emailHmac: some-other-email-hmac
+        emailEncrypted: some-other-encrypted-email
         principal:
           root: some-other-principal
           service: some-other-principal-service

@@ -2,25 +2,45 @@ import deps from "./deps.js";
 
 const mergeGroups = async ({
   sessionPrincipalAggregate,
-  principalAggregate,
+  sessionPrincipalGroupAggregates,
   principal,
   commandFn,
+  queryAggregatesFn,
 }) => {
+  
+  // Get the groups that the principal is in.
+  const principalGroupAggregates = await queryAggregatesFn({
+    domain: "group",
+    queryPairs: [{
+      key: "principals.root",
+      value: principal.root,
+    },
+    {
+      key: "principals.service",
+      value: principal.service,
+    },
+    {
+      key: "principals.network",
+      value: principal.network,
+    }],
+  });
+
   const groupCommandFns = [];
 
   // Get the groups that are in the session principal but not in the account principal.
   deps
     .difference(
-      sessionPrincipalAggregate.state.groups.map(
-        (group) => `${group.root}:${group.service}:${group.network}`
+      sessionPrincipalGroupAggregates.map(
+        (groupAggregate) => `${groupAggregate.root}:${groupAggregate.service}:${groupAggregate.network}`
       ),
-      principalAggregate.state.groups.map(
-        (group) => `${group.root}:${group.service}:${group.network}`
+      principalGroupAggregates.map(
+        (groupAggregate) => `${groupAggregate.root}:${groupAggregate.service}:${groupAggregate.network}`
       )
     )
     // For each group, add the principals to the group.
     .forEach((groupString) => {
       const [root, service, network] = groupString.split(":");
+      
       // Get the roles that the session principal has for the groups being added to the account principal.
       const roles = sessionPrincipalAggregate.state.roles.filter(
         (role) =>
@@ -30,6 +50,7 @@ const mergeGroups = async ({
           role.subject.network == network
       ); 
 
+      // TODO why not add the principal with no roles?
       if (!roles.length) return;
 
       groupCommandFns.push(
@@ -53,40 +74,53 @@ const mergeGroups = async ({
       ); 
       // The session principal will be removed from all of its groups in the next step.
     });
-
+  
   await Promise.all(groupCommandFns);
 };
 
 const getEventsForPermissionsMerge = async ({
   principal,
-  context,
+  sessionPrincipalAggregate,
   accountRoot,
   aggregateFn,
+  queryAggregatesFn,
   commandFn,
 }) => {
+
   // Get the aggregates of the principal of the account and the current principal of the session if one exists.
-  const [principalAggregate, sessionPrincipalAggregate] = await Promise.all([
+  const [principalAggregate, sessionPrincipalGroupAggregates] = await Promise.all([
     aggregateFn(principal.root, {
       domain: "principal",
     }),
-    ...(context.principal
+    ...(sessionPrincipalAggregate
       ? [
-          aggregateFn(context.principal.root, {
-            domain: "principal",
-            service: context.principal.service,
-            network: context.principal.network,
+          queryAggregatesFn({
+            domain: "group",
+            queryPairs: [{
+              key: "principals.root",
+              value: sessionPrincipalAggregate.root,
+            },
+            {
+              key: "principals.service",
+              value: sessionPrincipalAggregate.service,
+            },
+            {
+              key: "principals.network",
+              value: sessionPrincipalAggregate.network,
+            }],
           }),
         ]
       : []),
   ]);
   
   // Merge the session principal's groups into the account principal.
-  if (sessionPrincipalAggregate) {
+  if (sessionPrincipalAggregate && sessionPrincipalGroupAggregates) {
     await mergeGroups({
       sessionPrincipalAggregate,
-      principalAggregate,
+      sessionPrincipalGroupAggregates,
       principal,
       commandFn,
+      queryAggregatesFn,
     });
   }
 
@@ -128,17 +162,19 @@ const getEventsForPermissionsMerge = async ({
           : []
         : []),
       // If there is a session principal, remove it from all of its groups.
-      ...(sessionPrincipalAggregate
-        ? sessionPrincipalAggregate.state.groups.map((group) => ({
+      ...(sessionPrincipalGroupAggregates ? sessionPrincipalGroupAggregates.map((groupAggregate) => ({
             domain: "group",
-            service: group.service,
+            service: groupAggregate.service,
             action: "remove-principals",
-            root: group.root,
+            root: groupAggregate.root,
             payload: {
-              principals: [context.principal],
+              principals: [{
+                root: sessionPrincipalAggregate.root,
+                service: sessionPrincipalAggregate.service,
+                network: sessionPrincipalAggregate.network,
+              }],
             },
-          }))
-        : []),
+          })) : []),
     ],
     principal,
   };
@@ -211,6 +247,20 @@ const getEventsForAccountRegistering = async ({
           ],
         },
       },
+      {
+        action: "set-subject",
+        domain: "principal",
+        service: principal.service,
+        root: principal.root,
+        payload: {
+          subject: {
+            root: accountRoot,
+            domain: "account",
+            service: process.env.SERVICE,
+            network: process.env.NETWORK,
+          }
+        }
+      }
     ],
     principal,
     receipt: {
@@ -241,38 +291,44 @@ export default async ({
   // Check to see if there is an account with the provided email.
   const [account] = await queryAggregatesFn({
     domain: "account",
-    key: "emailHmac",
-    value: hmacEmail,
+    queryPairs: [{
+      key: "emailHmac",
+      value: hmacEmail,
+    }],
   });
 
-  if (account) {
-    // If the account has a password, make sure the matches the password passed in the payload.
-    if (account.state.password && !(await deps.compare(payload.password, account.state.password)))
-      throw deps.invalidArgumentError.message("This password isn't right.");
+  // If the account has a password, make sure the matches the password passed in the payload.
+  if (account && account.state.password && !(await deps.compare(payload.password, account.state.password)))
+    throw deps.invalidArgumentError.message("This password isn't right.");
 
-    if (context.principal) {
-      // Don't log an event or issue a challange if
-      // the context already has the account's principal.
-      if (
-        account.state.principal.root == context.principal.root &&
-        account.state.principal.service == context.principal.service &&
-        account.state.principal.network == context.principal.network
-      )
-        return;
-      
-      // Get the account associated with the principal of the current session.
-      const [principalAccount] = await queryAggregatesFn({
-        domain: "account",
-        key: "principal.root",
-        value: context.principal.root,
-      });
+  // Don't log an event or issue a challange if
+  // the context already has the account's principal.
+  if (
+    account && 
+    context.principal &&
+    account.state.principal.root == context.principal.root &&
+    account.state.principal.service == context.principal.service &&
+    account.state.principal.network == context.principal.network
+  )
+    return;
+     
+  // Keep a reference to the context's principal aggregate.
+  let sessionPrincipalAggregate;
 
-      // If the principal of the current session is already associated with an account, throw an error.
-      if (principalAccount)
-        throw deps.badRequestError.message(
-          "The session already belongs to a different account."
-        );
-    }
+  // Check to see if the principal of the current session is already associated with an account.
+  if (context.principal) {
+    // Get the subject associated with the principal of the current session.
+    sessionPrincipalAggregate = await aggregateFn(context.principal.root, {
+      domain: "principal",
+      service: context.principal.service,
+      network: context.principal.network,
+    })
+    
+    // If the principal of the current session is already associated with a subject, throw an error.
+    if (sessionPrincipalAggregate.state.subject)
+      throw deps.badRequestError.message(
+        "The session already belongs to a different subject."
+      );
   }
 
   // If an account is found, merge the roles given to the principal already in the context
@@ -287,8 +343,9 @@ export default async ({
     ? await getEventsForPermissionsMerge({
         principal: account.state.principal,
         accountRoot: account.root,
-        context,
+        sessionPrincipalAggregate,
         aggregateFn,
+        queryAggregatesFn,
         commandFn,
       })
     : await getEventsForAccountRegistering({

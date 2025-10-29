@@ -3,8 +3,10 @@ import deps from "./deps.js";
 export default async ({ context, query, queryAggregatesFn }) => {
   const networkRoles = await queryAggregatesFn({
     domain: process.env.DOMAIN,
-    key: "network",
-    value: context.network,
+    queryPairs: [{
+      key: "network",
+      value: context.network,
+    }],
   });
 
   const role = networkRoles.find((role) => role.state.id == query.id);

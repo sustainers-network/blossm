@@ -13,11 +13,17 @@ const { expect } = chai;
 let clock;
 const now = new Date();
 const root = "some-principal-root";
-const context = { principal: { root } };
+const service = "some-principal-service";
+const network = "some-principal-network";
+const context = { principal: { root, service, network } };
 
 const sceneRoot = "some-root";
 const sceneService = "some-scene-service";
 const sceneNetwork = "some-scene-network";
+
+const groupRoot = "some-group-root";
+const groupService = "some-group-service";
+const groupNetwork = "some-group-network";
 
 describe("Command handler unit tests", () => {
   beforeEach(() => {
@@ -36,27 +42,27 @@ describe("Command handler unit tests", () => {
       },
     };
 
-    const aggregateFake = stub()
-      .onFirstCall()
-      .returns({
-        state: {},
-      })
-      .onSecondCall()
-      .returns({
+    const aggregateFake = fake.returns({
         state: {
-          scenes: [
-            {
-              root: sceneRoot,
-              service: sceneService,
-              network: sceneNetwork,
-            },
-          ],
+          group: {
+            root: groupRoot,
+            service: groupService,
+            network: groupNetwork,
+          },
         },
       });
+
+    const queryAggregatesFnFake = fake.returns([{
+        root: groupRoot,
+        service: groupService,
+        network: groupNetwork,
+      }]);
+
     const result = await main({
       context,
       payload,
       aggregateFn: aggregateFake,
+      queryAggregatesFn: queryAggregatesFnFake,
     });
 
     expect(result).to.deep.equal({
@@ -70,21 +76,41 @@ describe("Command handler unit tests", () => {
         },
       ],
     });
-    expect(aggregateFake.getCall(0)).to.have.been.calledWith(sceneRoot);
-    expect(aggregateFake.getCall(1)).to.have.been.calledWith(root, {
-      domain: "principal",
-      service: "core",
+    expect(aggregateFake).to.have.been.calledWith(sceneRoot);
+    expect(queryAggregatesFnFake).to.have.been.calledWith({
+      domain: "group",
+      queryPairs: [{
+        key: "principals.root",
+        value: root,
+      },
+      {
+        key: "principals.service",
+        value: service,
+      },
+      {
+        key: "principals.network",
+        value: network,
+      }],
     });
   });
   it("should return correctly if aggregate has already been deleted", async () => {
     const aggregateFake = fake.returns({
       state: { deleted: deps.stringDate() },
     });
+
+    const queryAggregatesFnFake = fake.returns([{
+      root: groupRoot,
+      service: groupService,
+      network: groupNetwork,
+    }]);
+
     const response = await main({
       context,
       payload: { scene: { root: sceneRoot } },
       aggregateFn: aggregateFake,
+      queryAggregatesFn: queryAggregatesFnFake,
     });
+
     expect(response).to.be.undefined;
   });
   it("should throw correctly if scene isn't accessible.", async () => {
@@ -95,30 +121,29 @@ describe("Command handler unit tests", () => {
         network: sceneNetwork,
       },
     };
-    const aggregateFake = stub()
-      .onFirstCall()
-      .returns({
-        state: {},
-      })
-      .onSecondCall()
-      .returns({
-        state: {
-          scenes: [
-            {
-              root: "bogus",
-              service: sceneService,
-              network: sceneNetwork,
-            },
-          ],
+    const aggregateFake = fake.returns({
+      state: {
+        group: {
+          root: "bogus",
+          service: groupService,
+          network: groupNetwork,
         },
-      });
+      },
+    });
+
+    const queryAggregatesFnFake = fake.returns([{
+      root: groupRoot,
+      service: groupService,
+      network: groupNetwork,
+    }]);
+
     const error = "some-error";
     const messageFake = fake.returns(error);
     replace(deps, "forbiddenError", {
       message: messageFake,
     });
     try {
-      await main({ context, payload, aggregateFn: aggregateFake });
+      await main({ context, payload, aggregateFn: aggregateFake, queryAggregatesFn: queryAggregatesFnFake });
       //shouldn't get called
       expect(2).to.equal(3);
     } catch (e) {
@@ -136,24 +161,24 @@ describe("Command handler unit tests", () => {
         network: sceneNetwork,
       },
     };
-    const aggregateFake = stub()
-      .onFirstCall()
-      .returns({
-        state: {},
-      })
-      .onSecondCall()
-      .returns({
-        state: {
-          scenes: [],
+    const aggregateFake = fake.returns({
+      state: {
+        group: {
+          root: groupRoot,
+          service: groupService,
+          network: groupNetwork,
         },
-      });
+      },
+    });
+    const queryAggregatesFnFake = fake.returns([]);
+
     const error = "some-error";
     const messageFake = fake.returns(error);
     replace(deps, "forbiddenError", {
       message: messageFake,
     });
     try {
-      await main({ context, payload, aggregateFn: aggregateFake });
+      await main({ context, payload, aggregateFn: aggregateFake, queryAggregatesFn: queryAggregatesFnFake });
       //shouldn't get called
       expect(2).to.equal(3);
     } catch (e) {

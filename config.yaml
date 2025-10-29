@@ -48,7 +48,7 @@ vendors:
         production: view-store-pri.xpbhz.gcp.mongodb.net
         sandbox: view-store-pri.fzyij.gcp.mongodb.net
         staging: view-store-pri.ahi18.gcp.mongodb.net
-        development: view-store-pri.y8mw0ub.gcp.mongodb.net
+        development: view-store-pri.bn99nn.mongodb.net
       protocol: mongodb+srv
   eventStore:
     mongodb:

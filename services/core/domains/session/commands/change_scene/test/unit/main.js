@@ -26,10 +26,18 @@ const project = "some-projectl";
 const sessionRoot = "some-session-root";
 const account = "some-account";
 const oldDomain = "some-old-domain";
+const contextPrincipalRoot = "some-context-principal-root";
+const contextPrincipalService = "some-context-principal-service";
+const contextPrincipalNetwork = "some-context-principal-network";
 const context = {
   account,
   session: {
     root: sessionRoot,
+  },
+  principal: {
+    root: contextPrincipalRoot,
+    service: contextPrincipalService,
+    network: contextPrincipalNetwork,
   },
   domain: oldDomain,
   [oldDomain]: "some-old-domain",
@@ -38,6 +46,9 @@ const sceneAggregateRoot = "some-scene-aggregate-root";
 const sceneAggregateDomain = "some-scene-aggregate-domain";
 const sceneAggregateService = "some-scene-aggregate-service";
 const sceneAggregateNetwork = "some-scene-aggregate-network";
+
+const groupPrincipalRoot = "some-group-principal-root";
+const groupRoot = "some-group-root";
 
 const iss = "some-iss";
 const aud = "some-aud";
@@ -75,34 +86,34 @@ describe("Command handler unit tests", () => {
 
     const aggregateFake = stub()
       .onFirstCall()
-      .returns({
-        state: {
-          scenes: [
-            {
-              root: newSceneRoot,
-              service: sceneService,
-              network: sceneNetwork,
-            },
-          ],
-        },
-      })
-      .onSecondCall()
       .returns({ state: {} })
-      .onThirdCall()
+      .onSecondCall()
       .returns({
         state: {
           domain: sceneAggregateDomain,
           service: sceneAggregateService,
           network: sceneAggregateNetwork,
           root: sceneAggregateRoot,
+          group: {
+            root: groupRoot,
+            service,
+            network,
+          }
         },
       });
 
+    const queryAggregatesFnFake = fake
+      .returns([{
+        root: groupRoot,
+        service,
+        network,
+      }]);
     const result = await main({
       payload,
       context,
       claims,
       aggregateFn: aggregateFake,
+      queryAggregatesFn: queryAggregatesFnFake,
     });
 
     expect(result).to.deep.equal({
@@ -121,14 +132,26 @@ describe("Command handler unit tests", () => {
       ],
       tokens: [{ network, type: "access", value: token }],
     });
-    expect(aggregateFake).to.have.been.calledWith(sub, {
-      domain: "principal",
-    });
     expect(aggregateFake).to.have.been.calledWith(sessionRoot);
     expect(aggregateFake).to.have.been.calledWith(newSceneRoot, {
       domain: "scene",
     });
-    expect(aggregateFake).to.have.callCount(3);
+    expect(queryAggregatesFnFake).to.have.been.calledWith({
+      domain: "group",
+      queryPairs: [{
+        key: "principals.root",
+        value: contextPrincipalRoot,
+      },
+      {
+        key: "principals.service",
+        value: contextPrincipalService,
+      },
+      {
+        key: "principals.network",
+        value: contextPrincipalNetwork,
+      }],
+    });
+    expect(aggregateFake).to.have.callCount(2);
     expect(createJwtFake).to.have.been.calledWith({
       options: {
         issuer: iss,
@@ -148,6 +171,11 @@ describe("Command handler unit tests", () => {
             network,
           },
           domain: sceneAggregateDomain,
+          principal: {
+            root: contextPrincipalRoot,
+            service: contextPrincipalService,
+            network: contextPrincipalNetwork,
+          },
           [sceneAggregateDomain]: {
             root: sceneAggregateRoot,
             service: sceneAggregateService,
@@ -182,28 +210,28 @@ describe("Command handler unit tests", () => {
 
     const aggregateFake = stub()
       .onFirstCall()
-      .returns({
-        state: {
-          scenes: [
-            {
-              root: newSceneRoot,
-              service: sceneService,
-              network: sceneNetwork,
-            },
-          ],
-        },
-      })
-      .onSecondCall()
       .returns({ state: {} })
-      .onThirdCall()
+      .onSecondCall()
       .returns({
         state: {
           domain: sceneAggregateDomain,
           service: sceneAggregateService,
           network: sceneAggregateNetwork,
           root: sceneAggregateRoot,
+          group: {
+            root: groupRoot,
+            service,
+            network,
+          }
         },
       });
+    
+    const queryAggregatesFnFake = fake
+      .returns([{
+        root: groupRoot,
+        service,
+        network,
+      }]);
 
     const contextNetwork = "some-context-network";
     const result = await main({
@@ -214,6 +242,7 @@ describe("Command handler unit tests", () => {
       },
       claims,
       aggregateFn: aggregateFake,
+      queryAggregatesFn: queryAggregatesFnFake,
     });
 
     expect(result).to.deep.equal({
@@ -232,14 +261,26 @@ describe("Command handler unit tests", () => {
       ],
       tokens: [{ network: contextNetwork, type: "access", value: token }],
     });
-    expect(aggregateFake).to.have.been.calledWith(sub, {
-      domain: "principal",
-    });
     expect(aggregateFake).to.have.been.calledWith(sessionRoot);
     expect(aggregateFake).to.have.been.calledWith(newSceneRoot, {
       domain: "scene",
     });
-    expect(aggregateFake).to.have.callCount(3);
+    expect(aggregateFake).to.have.callCount(2);
+    expect(queryAggregatesFnFake).to.have.been.calledWith({
+      domain: "group",
+      queryPairs: [{
+        key: "principals.root",
+        value: contextPrincipalRoot,
+      },
+      {
+        key: "principals.service",
+        value: contextPrincipalService,
+      },
+      {
+        key: "principals.network",
+        value: contextPrincipalNetwork,
+      }],
+    });
     expect(createJwtFake).to.have.been.calledWith({
       options: {
         issuer: iss,
@@ -258,6 +299,11 @@ describe("Command handler unit tests", () => {
             root: newSceneRoot,
             service,
             network,
+          },
+          principal: {
+            root: contextPrincipalRoot,
+            service: contextPrincipalService,
+            network: contextPrincipalNetwork,
           },
           domain: sceneAggregateDomain,
           [sceneAggregateDomain]: {
@@ -300,20 +346,28 @@ describe("Command handler unit tests", () => {
 
     const aggregateFake = stub()
       .onFirstCall()
-      .returns({
-        state: { scenes: [{ root: "bogus" }] },
-      })
-      .onSecondCall()
       .returns({ state: {} })
-      .onThirdCall()
+      .onSecondCall()
       .returns({
         state: {
           domain: sceneAggregateDomain,
           service: sceneAggregateService,
           network: sceneAggregateNetwork,
           root: sceneAggregateRoot,
+          group: {
+            root: "bogus",
+            service,
+            network,
+          }
         },
       });
+
+    const queryAggregatesFnFake = fake
+      .returns([{
+        root: groupRoot,
+        service,
+        network,
+      }]);
 
     try {
       await main({
@@ -321,6 +375,7 @@ describe("Command handler unit tests", () => {
         context,
         claims,
         aggregateFn: aggregateFake,
+        queryAggregatesFn: queryAggregatesFnFake,
       });
       //shouldn't get called
       expect(2).to.equal(3);
@@ -352,20 +407,24 @@ describe("Command handler unit tests", () => {
 
     const aggregateFake = stub()
       .onFirstCall()
-      .returns({
-        state: {},
-      })
-      .onSecondCall()
       .returns({ state: {} })
-      .onThirdCall()
+      .onSecondCall()
       .returns({
         state: {
           domain: sceneAggregateDomain,
           service: sceneAggregateService,
           network: sceneAggregateNetwork,
           root: sceneAggregateRoot,
+          group: {
+            root: groupRoot,
+            service,
+            network,
+          }
         },
       });
+    
+    const queryAggregatesFnFake = fake
+      .returns([]);
 
     try {
       await main({
@@ -373,6 +432,7 @@ describe("Command handler unit tests", () => {
         context,
         claims,
         aggregateFn: aggregateFake,
+        queryAggregatesFn: queryAggregatesFnFake,
       });
       //shouldn't get called
       expect(2).to.equal(3);
@@ -398,27 +458,26 @@ describe("Command handler unit tests", () => {
 
     const aggregateFake = stub()
       .onFirstCall()
-      .returns({
-        state: {
-          scenes: [
-            {
-              root: newSceneRoot,
-              service: sceneService,
-              network: sceneNetwork,
-            },
-          ],
-        },
-      })
-      .onSecondCall()
       .returns({ state: { terminated: deps.stringDate() } })
-      .onThirdCall()
+      .onSecondCall()
       .returns({
         state: {
           domain: sceneAggregateDomain,
           root: sceneAggregateRoot,
+          group: {
+            root: groupRoot,
+            service,
+            network,
+          }
         },
       });
 
+    const queryAggregatesFnFake = fake
+      .returns([{
+        root: groupRoot,
+        service,
+        network,
+      }]);
     const error = "some-error";
     const messageFake = fake.returns(error);
     replace(deps, "badRequestError", {
@@ -431,6 +490,7 @@ describe("Command handler unit tests", () => {
         context,
         claims,
         aggregateFn: aggregateFake,
+        queryAggregatesFn: queryAggregatesFnFake,
       });
       //shouldn't get called
       expect(2).to.equal(3);
@@ -452,35 +512,35 @@ describe("Command handler unit tests", () => {
 
     const aggregateFake = stub()
       .onFirstCall()
-      .returns({
-        state: {
-          scenes: [
-            {
-              root: newSceneRoot,
-              service: sceneService,
-              network: sceneNetwork,
-            },
-          ],
-        },
-      })
-      .onSecondCall()
       .returns({ state: {} })
-      .onThirdCall()
+      .onSecondCall()
       .returns({
         state: {
           domain: sceneAggregateDomain,
           service: sceneAggregateService,
           network: sceneAggregateNetwork,
           root: sceneAggregateRoot,
+          group: {  
+            root: groupRoot,
+            service,
+            network,
+          }
         },
       });
 
+    const queryAggregatesFnFake = fake
+      .returns([{
+        root: groupRoot,
+        service,
+        network,
+      }]);
     try {
       await main({
         payload,
         context,
         claims,
         aggregateFn: aggregateFake,
+        queryAggregatesFn: queryAggregatesFnFake,
       });
       //shouldn't get called
       expect(2).to.equal(3);

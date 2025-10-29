@@ -1,0 +1,35 @@
+domain: jb
+service: payment
+
+isPublic: true
+
+actions:
+  - send
+
+schema:
+  txHash: String 
+
+indexes:
+  - txHash
+
+testing:
+  handlers:
+    - action: send
+      examples:
+        - state:
+            txHash: some-tx-hash
+          payload:
+            txHash: some-other-tx-hash
+          result:
+            txHash: some-other-tx-hash
+
+  examples:
+    - action: send
+      payload:
+        txHash: some-tx-hash
+    - action: send
+      payload:
+        txHash: some-other-tx-hash
+
+#don't change
+procedure: event-store

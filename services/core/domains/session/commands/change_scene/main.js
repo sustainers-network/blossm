@@ -1,23 +1,36 @@
 import deps from "./deps.js";
 
-export default async ({ payload, context, claims, aggregateFn }) => {
+export default async ({ payload, context, claims, aggregateFn, queryAggregatesFn }) => {
   // Get aggregates for the principal, this session, and the context to be switched in to.
-  // TODO why claims.sub and not context.principal.root?
-  const [principalAggregate, sessionAggregate, sceneAggregate] = await Promise.all([
-    // The principal's root is the session token's subject.
-    aggregateFn(claims.sub, {
-      domain: "principal",
-    }),
+  const [sessionAggregate, sceneAggregate, principalGroupAggregates] = await Promise.all([
     aggregateFn(context.session.root),
     aggregateFn(payload.scene, {
       domain: "scene",
     }),
+    queryAggregatesFn({
+      domain: "group",
+      queryPairs: [{
+        key: "principals.root",
+        value: context.principal.root,
+      },
+      {
+        key: "principals.service",
+        value: context.principal.service,
+      },
+      {
+        key: "principals.network",
+        value: context.principal.network,
+      }],
+    }),
   ]);
 
-  // Make sure the principal has access to the context being changed to.
+  // Make sure the principal has access to the scene being changed to.
   if (
-    !(principalAggregate.state.scenes || []).some(
-      (scene) => scene.root == payload.scene
+    !principalGroupAggregates.some(
+      (groupAggregate) =>
+        sceneAggregate.state.group.root == groupAggregate.root &&
+        sceneAggregate.state.group.service == groupAggregate.service &&
+        sceneAggregate.state.group.network == groupAggregate.network
     )
   )
     throw deps.forbiddenError.message("This scene isn't accessible.", {

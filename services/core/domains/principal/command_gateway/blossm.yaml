@@ -6,10 +6,6 @@ commands:
     privileges: none
   - name: remove-roles
     privileges: none
-  - name: add-scenes
-    privileges: none
-  - name: remove-scenes
-    privileges: none
 
 #don't change
 procedure: command-gateway

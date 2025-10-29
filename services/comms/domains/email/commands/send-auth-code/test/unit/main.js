@@ -22,14 +22,11 @@ const payload = {
 const service = "some-service";
 const network = "some-network";
 const secret = "some-secret\\n";
-
-const gmailUser = "some-gmail-user";
-const gmailClientId = "some-gmail-client-id";
+const project = "some-project";
 
 process.env.SERVICE = service;
 process.env.NETWORK = network;
-process.env.GMAIL_USER = gmailUser;
-process.env.GMAIL_CLIENT_ID = gmailClientId;
+process.env.GCP_PROJECT = project;
 
 const contextNetwork = "some-context-network";
 const context = {
@@ -60,6 +57,9 @@ describe("Command handler unit tests", () => {
     });
 
     const generateRootFake = fake.returns(root);
+
+    const encryptFake = fake.returns(to);
+    replace(deps, "encrypt", encryptFake);
 
     const result = await main({
       payload,
@@ -109,6 +109,15 @@ describe("Command handler unit tests", () => {
       subject,
       text: message,
     });
+
+    expect(encryptFake).to.have.been.calledWith({
+      message: to,
+      key: "address",
+      ring: "email",
+      location: "global",
+      project: project,
+      format: "base64",
+    });
   });
   it("should return successfully in local env", async () => {
     const info = "some-info";
@@ -137,6 +146,9 @@ describe("Command handler unit tests", () => {
     });
 
     const generateRootFake = fake.returns(root);
+
+    const encryptFake = fake.returns(to);
+    replace(deps, "encrypt", encryptFake);
 
     process.env.NODE_ENV = "local";
     const result = await main({
@@ -183,6 +195,14 @@ describe("Command handler unit tests", () => {
       to,
       subject,
       text: message,
+    });
+    expect(encryptFake).to.have.been.calledWith({
+      message: to,
+      key: "address",
+      ring: "email",
+      location: "global",
+      project: project,
+      format: "base64",
     });
   });
 });

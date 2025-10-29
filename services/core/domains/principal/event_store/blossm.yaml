@@ -6,17 +6,14 @@ isPublic: true
 actions:
   - add-roles
   - remove-roles
-
-  # TODO do we need to store scenes in this event store? cant we just query the scenes domain for principals?
-  # Right now scenes domain does have a principals entry, should it? Probably should instead have a group entry.
-  - add-scenes
-  - remove-scenes
-
-  # TODO do we need to store groups in this event store? cant we just query the groups domain for principals?
-  - add-groups
-  - remove-groups
+  - set-subject
 
 schema:
+  subject:
+    domain: String
+    root: String
+    service: String
+    network: String
   roles:
     - id: String
       subject:
@@ -24,14 +21,12 @@ schema:
         domain: String
         service: String
         network: String
-  scenes:
-    - root: String
-      service: String
-      network: String
-  groups:
-    - root: String
-      service: String
-      network: String
+
+indexes:
+  - subject.root
+  - subject.domain
+  - subject.service
+  - subject.network
 
 dependencies:
   "@blossm/array-difference": "*"
@@ -53,6 +48,11 @@ testing:
               domain: some-other-role-subject-domain
               service: some-other-role-subject-service
               network: some.other-role-subject-network
+        subject:
+          root: some-subject-root
+          domain: some-subject-domain
+          service: some-subject-service
+          network: some.subject-network
     - action: remove-roles
       payload:
         roles:
@@ -62,30 +62,18 @@ testing:
               domain: some-role-subject-domain
               service: some-role-subject-service
               network: some.role-subject-network
-    - action: add-scenes
+        subject:
+          root: some-other-subject-root
+          domain: some-other-subject-domain
+          service: some-other-subject-service
+          network: some.other-subject-network
+    - action: set-subject
       payload:
-        scenes:
-          - root: some-scene
-            service: some-scene-service
-            network: some.scene-network
-    - action: remove-scenes
-      payload:
-        scenes:
-          - root: some-scene
-            service: some-scene-service
-            network: some.scene-network
-    - action: add-groups
-      payload:
-        groups:
-          - root: some-group
-            service: some-group-service
-            network: some.group-network
-    - action: remove-groups
-      payload:
-        groups:
-          - root: some-group
-            service: some-group-service
-            network: some.group-network
+        subject:
+          root: yet-another-subject-root
+          domain: yet-another-subject-domain
+          service: yet-another-subject-service
+          network: yet.another-subject-network
 
   handlers:
     - action: add-roles
@@ -216,108 +204,39 @@ testing:
                   network: some.role-subject-network
           result:
             roles: []
-    - action: add-scenes
+    - action: set-subject
       examples:
-        - state:
-            scenes:
-              - root: some-scene
-                service: some-scene-service
-                network: some.scene-network
-          payload:
-            scenes:
-              - root: some-scene
-                service: some-scene-service
-                network: some.scene-network
-              - root: some-other-scene
-                service: some-other-scene-service
-                network: some.other-scene-network
-          result:
-            scenes:
-              - root: some-scene
-                service: some-scene-service
-                network: some.scene-network
-              - root: some-other-scene
-                service: some-other-scene-service
-                network: some.other-scene-network
-    - action: remove-scenes
-      examples:
-        - state:
-            scenes:
-              - root: some-scene
-                service: some-scene-service
-                network: some.scene-network
-              - root: some-other-scene
-                service: some-other-scene-service
-                network: some.other-scene-network
-          payload:
-            scenes:
-              - root: some-scene
-                service: some-scene-service
-                network: some.scene-network
-          result:
-            scenes:
-              - root: some-other-scene
-                service: some-other-scene-service
-                network: some.other-scene-network
         - state: {}
           payload:
-            scenes:
-              - root: some-scene
-                service: some-scene-service
-                network: some.scene-network
+            subject:
+              root: some-subject-root
+              domain: some-subject-domain
+              service: some-subject-service
+              network: some.subject-network
           result:
-            scenes: []
-    - action: add-groups
-      examples:
+            subject:
+              root: some-subject-root
+              domain: some-subject-domain
+              service: some-subject-service
+              network: some.subject-network
         - state:
-            groups:
-              - root: some-group
-                service: some-group-service
-                network: some.group-network
+            subject:
+              root: some-subject-root
+              domain: some-subject-domain
+              service: some-subject-service
+              network: some.subject-network
           payload:
-            groups:
-              - root: some-group
-                service: some-group-service
-                network: some.group-network
-              - root: some-other-group
-                service: some-other-group-service
-                network: some.other-group-network
+            subject:
+              root: some-other-subject-root
+              domain: some-other-subject-domain
+              service: some-other-subject-service
+              network: some.other-subject-network
           result:
-            groups:
-              - root: some-group
-                service: some-group-service
-                network: some.group-network
-              - root: some-other-group
-                service: some-other-group-service
-                network: some.other-group-network
-    - action: remove-groups
-      examples:
-        - state:
-            groups:
-              - root: some-group
-                service: some-group-service
-                network: some.group-network
-              - root: some-other-group
-                service: some-other-group-service
-                network: some.other-group-network
-          payload:
-            groups:
-              - root: some-group
-                service: some-group-service
-                network: some.group-network
-          result:
-            groups:
-              - root: some-other-group
-                service: some-other-group-service
-                network: some.other-group-network
-        - state: {}
-          payload:
-            groups:
-              - root: some-group
-                service: some-group-service
-                network: some.group-network
-          result:
-            groups: []
+            subject:
+              root: some-other-subject-root
+              domain: some-other-subject-domain
+              service: some-other-subject-service
+              network: some.other-subject-network
 
 #don't change
 procedure: event-store

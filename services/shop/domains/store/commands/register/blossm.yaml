@@ -1,0 +1,128 @@
+name: register
+domain: store
+service: shop
+
+payload:
+  name: string
+  ticker: string
+
+dependencies:
+  "@blossm/command-rpc": "*"
+  "@blossm/uuid": "*"
+  "@blossm/gcp-token": "*"
+
+devDependencies:
+  "mocha": "^11.6.0"
+  "chai": "^5.2.0"
+  "sinon": "^21.0.0"
+  "sinon-chai": "^4.0.0"
+
+testing:
+  validate:
+    ok:
+      - name: some-name
+        ticker: some-ticker
+    bad:
+      - name: 3
+      - ticker: 3
+
+  normalize:
+    - payload:
+        name: Some name
+        ticker: ticker
+      normalized:
+        name: Some name
+        ticker: TICKER 
+
+  dependencies:
+    - name: register
+      domain: scene
+      service: core
+      procedure: command
+    - domain: principal
+      service: core
+      procedure: event-store
+    - domain: principal
+      procedure: event-store
+      service: core
+
+  steps:
+    - pre:
+        - domain: session
+          service: core
+          root: some-session-root
+          action: start
+          payload:
+            device: {}
+      payload:
+        name: some-name
+        ticker: some-ticker
+      context:
+        network: local.network
+        session:
+          root: some-session-root
+          service: some-session-service
+          network: some.session-network
+      claims:
+        iss: some-iss
+        aud: some-aud
+        exp: 9999-12-31T00:00:00.000
+      response:
+        context:
+        receipt:
+          principal:
+            root:
+            service:
+            network:
+          shop:
+            root:
+            service:
+            network:
+          group:
+            root:
+            service:
+            network:
+          scene:
+            root:
+            service: core
+            network:
+      tokens:
+        - network:
+          type: access
+          value:
+      code: 202
+    - payload:
+        name: some-name
+        ticker: some-ticker
+      context:
+        network: local.network
+        session:
+          root: some-other-session-root
+          service: some-other-session-service
+          network: some.other-session-network
+        principal:
+          root: some-principal-root
+          service: core
+          network: local.network
+      claims:
+        iss: some-iss
+        aud: some-aud
+        exp: 9999-12-31T00:00:00.000
+      response:
+        receipt:
+          shop:
+            root:
+            service:
+            network:
+          group:
+            root:
+            service:
+            network:
+          scene:
+            root:
+            service: core
+            network:
+      code: 202
+
+#don't change
+procedure: command

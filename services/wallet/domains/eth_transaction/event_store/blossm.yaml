@@ -1,0 +1,117 @@
+domain: eth_transaction
+service: wallet
+
+isPublic: false
+
+actions:
+  - register
+  - monitor
+  - update-status
+
+schema:
+  type:
+    type: String
+    enum: ["single", "multi"]
+  status:
+    type: String
+    enum: ["submitted", "included", "succeeded", "failed"]
+  chainId: Number
+  transactionHash: String
+  bundleId: String
+  receipt: Object
+  bundleStatus: Object
+  error: String
+  createdAt: Date
+  updatedAt: Date
+
+testing:
+  examples:
+    - action: register
+      payload:
+        type: single
+        status: submitted
+        chainId: 1
+        transactionHash: "0x1234567890abcdef"
+    - action: register
+      payload:
+        type: multi
+        status: submitted
+        bundleId: "bundle-123"
+    - action: monitor
+      payload:
+        status: included
+    - action: update-status
+      payload:
+        status: succeeded
+        receipt:
+          transactionHash: "0x1234567890abcdef"
+          status: "success"
+          blockNumber: 12345
+          gasUsed: "21000"
+
+  handlers:
+    - action: register
+      examples:
+        - payload:
+            type: single
+            status: submitted
+            chainId: 1
+            transactionHash: "0x1234567890abcdef"
+          result:
+            type: single
+            status: submitted
+            chainId: 1
+            transactionHash: "0x1234567890abcdef"
+            createdAt: "2024-01-01T00:00:00.000Z"
+        - payload:
+            type: multi
+            status: submitted
+            bundleId: "bundle-123"
+          result:
+            type: multi
+            status: submitted
+            bundleId: "bundle-123"
+            createdAt: "2024-01-01T00:00:00.000Z"
+    - action: monitor
+      examples:
+        - state:
+            type: single
+            status: submitted
+            chainId: 1
+            transactionHash: "0x1234567890abcdef"
+          payload:
+            status: included
+          result:
+            type: single
+            status: included
+            chainId: 1
+            transactionHash: "0x1234567890abcdef"
+            updatedAt: "2024-01-01T00:00:00.000Z"
+    - action: update-status
+      examples:
+        - state:
+            type: single
+            status: included
+            chainId: 1
+            transactionHash: "0x1234567890abcdef"
+          payload:
+            status: succeeded
+            receipt:
+              transactionHash: "0x1234567890abcdef"
+              status: "success"
+              blockNumber: 12345
+              gasUsed: "21000"
+          result:
+            type: single
+            status: succeeded
+            chainId: 1
+            transactionHash: "0x1234567890abcdef"
+            receipt:
+              transactionHash: "0x1234567890abcdef"
+              status: "success"
+              blockNumber: 12345
+              gasUsed: "21000"
+            updatedAt: "2024-01-01T00:00:00.000Z"
+
+#don't change
+procedure: event-store

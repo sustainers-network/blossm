@@ -9,12 +9,14 @@ payload:
       - SceneAdmin
       - SceneViewer
     optional: true
-  root: string
-  domain: string
-  service: string
-  network:
-    type: domain
-    is: $network
+  # The subject is the entity that is being represented by this scene.
+  subject:
+    root: string
+    domain: string
+    service: string
+    network:
+      type: domain
+      is: $network
 
 dependencies:
   "@blossm/uuid": "*"
@@ -27,56 +29,69 @@ devDependencies:
 
 testing:
   validate:
-    # do we need context here?
+    # TODO do we need context here?
     context:
       network: some.network
     ok:
-      - root: some-root
-        domain: some-domain
-        service: some-service
-        network: some.network
+      - subject:
+          root: some-root
+          domain: some-domain
+          service: some-service
+          network: some.network
       - role: SceneViewer
-        root: some-root
-        domain: some-domain
-        service: some-service
-        network: some.network
-      - root: some-root
-        domain: some-domain
-        service: some-service
-        network: some.network
+        subject:
+          root: some-root
+          domain: some-domain
+          service: some-service
+          network: some.network
+      - subject:
+          root: some-root
+          domain: some-domain
+          service: some-service
+          network: some.network
     bad:
       - role: 3
       - role: some-bogus-role
-      - root: 3
-      - domain: 3
-      - service: 3
-      - network: 3
-      - network: some.bogus-network
-      - network: some-bad-network
+      - subject: 3
+      - subject:
+          root: 3
+      - subject:
+          domain: 3
+      - subject:
+          service: 3
+      - subject:
+          network: 3
+      - subject:
+          network: some-bad-network
 
   normalize:
     - payload:
-        root: some-root
-        domain: some-domain
-        service: some-service
-        network: some.network
+        subject:
+          root: some-root
+          domain: some-domain
+          service: some-service
+          network: some.network
+          some: other
       normalized:
-        root: some-root
-        domain: some-domain
-        service: some-service
-        network: some.network
+        subject:
+          root: some-root
+          domain: some-domain
+          service: some-service
+          network: some.network
     - payload:
         role: some-role
-        root: some-root
-        domain: some-domain
-        service: some-service
-        network: some.network
+        subject:
+          root: some-root
+          domain: some-domain
+          service: some-service
+          network: some.network
       normalized:
         role: some-role
-        root: some-root
-        domain: some-domain
-        service: some-service
-        network: some.network
+        subject:
+          root: some-root
+          domain: some-domain
+          service: some-service
+          network: some.network
 
   dependencies:
     - name: upgrade
@@ -84,6 +99,9 @@ testing:
       procedure: command
       service: core
     - domain: principal
+      procedure: event-store
+      service: core
+    - domain: group
       procedure: event-store
       service: core
 
@@ -98,10 +116,11 @@ testing:
               os: some-os
       payload:
         role: SceneAdmin
-        root: some-root
-        domain: some-domain
-        service: some-service
-        network: some.network
+        subject:
+          root: some-root
+          domain: some-domain
+          service: some-service
+          network: some.network
       context:
         network: some.network
         session:
@@ -130,10 +149,11 @@ testing:
       code: 202
     # No role
     - payload:
-        root: some-root
-        domain: some-domain
-        service: some-service
-        network: some.network
+        subject:
+          root: some-root
+          domain: some-domain
+          service: some-service
+          network: some.network
       context:
         network: some.network
         session:
@@ -164,10 +184,11 @@ testing:
             device:
               os: some-os
       payload:
-        root: some-root
-        domain: some-domain
-        service: some-service
-        network: some.network
+        subject:
+          root: some-root
+          domain: some-domain
+          service: some-service
+          network: some.network
       context:
         network: some.network
         session:

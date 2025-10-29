@@ -42,21 +42,22 @@ export default async ({ payload, context, generateRootFn }) => {
     throw new Error(`Email configuration error: ${error.message}`);
   }
 
-  const info = await transporter.sendMail({
-    from: `"${context.network}" <${payload.from}@${context.network}>`,
-    to: payload.to,
-    subject: payload.subject,
-    text: payload.message,
-  });
-  
-  const encryptedTo = await deps.encrypt({
-    message: payload.to,
-    key: "to",
-    ring: "email",
-    location: "global",
-    project: process.env.GCP_PROJECT,
-    format: "base64",
-  });
+  const [info, encryptedTo] = await Promise.all([
+    transporter.sendMail({
+      from: `"${context.network}" <${payload.from}@${context.network}>`,
+      to: payload.to,
+      subject: payload.subject,
+      text: payload.message,
+    }),
+    deps.encrypt({
+      message: payload.to,
+      key: "address",
+      ring: "email",
+      location: "global",
+      project: process.env.GCP_PROJECT,
+      format: "base64",
+    })
+  ]);
 
   return {
     events: [

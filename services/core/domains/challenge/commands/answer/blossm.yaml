@@ -11,6 +11,7 @@ payload:
 dependencies:
   "@blossm/errors": "*"
   "@blossm/datetime": "*"
+  "@blossm/crypt": "*"
 
 devDependencies:
   "mocha": "^11.6.0"

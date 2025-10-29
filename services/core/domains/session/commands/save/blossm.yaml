@@ -10,6 +10,7 @@ payload:
   # The email to save the session to.
   email: email
   # The optional password to save the session with.
+  # If specified, it'll be required when trying to challenge the account from here on out.
   password:
     type: string
     optional: true
@@ -42,13 +43,21 @@ testing:
   normalize:
     - payload:
         email: Some@email.com
-        # password: some-password
       normalized:
         email: some@email.com
-        # password: some-password
+    - payload:
+        email: Some@email.com
+        password: some-password
+        something: something
+      normalized:
+        email: some@email.com
+        password: some-password
 
   dependencies:
     - domain: principal
+      procedure: event-store
+      service: core
+    - domain: group
       procedure: event-store
       service: core
     - domain: account
@@ -62,6 +71,7 @@ testing:
   steps:
     # 0. Should return 409 if the password is wrong.
     - pre:
+        # Make sure there is an account registered.
         - domain: account
           service: core
           root: some-account-root
@@ -76,6 +86,7 @@ testing:
               root: some-sub
               service: some-service
               network: some.network
+      # Send the wrong password for the account's email.
       payload:
         email: some@accountemail.com
         password: some-bogus
@@ -83,6 +94,7 @@ testing:
 
     # 1. Should return an empty response if saving isn't necessary.
     - pre:
+        # Make sure there is an account registered.
         - domain: account
           service: core
           root: some-other-account-root
@@ -97,10 +109,12 @@ testing:
               root: some-principal-root
               service: some-service
               network: some.network
+      # Send the correct email and password for the account.
       payload:
         email: some-other@accountemail.com
         password: "some-other-password"
       context:
+        # Send from the principal that is already associated with the account.
         principal:
           root: some-principal-root
           service: some-service
@@ -108,57 +122,115 @@ testing:
       code: 204
 
     # 2. Returns successfully if saving a new account, without a password.
-    - payload:
+    - pre:
+        # Make sure there is principal stored, cant have a subject.
+        - domain: principal 
+          service: core
+          root: some-principal-root
+          action: add-roles
+          payload:
+            roles:
+              - id: some-random-role
+                subject:
+                  root: some-random-root
+                  domain: some-random-domain
+                  service: some-random-service
+      payload:
         email: new@email.com
+      # Send from the principal that uses the service and network of a dependency event store.
       context:
         principal:
           root: some-principal-root
-          service: some-service
-          network: some.network
+          service: core
+          network: local.network
       code: 202
       response:
         receipt:
+          # There should be a new challenge
           challenge:
             root:
             service:
             network:
+          # There should be a new account
           account:
             root:
             service:
             network:
+      # A challenge token should be returned.
       tokens:
         - network:
           type: challenge
           value:
 
     # 3. Returns successfully if saving a new account, with a password.
-    - payload:
+    - pre:
+        # Make sure there is principal stored, cant have a subject.
+        - domain: principal 
+          service: core
+          root: some-brand-new-principal-root
+          action: add-roles
+          payload:
+            roles:
+              - id: some-random-role
+                subject:
+                  root: some-random-root
+                  domain: some-random-domain
+                  service: some-random-service
+      payload:
         email: brand-new@email.com
         password: "a-password"
       context:
         principal:
-          root: some-principal-root
-          service: some-service
+          root: some-brand-new-principal-root
+          service: core
           network: some.network
       code: 202
       response:
         receipt:
+          # There should be a new challenge
           challenge:
             root:
             service:
             network:
+          # There should be a new account
           account:
             root:
             service:
             network:
+      # A challenge token should be returned.
       tokens:
         - network:
           type: challenge
           value:
 
-    # 4. Return successfully if saving a new email with a context that has
+    # 4. Returns 400 if the session's principal is already associated with another subject.
+    - pre:
+        # Make sure there is an account registered.
+        - domain: principal 
+          service: core
+          root: some-used-principal
+          action: set-subject
+          payload:
+            subject:
+              domain: account
+              root: some-subject-root
+              service: some-subject-service
+              network: some-subject-network
+      payload:
+        email: brand-new@email.com
+        password: "a-password"
+      context:
+        # Make the request from a principal that is already associated with another account.
+        principal:
+          root: some-used-principal
+          service: core
+          network: local.network
+      code: 400
+
+    # 5. Return successfully if saving a new email with a context that has
     # a principal that doesn't yet belong to an account.
     - pre:
+        # Add a role to the principal.
         - domain: principal
           service: core
           root: some-principal-root
@@ -171,10 +243,17 @@ testing:
                   domain: some-domain
                   service: some-service
                   network: some.network
-            groups:
-              - root: some-group-root
-                service: some-group-service
-                network: some.network
+        # Add the principal to a group.
+        - domain: group
+          service: core
+          root: some-group-root
+          action: add-principals
+          payload:
+            principals:
+              - root: some-principal-root
+                service: core
+                network: local.network
+        # Add a role to another principal, these will be merged with the first principal's roles.
         - domain: principal
           service: core
           root: some-other-principal-root
@@ -187,10 +266,17 @@ testing:
                   domain: some-domain
                   service: some-service
                   network: some.network
-            groups:
-              - root: some-other-group-root
-                service: some-other-group-service
-                network: some.network
+        # Add the other principal to another group, this will be replaced with the other principal.
+        - domain: group
+          service: core
+          root: some-other-group-root
+          action: add-principals
+          payload:
+            principals:
+              - root: some-other-principal-root
+                service: core
+                network: local.network
+        # Make an account for one of the principals.
         - domain: account
           service: core
           root: yet-another-account-root
@@ -205,52 +291,44 @@ testing:
               root: some-principal-root
               service: some-service
               network: some.network
+      # Send the email and password for the account.
       payload:
         email: yet-another@accountemail.com
         password: "yet-another-password"
+      # Make the call from the principal not associated with the account.
       context:
         principal:
           root: some-other-principal-root
           service: core
-          network: dianet.work
+          network: local.network
       response:
         receipt:
+          # There should be a new challenge
           challenge:
             root:
             service:
             network:
+      # A challenge token should be returned.
       tokens:
         - network:
           type: challenge
           value:
       code: 202
 
-    # 5. Should return 400 if the principal in the context belongs to a different account.
+    # 6. Should return 400 if the principal in the context belongs to a different account.
     - pre:
-        - domain: principal
-          service: core
-          root: some-principal-root_1
-          action: add-roles
-          payload:
-            roles:
-              - id: some-role
-                subject:
-                  root: some-role-subject-root
-                  domain: some-domain
-                  service: some-service
-                  network: some.network
+        # Add a role to another principal.
         - domain: principal
           service: core
           root: some-other-principal-root_1
-          action: add-roles
+          action: set-subject
           payload:
-            roles:
-              - id: some-other-role
-                subject:
-                  root: some-role-subject-root
-                  domain: some-domain
-                  service: some-service
-                  network: some.network
+            subject:
+              root: some-other-role-subject-root
+              domain: some-domain
+              service: some-service
+              network: some.network
+        # Make an account for the first principal.
         - domain: account
           service: core
           root: yet-another-account-root_1
@@ -263,31 +341,19 @@ testing:
             password: "#a-great-password"
             principal:
               root: some-principal-root_1
-              service: some-service
-              network: some.network
-        - domain: account
-          service: core
-          root: any-account-root_1
-          action: register
-          payload:
-            emailHmac: 
-              type: hmac 
-              secretKey: email-hmac-key
-              message: doesnt-Matter@email.com
-            password: "#a-great-password"
-            principal:
-              root: some-other-principal-root_1
-              service: some-service
-              network: some.network
+              service: core
+              network: local.network
+      # Send the email and password for the account.
       payload:
         email: yet-another@account-id1.com
         password: a-great-password
-      claims:
+      
+      # Make the request from the other principal associated with another account.
       context:
         principal:
           root: some-other-principal-root_1
-          service: some-service
-          network: some.network
+          service: core
+          network: local.network
       code: 400
 
 #don't change

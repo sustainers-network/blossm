@@ -4,6 +4,12 @@ export default async ({ payload, context, commandFn }) => {
   // Make a root for the new scene.
   const sceneRoot = deps.uuid();
   
+  const group = {
+    root: deps.uuid(),
+    service: process.env.SERVICE,
+    network: process.env.NETWORK,
+  }
+
   // Get the principal from the session's context, or make a new one.
   const principal = context.principal || {
     root: deps.uuid(),
@@ -42,26 +48,26 @@ export default async ({ payload, context, commandFn }) => {
       action: "register",
       root: sceneRoot,
       payload: {
-        root: payload.root,
-        domain: payload.domain,
-        service: payload.service,
-        network: payload.network,
+        subject: payload.subject,
+        group: group
       },
+      groupsAdded: [group],
       correctNumber: 0,
     },
-    // Add the scene to the principal. 
+    // Add the principal to the group. 
     {
-      domain: "principal",
-      service: principal.service,
-      network: principal.network,
-      action: "add-scenes",
-      root: principal.root,
+      domain: "group",
+      service: group.service,
+      network: group.network,
+      action: "add-principals",
+      root: group.root,
       payload: {
-        scenes: [
+        principals: [
           {
-            root: sceneRoot,
-            service: process.env.SERVICE,
-            network: process.env.NETWORK,
+            roles: ["GroupAdmin"],
+            root: principal.root,
+            service: principal.service,
+            network: principal.network,
           },
         ],
       },
@@ -75,6 +81,7 @@ export default async ({ payload, context, commandFn }) => {
         service: process.env.SERVICE,
         network: process.env.NETWORK,
       },
+      group
     },
   };
 

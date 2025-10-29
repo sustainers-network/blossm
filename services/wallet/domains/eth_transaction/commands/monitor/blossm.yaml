@@ -1,0 +1,69 @@
+name: monitor
+domain: eth_transaction
+service: wallet
+
+payload:
+  transactionId:
+    type: string
+    description: "The transaction ID to monitor"
+  type:
+    type: string
+    enum: ["single", "multi"]
+    default: "single"
+    description: "Type of transaction to monitor (single-chain or multi-chain via Relayr)"
+
+dependencies:
+  "viem": "^2.38.0"
+  "@blossm/request": "*"
+  "@blossm/errors": "*"
+  "@blossm/providers": "*"
+
+devDependencies:
+  "mocha": "^11.6.0"
+  "chai": "^5.2.0"
+  "sinon": "^21.0.0"
+  "sinon-chai": "^4.0.0"
+  "chai-datetime": "^1.8.1"
+
+testing:
+  validate:
+    ok:
+      - transactionId: tx-123
+        type: single
+      - transactionId: tx-456
+        type: multi
+    bad:
+      - transactionId: tx-123
+        type: invalid
+      - type: single
+
+  normalize:
+    - payload:
+        transactionId: tx-123
+        type: single
+      normalized:
+        transactionId: tx-123
+        type: single
+    - payload:
+        transactionId: tx-456
+      normalized:
+        transactionId: tx-456
+        type: single
+
+  steps:
+    - payload:
+        transactionId: tx-123
+        type: single
+      response:
+        transactionId: tx-123
+        status: succeeded
+        type: single
+        receipt:
+          transactionHash:
+          status: success
+          blockNumber:
+          gasUsed:
+      code: 200
+
+#don't change
+procedure: command

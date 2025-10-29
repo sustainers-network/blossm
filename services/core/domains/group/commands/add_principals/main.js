@@ -84,23 +84,6 @@ export default async ({ context, payload, root, aggregateFn }) => {
           })),
         },
       })),
-      // Add the group to the principals.
-      ...principalsToAdd.map((principal) => ({
-        domain: "principal",
-        service: process.env.SERVICE,
-        network: process.env.NETWORK,
-        action: "add-groups",
-        root: principal.root,
-        payload: {
-          groups: [
-            {
-              root: groupRoot,
-              service: process.env.SERVICE,
-              network: process.env.NETWORK,
-            },
-          ],
-        },
-      })),
       // Add the principals to this group.
       ...(principalsToAdd.length
         ? [
@@ -108,7 +91,7 @@ export default async ({ context, payload, root, aggregateFn }) => {
               action: "add-principals",
               root: groupRoot,
               payload: {
-                principals: nonDuplicatedPrincipals.map((principal) => ({
+                principals: principalsToAdd.map((principal) => ({
                   root: principal.root,
                   service: principal.service,
                   network: principal.network,

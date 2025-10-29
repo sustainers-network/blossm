@@ -40,6 +40,19 @@ export default async ({ payload, context, aggregateFn }) => {
         root: principalRoot,
       },
       {
+        domain: "principal",
+        service: "core",
+        action: "set-subject",
+        payload: {
+          subject: {
+            domain: "key",
+            root: keyRoot,
+            service: process.env.SERVICE,
+            network: process.env.NETWORK
+          }
+        }
+      },
+      {
         action: "create",
         payload: {
           name: payload.name,

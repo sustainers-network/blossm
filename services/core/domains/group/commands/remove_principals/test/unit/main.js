@@ -152,26 +152,26 @@ describe("Command handler unit tests", () => {
             roles: roles2,
           },
         },
-        {
-          domain: "principal",
-          service,
-          network,
-          action: "remove-groups",
-          root: principal1Root,
-          payload: {
-            groups: [{ root, service, network }],
-          },
-        },
-        {
-          domain: "principal",
-          service,
-          network,
-          action: "remove-groups",
-          root: principal2Root,
-          payload: {
-            groups: [{ root, service, network }],
-          },
-        },
+        // {
+        //   domain: "principal",
+        //   service,
+        //   network,
+        //   action: "remove-groups",
+        //   root: principal1Root,
+        //   payload: {
+        //     groups: [{ root, service, network }],
+        //   },
+        // },
+        // {
+        //   domain: "principal",
+        //   service,
+        //   network,
+        //   action: "remove-groups",
+        //   root: principal2Root,
+        //   payload: {
+        //     groups: [{ root, service, network }],
+        //   },
+        // },
         {
           action: "remove-principals",
           root,
@@ -281,16 +281,16 @@ describe("Command handler unit tests", () => {
             roles,
           },
         },
-        {
-          domain: "principal",
-          service,
-          network,
-          action: "remove-groups",
-          root: principal1Root,
-          payload: {
-            groups: [{ root, service, network }],
-          },
-        },
+        // {
+        //   domain: "principal",
+        //   service,
+        //   network,
+        //   action: "remove-groups",
+        //   root: principal1Root,
+        //   payload: {
+        //     groups: [{ root, service, network }],
+        //   },
+        // },
         {
           action: "remove-principals",
           root,

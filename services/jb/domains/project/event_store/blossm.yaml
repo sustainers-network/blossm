@@ -1,0 +1,85 @@
+domain: project
+service: jb
+
+isPublic: true
+
+actions:
+  - deploy
+
+schema:
+  name: String 
+  instances: 
+    - chainId: Number
+      projectId: Number
+      createTx: String
+  scene:
+    root: String
+    service: String
+    network: String
+
+indexes:
+  - instances.chainId
+  - instances.projectId
+  - instances.createTx
+  - scene.root
+  - scene.service
+  - scene.network
+
+testing:
+  handlers:
+    - action: deploy 
+      examples:
+        - state:
+            name: some-name
+            instances:
+              - chainId: 1
+                projectId: 1
+                createTx: some-create-tx
+            scene:
+              root: some-scene-root
+              service: some-scene-service
+              network: some.scene-network
+          payload:
+            name: some-other-name
+            instances:
+              - chainId: 2
+                projectId: 2
+                createTx: some-other-create-tx
+            scene:
+              root: some-other-scene-root
+              service: some-other-scene-service
+              network: some.other-scene-network
+          result:
+            name: some-other-name
+            instances:
+              - chainId: 2
+                projectId: 2
+                createTx: some-other-create-tx
+            scene:
+              root: some-other-scene-root
+              service: some-other-scene-service
+              network: some.other-scene-network
+
+  examples:
+    - action: deploy
+      payload:
+        name: some-name
+        instances:
+          - chainId: 1
+            projectId: 1
+            createTx: some-create-tx
+        scene:
+          root: some-scene-root
+          service: some-scene-service
+          network: some.scene-network
+    - action: deploy
+      payload:
+        name: some-other-name
+        id: some-other-id
+        scene:
+          root: some-other-scene-root
+          service: some-other-scene-service
+          network: some.other-scene-network
+
+#don't change
+procedure: event-store

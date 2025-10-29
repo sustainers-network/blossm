@@ -9,7 +9,7 @@ export default async ({ payload, context, aggregateFn, commandFn }) => {
   const challengeAggregate = await aggregateFn(root);
 
   // Make sure the code is correct.
-  if (await deps.compare(challengeAggregate.state.code, payload.code))
+  if (!(await deps.compare(payload.code, challengeAggregate.state.code)))
     throw deps.invalidArgumentError.message("This code is wrong.", {
       info: { reason: "wrong" },
     });

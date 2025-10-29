@@ -133,8 +133,10 @@ describe("Command handler unit tests", () => {
     expect(compareFake).to.have.been.calledWith(payloadPassword, password);
     expect(queryAggregatesFnFake).to.have.been.calledWith({
       domain: "account",
-      key: "emailHmac",
-      value: hmacEmail,
+      queryPairs: [{
+        key: "emailHmac",
+        value: hmacEmail,
+      }],
     });
     expect(createJwtFake).to.have.been.calledWith({
       options: {
@@ -266,8 +268,10 @@ describe("Command handler unit tests", () => {
     expect(compareFake).to.have.been.calledWith(payloadPassword, password);
     expect(queryAggregatesFnFake).to.have.been.calledWith({
       domain: "account",
-      key: "emailHmac",
-      value: hmacEmail,
+      queryPairs: [{
+        key: "emailHmac",
+        value: hmacEmail,
+      }],
     });
     expect(createJwtFake).to.have.been.calledWith({
       options: {
@@ -404,8 +408,10 @@ describe("Command handler unit tests", () => {
     expect(compareFake).to.have.been.calledWith(payloadPassword, password);
     expect(queryAggregatesFnFake).to.have.been.calledWith({
       domain: "account",
-      key: "emailHmac",
-      value: emailHmac,
+      queryPairs: [{
+        key: "emailHmac",
+        value: emailHmac,
+      }],
     });
     expect(createJwtFake).to.have.been.calledWith({
       options: {

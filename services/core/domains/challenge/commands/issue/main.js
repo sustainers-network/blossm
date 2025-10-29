@@ -21,8 +21,10 @@ const determineUpgrade = async (payload, context, queryAggregatesFn) => {
   // If the principal is being upgraded, use a placeholder account with it instead.
   const [account] = await queryAggregatesFn({
     domain: "account",
-    key: "emailHmac",
-    value: hmacEmail,
+    queryPairs: [{
+      key: "emailHmac",
+      value: hmacEmail,
+    }],
   });
 
   if (!account)

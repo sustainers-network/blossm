@@ -47,8 +47,10 @@ describe("Fact unit tests", () => {
 
     expect(queryAggregatesFnFake).to.have.been.calledWith({
       domain,
-      key: "network",
-      value: network,
+      queryPairs: [{
+        key: "network",
+        value: network,
+      }],
     });
     expect(result).to.deep.equal({ response: permissions });
   });

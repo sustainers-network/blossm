@@ -49,12 +49,9 @@ testing:
         - domain: principal
           service: core
           root: some-other-principal-root
-          action: add-scenes
+          action: add-roles
           payload:
-            scenes:
-              - root: some-scene-root
-                service: some-scene-service
-                network: some.network
+            roles: []
       context:
         network: some.network
         principal:

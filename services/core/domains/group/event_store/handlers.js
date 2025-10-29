@@ -3,7 +3,7 @@ import difference from "@blossm/array-difference";
 export default {
   "add-principals": (state, payload) => {
     state.principals = state.principals || [];
-    return {
+    const diff = {
       ...state,
       // Dedup the principals. 
       principals: state.principals.concat(
@@ -26,6 +26,7 @@ export default {
         })
       ),
     };
+    return diff;
   },
   "remove-principals": (state, payload) => ({
       ...state,

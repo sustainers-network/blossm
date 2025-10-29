@@ -68,7 +68,8 @@ describe("Command handler unit tests", () => {
       body: { _tokens, context: newContext },
     });
 
-    const hashFake = fake.returns(hashedCode);
+    const compareFake = fake.returns(true);
+    replace(deps, "compare", compareFake);
 
     const result = await main({
       payload,
@@ -97,7 +98,7 @@ describe("Command handler unit tests", () => {
       ],
     });
     expect(aggregateFake).to.have.been.calledWith(contextChallenge);
-    expect(hashFake).to.have.been.calledWith(code);
+    expect(compareFake).to.have.been.calledWith(code, hashedCode);
     expect(commandFnFake).to.have.been.calledWith({
       domain: "session",
       name: "upgrade",
@@ -116,6 +117,9 @@ describe("Command handler unit tests", () => {
         expires: deps.stringDate(),
       },
     });
+
+    const compareFake = fake.returns(true);
+    replace(deps, "compare", compareFake);
 
     const result = await main({
       payload,
@@ -167,8 +171,8 @@ describe("Command handler unit tests", () => {
       message: messageFake,
     });
     
-    const hashFake = fake.returns(hashedCode);
-    replace(deps, "hash", hashFake);
+    const compareFake = fake.returns(false);
+    replace(deps, "compare", compareFake);
 
     try {
       await main({ payload, context, aggregateFn: aggregateFake });
@@ -195,8 +199,8 @@ describe("Command handler unit tests", () => {
       message: messageFake,
     });
 
-    const hashFake = fake.returns(hashedCode);
-    replace(deps, "hash", hashFake);
+    const compareFake = fake.returns(true);
+    replace(deps, "compare", compareFake);
 
     try {
       await main({

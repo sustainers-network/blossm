@@ -9,7 +9,7 @@ export default async ({ payload, context, commandFn }) => {
     body: {
       _tokens,
       context: newContext,
-      receipt: { principal, scene },
+      receipt: { principal, scene, group },
     },
   } = await commandFn({
     name: "register",
@@ -21,24 +21,6 @@ export default async ({ payload, context, commandFn }) => {
       domain: process.env.DOMAIN,
       service: process.env.SERVICE,
       network: process.env.NETWORK,
-    },
-  });
-
-  const {
-    body: {
-      receipt: { group },
-    },
-  } = await commandFn({
-    name: "add-principals",
-    domain: "group",
-    service: "core",
-    payload: {
-      principals: [
-        {
-          roles: ["GroupAdmin"],
-          ...(principal || context.principal),
-        },
-      ],
     },
   });
 
@@ -72,21 +54,20 @@ export default async ({ payload, context, commandFn }) => {
         payload: {
           network: payload.network,
           scene,
-        },
-        groupsAdded: [group],
+        }
       },
     ],
     response: {
       ...(newContext && { context: newContext }),
       receipt: {
         ...(principal && { principal }),
-        ...(group && { group }),
+        scene,
+        group,
         node: {
           root: nodeRoot,
           service: process.env.SERVICE,
           network: process.env.NETWORK,
         },
-        scene,
       },
     },
     ...(_tokens && { tokens: _tokens }),

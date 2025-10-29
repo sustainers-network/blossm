@@ -96,26 +96,6 @@ describe("Command handler unit tests", () => {
           },
         },
         {
-          domain: "principal",
-          service,
-          network,
-          action: "add-groups",
-          root: principal1Root,
-          payload: {
-            groups: [{ root, service, network }],
-          },
-        },
-        {
-          domain: "principal",
-          service,
-          network,
-          action: "add-groups",
-          root: principal2Root,
-          payload: {
-            groups: [{ root, service, network }],
-          },
-        },
-        {
           action: "add-principals",
           root,
           payload: {
@@ -246,16 +226,6 @@ describe("Command handler unit tests", () => {
                 subject: { root, domain: "group", service, network },
               },
             ],
-          },
-        },
-        {
-          domain: "principal",
-          service,
-          network,
-          action: "add-groups",
-          root: principal1Root,
-          payload: {
-            groups: [{ root, service, network }],
           },
         },
         {
@@ -412,26 +382,6 @@ describe("Command handler unit tests", () => {
                 },
               },
             ],
-          },
-        },
-        {
-          domain: "principal",
-          service,
-          network,
-          action: "add-groups",
-          root: principal1Root,
-          payload: {
-            groups: [{ root: uuid, service, network }],
-          },
-        },
-        {
-          domain: "principal",
-          service,
-          network,
-          action: "add-groups",
-          root: principal2Root,
-          payload: {
-            groups: [{ root: uuid, service, network }],
           },
         },
         {

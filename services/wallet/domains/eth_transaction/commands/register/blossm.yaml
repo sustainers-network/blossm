@@ -1,0 +1,88 @@
+name: register
+domain: eth_transaction
+service: wallet
+
+payload:
+  type:
+    type: string
+    enum: ["single", "multi"]
+    default: "single"
+    description: "Type of transaction (single-chain or multi-chain via Relayr)"
+  status:
+    type: string
+    enum: ["submitted", "included", "succeeded", "failed"]
+    default: "submitted"
+    description: "Initial transaction status"
+  chainId:
+    type: number
+    description: "Blockchain network ID (required for single-chain transactions)"
+  transactionHash:
+    type: string
+    description: "Blockchain transaction hash (required for single-chain transactions)"
+  bundleId:
+    type: string
+    description: "Relayr bundle ID (required for multi-chain transactions)"
+
+dependencies:
+  "@blossm/errors": "*"
+
+devDependencies:
+  "mocha": "^11.6.0"
+  "chai": "^5.2.0"
+  "sinon": "^21.0.0"
+  "sinon-chai": "^4.0.0"
+  "chai-datetime": "^1.8.1"
+
+testing:
+  validate:
+    ok:
+      - type: single
+        chainId: 1
+        transactionHash: "0x1234567890abcdef"
+      - type: multi
+        bundleId: "bundle-123"
+      - type: single
+        chainId: 1
+        transactionHash: "0x1234567890abcdef"
+        status: included
+    bad:
+      - type: single
+        chainId: 1
+      - type: single
+        transactionHash: "0x1234567890abcdef"
+      - type: multi
+      - type: invalid
+
+  normalize:
+    - payload:
+        type: single
+        chainId: 1
+        transactionHash: "0x1234567890abcdef"
+      normalized:
+        type: single
+        chainId: 1
+        transactionHash: "0x1234567890abcdef"
+        status: submitted
+    - payload:
+        type: multi
+        bundleId: "bundle-123"
+      normalized:
+        type: multi
+        bundleId: "bundle-123"
+        status: submitted
+
+  steps:
+    - payload:
+        type: single
+        chainId: 1
+        transactionHash: "0x1234567890abcdef"
+      response:
+        receipt:
+          transaction:
+            root:
+            service: wallet
+            network:
+      code: 202
+
+#don't change
+procedure: command

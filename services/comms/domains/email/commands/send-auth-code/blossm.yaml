@@ -2,8 +2,6 @@ name: send-auth-code
 domain: email
 service: comms
 
-memory: 256Mi
-
 payload:
   from:
     type: string
@@ -17,6 +15,7 @@ payload:
 dependencies:
   "nodemailer": "7.0.4"
   "@blossm/gcp-secret": "*"
+  "@blossm/gcp-kms": "*"
 
 devDependencies:
   "mocha": "^11.6.0"
@@ -48,6 +47,7 @@ testing:
         to: some@email.com
         message: some message
         subject: some subject
+        some: random
       normalized:
         from: some
         to: some@email.com
@@ -57,11 +57,11 @@ testing:
   steps:
     - payload:
         from: auth
-        to: jango@dianet.work
+        to: some@email.com
         subject: some subject
         message: some message
       context:
-        network: dianet.work
+        network: some.network
       response:
         info:
         receipt:

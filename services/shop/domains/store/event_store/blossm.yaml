@@ -1,0 +1,67 @@
+domain: store
+service: shop 
+
+isPublic: true
+
+actions:
+  - register
+
+schema:
+  name: String 
+  ticker: String
+  scene:
+    root: String
+    service: String
+    network: String
+
+indexes:
+  - scene.root
+  - scene.service
+  - scene.network
+
+testing:
+  handlers:
+    - action: register
+      examples:
+        - state:
+            name: some-name
+            ticker: some-ticker
+            scene:
+              root: some-scene-root
+              service: some-scene-service
+              network: some.scene-network
+          payload:
+            name: some-other-name
+            ticker: some-other-ticker
+            scene:
+              root: some-other-scene-root
+              service: some-other-scene-service
+              network: some.other-scene-network
+          result:
+            name: some-other-name
+            ticker: some-other-ticker
+            scene:
+              root: some-other-scene-root
+              service: some-other-scene-service
+              network: some.other-scene-network
+
+  examples:
+    - action: register
+      payload:
+        name: some-name
+        ticker: some-ticker
+        scene:
+          root: some-scene-root
+          service: some-scene-service
+          network: some.scene-network
+    - action: register
+      payload:
+        name: some-other-name
+        ticker: some-other-ticker
+        scene:
+          root: some-other-scene-root
+          service: some-other-scene-service
+          network: some.other-scene-network
+
+#don't change
+procedure: event-store

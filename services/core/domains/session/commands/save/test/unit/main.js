@@ -44,6 +44,22 @@ const principalService = "some-principal-service";
 const principalNetwork = "some-principal-network";
 const accountRoot = "some-root";
 
+const principalGroupRoot = "some-principal-group-root";
+
+const principalGroupAggregate = {
+  root: principalGroupRoot,
+  service,
+  network,
+};
+
+const sessionPrincipalGroupRoot = "some-session-principal-group-root";
+
+const sessionPrincipalGroupAggregate = {
+  root: sessionPrincipalGroupRoot,
+  service,
+  network,
+};
+
 const account = {
   root: accountRoot,
   state: {
@@ -56,49 +72,59 @@ const account = {
 };
 
 const principalAggregate = {
-  roles: [
-    {
-      id: "some-role-id",
-      subject: { root: "some-group-root", domain: "group", service, network },
-    },
-    {
-      id: "some-silly-role-id",
-      subject: { root: "some-silly-root", domain: "non-group", service, network },
-    },
-  ],
-  groups: [{ root: "some-group-root", service, network }],
+  root: principalRoot,
+  service: principalService,
+  network: principalNetwork,
+  state: {
+    roles: [
+      {
+        id: "some-role-id",
+        subject: { root: principalGroupRoot, domain: "group", service, network },
+      },
+      {
+        id: "some-silly-role-id",
+        subject: { root: "some-silly-root", domain: "non-group", service, network },
+      },
+    ]
+  }
 };
 
+const roleId = "some-group-role-id";
+
 const sessionPrincipalAggregate = {
-  roles: [
-    {
-      id: "some-group-role-id",
-      subject: {
-        root: "some-group-role-root",
-        domain: "group",
-        service,
-        network,
+  root: contextPrincipalRoot,
+  service: contextPrincipalService,
+  network: contextPrincipalNetwork,
+  state: {
+    roles: [
+      {
+        id: roleId,
+        subject: {
+          root: sessionPrincipalGroupRoot,
+          domain: "group",
+          service,
+          network,
+        },
       },
-    },
-    {
-      id: "some-other-role-id",
-      subject: {
-        root: "some-other-role-root",
-        domain,
-        service,
-        network,
+      {
+        id: "some-other-role-id",
+        subject: {
+          root: "some-other-role-root",
+          domain,
+          service,
+          network,
+        },
       },
-    },
-    {
-      id: "some-silly-role-id",
-      subject: { root: "some-silly-root", domain: "non-group", service, network },
-    },
-    {
-      id: "some-other-silly-role-id",
-      subject: { root: "some-other-silly-root", domain: "non-group", service, network },
-    },
-  ],
-  groups: [{ root: "some-group-role-root", service, network }],
+      {
+        id: "some-silly-role-id",
+        subject: { root: "some-silly-root", domain: "non-group", service, network },
+      },
+      {
+        id: "some-other-silly-role-id",
+        subject: { root: "some-other-silly-root", domain: "non-group", service, network },
+      },
+    ]
+  }
 };
 
 process.env.SERVICE = service;
@@ -123,20 +149,18 @@ describe("Command handler unit tests", () => {
     replace(deps, "hmacCreate", hmacCreateFake);
 
     const queryAggregatesFnFake = stub()
-      .onFirstCall()
+      .onCall(0)
       .returns([account])
-      .onSecondCall()
-      .returns([]);
+      .onCall(1)
+      .returns([sessionPrincipalGroupAggregate])
+      .onCall(2)
+      .returns([principalGroupAggregate]);
 
     const aggregateFake = stub()
       .onFirstCall()
-      .returns({
-        state: principalAggregate,
-      })
+      .returns(sessionPrincipalAggregate)
       .onSecondCall()
-      .returns({
-        state: sessionPrincipalAggregate,
-      });
+      .returns(principalAggregate);
 
     const commandFnFake = stub()
       .onSecondCall()
@@ -171,19 +195,43 @@ describe("Command handler unit tests", () => {
     });
     expect(queryAggregatesFnFake.getCall(0)).to.have.been.calledWith({
       domain: "account",
-      key: "emailHmac",
-      value: hmacEmail,
+      queryPairs: [{
+        key: "emailHmac",
+        value: hmacEmail,
+      }],
     });
     expect(queryAggregatesFnFake.getCall(1)).to.have.been.calledWith({
-      domain: "account",
-      key: "principal.root",
-      value: contextPrincipalRoot,
+      domain: "group",
+      queryPairs: [{
+        key: "principals.root",
+        value: contextPrincipalRoot,
+      },
+      {
+        key: "principals.service",
+        value: contextPrincipalService,
+      },
+      {
+        key: "principals.network",
+        value: contextPrincipalNetwork,
+      }],
     });
-    expect(queryAggregatesFnFake).to.have.been.calledTwice;
-    expect(aggregateFake.getCall(0)).to.have.been.calledWith(principalRoot, {
-      domain: "principal",
+    expect(queryAggregatesFnFake.getCall(2)).to.have.been.calledWith({
+      domain: "group",
+      queryPairs: [{
+        key: "principals.root",
+        value: principalRoot,
+      },
+      {
+        key: "principals.service",
+        value: principalService,
+      },
+      {
+        key: "principals.network",
+        value: principalNetwork,
+      }],
     });
-    expect(aggregateFake.getCall(1)).to.have.been.calledWith(
+    expect(queryAggregatesFnFake).to.have.callCount(3);
+    expect(aggregateFake.getCall(0)).to.have.been.calledWith(
       contextPrincipalRoot,
       {
         domain: "principal",
@@ -191,6 +239,9 @@ describe("Command handler unit tests", () => {
         network: contextPrincipalNetwork,
       }
     );
+    expect(aggregateFake.getCall(1)).to.have.been.calledWith(principalRoot, {
+      domain: "principal",
+    });
     expect(aggregateFake).to.have.been.calledTwice;
     expect(commandFnFake).to.have.been.calledTwice;
     expect(commandFnFake.getCall(0)).to.have.been.calledWith({
@@ -201,13 +252,13 @@ describe("Command handler unit tests", () => {
         principals: [
           {
             network: principalNetwork,
-            roles: ["some-group-role-id"],
+            roles: [roleId],
             root: principalRoot,
             service: principalService,
           },
         ],
       },
-      root: "some-group-role-root",
+      root: sessionPrincipalGroupRoot,
       service,
     });
     expect(commandFnFake.getCall(1)).to.have.been.calledWith({
@@ -262,7 +313,7 @@ describe("Command handler unit tests", () => {
                 },
               ],
             },
-            root: "some-group-role-root",
+            root: sessionPrincipalGroupRoot,
             service,
           },
         ],
@@ -321,8 +372,10 @@ describe("Command handler unit tests", () => {
     });
     expect(queryAggregatesFnFake.getCall(0)).to.have.been.calledWith({
       domain: "account",
-      key: "emailHmac",
-      value: hmacEmail,
+      queryPairs: [{
+        key: "emailHmac",
+        value: hmacEmail,
+      }],
     });
     expect(queryAggregatesFnFake).to.have.been.calledOnce;
     expect(aggregateFake).to.have.been.calledWith(principalRoot, {
@@ -361,17 +414,15 @@ describe("Command handler unit tests", () => {
       .onFirstCall()
       .returns([account])
       .onSecondCall()
-      .returns([]);
+      .returns([principalGroupAggregate])
+      .onThirdCall()
+      .returns([principalGroupAggregate]);
 
     const aggregateFake = stub()
       .onFirstCall()
-      .returns({
-        state: principalAggregate,
-      })
+      .returns(principalAggregate)
       .onSecondCall()
-      .returns({
-        state: principalAggregate,
-      });
+      .returns(principalAggregate);
 
     const commandFnFake = fake.returns({
       body: { _tokens, receipt: { challenge } },
@@ -404,22 +455,49 @@ describe("Command handler unit tests", () => {
     });
     expect(queryAggregatesFnFake.getCall(0)).to.have.been.calledWith({
       domain: "account",
-      key: "emailHmac",
-      value: hmacEmail,
+      queryPairs: [{
+        key: "emailHmac",
+        value: hmacEmail,
+      }],
     });
     expect(queryAggregatesFnFake.getCall(1)).to.have.been.calledWith({
-      domain: "account",
-      key: "principal.root",
-      value: contextPrincipalRoot,
+      domain: "group",
+      queryPairs: [{
+        key: "principals.root",
+        value: principalRoot,
+      },
+      {
+        key: "principals.service",
+        value: principalService,
+      },
+      {
+        key: "principals.network",
+        value: principalNetwork,
+      }],
     });
-    expect(queryAggregatesFnFake).to.have.been.calledTwice;
-    expect(aggregateFake).to.have.been.calledWith(principalRoot, {
-      domain: "principal",
+    expect(queryAggregatesFnFake.getCall(2)).to.have.been.calledWith({
+      domain: "group",
+      queryPairs: [{
+        key: "principals.root",
+        value: principalRoot,
+      },
+      {
+        key: "principals.service",
+        value: principalService,
+      },
+      {
+        key: "principals.network",
+        value: principalNetwork,
+      }],
     });
-    expect(aggregateFake).to.have.been.calledWith(contextPrincipalRoot, {
+    expect(queryAggregatesFnFake).to.have.callCount(3);
+    expect(aggregateFake.getCall(0)).to.have.been.calledWith(contextPrincipalRoot, {
       domain: "principal",
       service: contextPrincipalService,
       network: contextPrincipalNetwork,
+    });
+    expect(aggregateFake.getCall(1)).to.have.been.calledWith(principalRoot, {
+      domain: "principal",
     });
     expect(aggregateFake).to.have.been.calledTwice;
     expect(commandFnFake).to.have.been.calledWith({
@@ -442,15 +520,15 @@ describe("Command handler unit tests", () => {
             payload: {
               principals: [
                 {
-                  network: contextPrincipalNetwork,
-                  root: contextPrincipalRoot,
-                  service: contextPrincipalService,
+                  network: principalNetwork,
+                  root: principalRoot,
+                  service: principalService,
                 },
               ],
             },
-            root: "some-group-root",
+            root: principalGroupRoot,
             service,
-          },
+          }
         ],
       },
     });
@@ -516,8 +594,10 @@ describe("Command handler unit tests", () => {
     });
     expect(queryAggregatesFnFake).to.have.been.calledWith({
       domain: "account",
-      key: "emailHmac",
-      value: hmacEmail,
+      queryPairs: [{
+        key: "emailHmac",
+        value: hmacEmail,
+      }],
     });
     expect(hashFake).to.have.been.calledWith(password);
     expect(encryptFake).to.have.been.calledWith({
@@ -577,132 +657,19 @@ describe("Command handler unit tests", () => {
               ],
             },
           },
-        ],
-      },
-    });
-  });
-  it("should return successfully if account not found with no principal in the context", async () => {
-    const queryAggregatesFnFake = fake.returns([]);
-
-    const accountRoot = "some-new-account-root";
-    const principalRoot = "some-new-principal-root";
-
-    const generateRootFake = stub()
-      .onFirstCall()
-      .returns(accountRoot)
-      .onSecondCall()
-      .returns(principalRoot);
-
-    const hashFake = fake.returns(hashedPassword);
-    replace(deps, "hash", hashFake);
-
-    const secretFake = fake.returns(hmacSecret);
-    replace(deps, "secret", secretFake);
-
-    const hmacCreateFake = fake.returns(hmacEmail);
-    replace(deps, "hmacCreate", hmacCreateFake);
-
-    const encryptFake = fake.returns(emailEncrypted);
-    replace(deps, "encrypt", encryptFake);
-
-    const commandFnFake = fake.returns({
-      body: { _tokens, receipt: { challenge } },
-      statusCode,
-    });
-
-    replace(deps, "compare", fake.returns(true));
-
-    const context = {};
-    const result = await main({
-      payload,
-      context,
-      commandFn: commandFnFake,
-      queryAggregatesFn: queryAggregatesFnFake,
-      generateRootFn: generateRootFake,
-    });
-
-    expect(result).to.deep.equal({
-      response: {
-        receipt: {
-          challenge,
-          account: {
-            root: accountRoot,
-            service: process.env.SERVICE,
-            network: process.env.NETWORK,
-          },
-        },
-      },
-      tokens: _tokens,
-      statusCode,
-    });
-    expect(secretFake).to.have.been.calledWith("email-hmac-key");
-    expect(hmacCreateFake).to.have.been.calledWith({
-      secret: hmacSecret,
-      message: email
-    });
-    expect(queryAggregatesFnFake).to.have.been.calledWith({
-      domain: "account",
-      key: "emailHmac",
-      value: hmacEmail,
-    });
-    expect(hashFake).to.have.been.calledWith(password);
-    expect(encryptFake).to.have.been.calledWith({
-      message: email,
-      key: "address",
-      ring: "email",
-      location: "global",
-      project: project,
-      format: "base64"
-    });
-
-    expect(commandFnFake).to.have.been.calledWith({
-      name: "issue",
-      domain: "challenge",
-      payload: { email, password },
-      options: {
-        upgrade: {
-          account: {
-            root: accountRoot,
-            service,
-            network,
-          },
-          principal: {
-            root: principalRoot,
-            service,
-            network,
-          },
-        },
-        events: [
           {
-            action: "register",
-            domain: "account",
-            service,
-            root: accountRoot,
-            payload: {
-              password: hashedPassword,
-              emailHmac: hmacEmail,
-              emailEncrypted,
-              principal: { root: principalRoot, service, network },
-            },
-          },
-          {
-            action: "add-roles",
+            action: "set-subject",
             domain: "principal",
             service,
             root: principalRoot,
             payload: {
-              roles: [
-                {
-                  id: `AccountAdmin`,
-                  subject: {
-                    root: accountRoot,
-                    domain: "account",
-                    service,
-                    network,
-                  },
-                },
-              ],
-            },
+              subject: {
+                root: accountRoot,
+                domain: "account",
+                service,
+                network,
+              }
+            }
           },
         ],
       },
@@ -715,6 +682,10 @@ describe("Command handler unit tests", () => {
 
     const generateRootFake = fake.returns(accountRoot);
 
+    const aggregateFnFake = stub()
+      .onFirstCall()
+      .returns(sessionPrincipalAggregate);
+
     const hashFake = fake.returns(hashedPassword);
     replace(deps, "hash", hashFake);
 
@@ -738,6 +709,7 @@ describe("Command handler unit tests", () => {
       payload,
       context,
       commandFn: commandFnFake,
+      aggregateFn: aggregateFnFake,
       queryAggregatesFn: queryAggregatesFnFake,
       generateRootFn: generateRootFake,
     });
@@ -763,8 +735,15 @@ describe("Command handler unit tests", () => {
     });
     expect(queryAggregatesFnFake).to.have.been.calledWith({
       domain: "account",
-      key: "emailHmac",
-      value: hmacEmail,
+      queryPairs: [{
+        key: "emailHmac",
+        value: hmacEmail,
+      }],
+    });
+    expect(aggregateFnFake).to.have.been.calledWith(contextPrincipalRoot, {
+      domain: "principal",
+      service: contextPrincipalService,
+      network: contextPrincipalNetwork,
     });
     expect(hashFake).to.have.been.calledWith(password);
     expect(secretFake).to.have.been.calledWith("email-hmac-key");
@@ -828,6 +807,20 @@ describe("Command handler unit tests", () => {
               ],
             },
           },
+          {
+            action: "set-subject",
+            domain: "principal",
+            service: contextPrincipalService,
+            root: contextPrincipalRoot,
+            payload: {
+              subject: {
+                root: accountRoot,
+                domain: "account",
+                service,
+                network,
+              }
+            }
+          }
         ],
       },
     });
@@ -878,6 +871,12 @@ describe("Command handler unit tests", () => {
       .onSecondCall()
       .returns(["something"]);
 
+    const aggregateFnFake = fake.returns({
+      state: {
+        subject: "some-subject"
+      }
+    });
+
     replace(deps, "compare", fake.returns(true));
 
     const secretFake = fake.returns(hmacSecret);
@@ -890,13 +889,14 @@ describe("Command handler unit tests", () => {
       await main({
         payload,
         context,
+        aggregateFn: aggregateFnFake,
         queryAggregatesFn: queryAggregatesFnFake,
       });
       //shouldn't get called
       expect(2).to.equal(3);
     } catch (e) {
       expect(e.message).to.equal(
-        "The session already belongs to a different account."
+        "The session already belongs to a different subject."
       );
     }
   });

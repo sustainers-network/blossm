@@ -17,6 +17,11 @@ schema:
       service: String
       network: String
 
+indexes:
+  - principals.root 
+  - principals.service
+  - principals.network
+
 dependencies:
   "@blossm/array-difference": "*"
 
@@ -28,6 +33,12 @@ testing:
           - root: some-principal
             service: some-principal-service
             network: some.principal-network
+    - action: add-principals
+      payload:
+        principals:
+          - root: some-other-principal
+            service: some-other-principal-service
+            network: some.other-principal-network
     - action: remove-principals
       payload:
         principals:

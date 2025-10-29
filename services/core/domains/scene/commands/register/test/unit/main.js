@@ -15,10 +15,12 @@ const subjectService = "some-subject-service";
 const subjectNetwork = "some-subject-network";
 const payload = {
   role,
-  root: subjectRoot,
-  domain: subjectDomain,
-  service: subjectService,
-  network: subjectNetwork,
+  subject: {
+    root: subjectRoot,
+    domain: subjectDomain,
+    service: subjectService,
+    network: subjectNetwork,
+  }
 };
 const root = "some-root";
 const service = "some-service";
@@ -30,6 +32,7 @@ const contextSession = {
 const principalRoot = "some-principal-root";
 const principalService = "some-principal-service";
 const principalNetwork = "some-principal-network";
+const groupRoot = "some-group-root";
 
 const context = {
   session: contextSession,
@@ -48,6 +51,8 @@ describe("Command handler unit tests", () => {
       .onFirstCall()
       .returns(root)
       .onSecondCall()
+      .returns(groupRoot)
+      .onThirdCall()
       .returns(uuid);
     replace(deps, "uuid", uuidFake);
 
@@ -62,6 +67,7 @@ describe("Command handler unit tests", () => {
       context,
       commandFn: commandFnFake,
     });
+
     expect(result).to.deep.equal({
       events: [
         {
@@ -80,25 +86,38 @@ describe("Command handler unit tests", () => {
           },
         },
         {
-          domain: "principal",
-          service,
-          network,
-          action: "add-scenes",
-          root: uuid,
-          payload: {
-            scenes: [{ root, service, network }],
-          },
-        },
-        {
           action: "register",
           payload: {
-            root: subjectRoot,
-            domain: subjectDomain,
-            service: subjectService,
-            network: subjectNetwork,
+            subject: {
+              domain: subjectDomain,
+              root: subjectRoot,
+              service: subjectService,
+              network: subjectNetwork,
+            },
+            group: {
+              root: groupRoot,
+              service,
+              network,
+            },
           },
+          groupsAdded: [{ root: groupRoot, service, network }],
           root,
           correctNumber: 0,
+        },
+        {
+          domain: "group",
+          service,
+          network,
+          action: "add-principals",
+          root: groupRoot,
+          payload: {
+            principals: [{ 
+              roles: ["GroupAdmin"],
+              root: uuid, 
+              service, 
+              network 
+            }],
+          },
         },
       ],
       response: {
@@ -111,6 +130,11 @@ describe("Command handler unit tests", () => {
           },
           scene: {
             root,
+            service,
+            network,
+          },
+          group: {
+            root: groupRoot,
             service,
             network,
           },
@@ -136,6 +160,8 @@ describe("Command handler unit tests", () => {
       .onFirstCall()
       .returns(root)
       .onSecondCall()
+      .returns(groupRoot)
+      .onThirdCall()
       .returns(uuid);
     replace(deps, "uuid", uuidFake);
 
@@ -147,10 +173,12 @@ describe("Command handler unit tests", () => {
 
     const result = await main({
       payload: {
-        root: subjectRoot,
-        domain: subjectDomain,
-        service: subjectService,
-        network: subjectNetwork,
+        subject: {
+          root: subjectRoot,
+          domain: subjectDomain,
+          service: subjectService,
+          network: subjectNetwork,
+        }
       },
       context,
       commandFn: commandFnFake,
@@ -160,17 +188,45 @@ describe("Command handler unit tests", () => {
         {
           action: "register",
           payload: {
-            root: subjectRoot,
-            domain: subjectDomain,
-            service: subjectService,
-            network: subjectNetwork,
+            subject: {
+              domain: subjectDomain,
+              root: subjectRoot,
+              service: subjectService,
+              network: subjectNetwork,
+            },
+            group: {
+              root: groupRoot,
+              service,
+              network,
+            },
           },
+          groupsAdded: [{ root: groupRoot, service, network }],
           root,
           correctNumber: 0,
+        },
+        {
+          domain: "group",
+          service,
+          network,
+          action: "add-principals",
+          root: groupRoot,
+          payload: {
+            principals: [{ 
+              roles: ["GroupAdmin"],
+              root: uuid, 
+              service, 
+              network 
+            }],
+          },
         },
       ],
       response: {
         receipt: {
+          group: {
+            root: groupRoot,
+            service,
+            network,
+          },
           scene: {
             root,
             service,
@@ -187,6 +243,8 @@ describe("Command handler unit tests", () => {
       .onFirstCall()
       .returns(root)
       .onSecondCall()
+      .returns(groupRoot)
+      .onThirdCall()
       .returns(uuid);
     replace(deps, "uuid", uuidFake);
 
@@ -224,29 +282,47 @@ describe("Command handler unit tests", () => {
           },
         },
         {
-          domain: "principal",
-          service: principalService,
-          network: principalNetwork,
-          action: "add-scenes",
-          root: principalRoot,
-          payload: {
-            scenes: [{ root, service, network }],
-          },
-        },
-        {
           action: "register",
           payload: {
-            root: subjectRoot,
-            domain: subjectDomain,
-            service: subjectService,
-            network: subjectNetwork,
+            subject: {
+              domain: subjectDomain,
+              root: subjectRoot,
+              service: subjectService,
+              network: subjectNetwork,
+            },
+            group: {
+              root: groupRoot,
+              service,
+              network,
+            },
           },
+          groupsAdded: [{ root: groupRoot, service, network }],
           root,
           correctNumber: 0,
+        },
+        {
+          domain: "group",
+          service,
+          network,
+          action: "add-principals",
+          root: groupRoot,
+          payload: {
+            principals: [{ 
+              roles: ["GroupAdmin"],
+              root: principalRoot, 
+              service: principalService, 
+              network: principalNetwork 
+            }],
+          },
         },
       ],
       response: {
         receipt: {
+          group: {
+            root: groupRoot,
+            service,
+            network,
+          },
           scene: {
             root,
             service,
@@ -262,6 +338,8 @@ describe("Command handler unit tests", () => {
       .onFirstCall()
       .returns(root)
       .onSecondCall()
+      .returns(groupRoot)
+      .onThirdCall()
       .returns(uuid);
     replace(deps, "uuid", uuidFake);
 
@@ -278,10 +356,12 @@ describe("Command handler unit tests", () => {
     };
     const result = await main({
       payload: {
-        root: subjectRoot,
-        domain: subjectDomain,
-        service: subjectService,
-        network: subjectNetwork,
+        subject: {
+          root: subjectRoot,
+          domain: subjectDomain,
+          service: subjectService,
+          network: subjectNetwork,
+        }
       },
       context: principalContext,
       commandFn: commandFnFake,
@@ -291,17 +371,45 @@ describe("Command handler unit tests", () => {
         {
           action: "register",
           payload: {
-            root: subjectRoot,
-            domain: subjectDomain,
-            service: subjectService,
-            network: subjectNetwork,
+            subject: {
+              domain: subjectDomain,
+              root: subjectRoot,
+              service: subjectService,
+              network: subjectNetwork,
+            },
+            group: {
+              root: groupRoot,
+              service,
+              network,
+            },
           },
+          groupsAdded: [{ root: groupRoot, service, network }],
           root,
           correctNumber: 0,
+        },
+        {
+          domain: "group",
+          service,
+          network,
+          action: "add-principals",
+          root: groupRoot,
+          payload: {
+            principals: [{ 
+              roles: ["GroupAdmin"],
+              root: principalRoot, 
+              service: principalService, 
+              network: principalNetwork 
+            }],
+          },
         },
       ],
       response: {
         receipt: {
+          group: {
+            root: groupRoot,
+            service,
+            network,
+          },
           scene: {
             root,
             service,

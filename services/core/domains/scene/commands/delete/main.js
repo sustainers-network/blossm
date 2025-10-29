@@ -1,25 +1,43 @@
 import deps from "./deps.js";
 
-export default async ({ payload, context, aggregateFn }) => {
+export default async ({ payload, context, aggregateFn, queryAggregatesFn }) => {
+  console.log("context: ", context);
   // Get the scene and principal aggregates.
-  const [sceneAggregate, principalAggregate] = await Promise.all([
+  const [sceneAggregate, principalGroupAggregates] = await Promise.all([
     aggregateFn(payload.scene.root),
-    aggregateFn(context.principal.root, {
-      domain: "principal",
-      service: "core",
+    queryAggregatesFn({
+      domain: "group",
+      queryPairs: [{
+        key: "principals.root",
+        value: context.principal.root,
+      },
+      {
+        key: "principals.service",
+        value: context.principal.service,
+      },
+      {
+        key: "principals.network",
+        value: context.principal.network,
+      }],
     }),
   ]);
   
+  console.log("hmm: ", principalGroupAggregates);
+   
+  // if (principalGroupAggregates && principalGroupAggregates.length) {
+  //   console.log("principalGroupAggregates: ", {root: principalGroupAggregates[0].state.group.root, service: principalGroupAggregates[0].state.group.service, network: principalGroupAggregates[0].state.group.network});
+  // }
+  console.log("sceneAggregate: ", sceneAggregate);
+
   // If the scene has already been deleted, return.
   if (sceneAggregate.state.deleted) return;
-  
+
   // Make sure the principal has the scene being deleted.
   if (
-    !(principalAggregate.state.scenes || []).some(
-      (scene) =>
-        scene.root == payload.scene.root &&
-        scene.service == payload.scene.service &&
-        scene.network == payload.scene.network
+    !principalGroupAggregates.some(
+      (groupAggregate) => sceneAggregate.state.group.root == groupAggregate.root &&
+        sceneAggregate.state.group.service == groupAggregate.service &&
+        sceneAggregate.state.group.network == groupAggregate.network
     )
   )
     throw deps.forbiddenError.message("This scene isn't accessible.");
@@ -32,7 +50,6 @@ export default async ({ payload, context, aggregateFn }) => {
         action: "delete",
         payload: { deleted: deps.stringDate() },
       },
-      // TODO should we remove the scene from the principal?
     ],
   };
 };

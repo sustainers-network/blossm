@@ -76,23 +76,23 @@ export default async ({
         },
       })),
 
-      // Remove the group from each principal being removed.
-      ...existingPrincipals.map((principal) => ({
-        domain: "principal",
-        service: process.env.SERVICE,
-        network: process.env.NETWORK,
-        action: "remove-groups",
-        root: principal.root,
-        payload: {
-          groups: [
-            {
-              root,
-              service: process.env.SERVICE,
-              network: process.env.NETWORK,
-            },
-          ],
-        },
-      })),
+      // // Remove the group from each principal being removed.
+      // ...existingPrincipals.map((principal) => ({
+      //   domain: "principal",
+      //   service: process.env.SERVICE,
+      //   network: process.env.NETWORK,
+      //   action: "remove-groups",
+      //   root: principal.root,
+      //   payload: {
+      //     groups: [
+      //       {
+      //         root,
+      //         service: process.env.SERVICE,
+      //         network: process.env.NETWORK,
+      //       },
+      //     ],
+      //   },
+      // })),
 
       // Remove the principals from this group.
       {

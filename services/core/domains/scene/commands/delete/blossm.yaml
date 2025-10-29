@@ -28,45 +28,54 @@ testing:
       - scene:
           root: cb00ed30-b743-4fda-a8a1-c27544374f2e
           service: some-service
-          network: some.network
+          network: local.network
 
   normalize:
     - payload:
         scene:
           root: cb00ed30-b743-4fda-a8a1-c27544374f2e
           service: some-service
-          network: some.network
+          network: local.network
           some: bogus
       normalized:
         scene:
           root: cb00ed30-b743-4fda-a8a1-c27544374f2e
           service: some-service
-          network: some.network
+          network: local.network
 
   dependencies:
     - domain: principal
       service: core
       procedure: event-store
+    - domain: group
+      service: core
+      procedure: event-store
 
   steps:
     - pre:
-        - domain: principal
+        - domain: group 
           service: core
-          root: some-principal-root
-          action: add-scenes
+          root: some-group-root
+          action: add-principals
           payload:
-            scenes:
-              - root: cb00ed30-b743-4fda-a8a1-c27544374f2e
-                service: some-scene-service-root
-                network: some.scene-network-root
+            principals:
+              - root: some-principal-root
+                service: core
+                network: local.network
         - domain: scene
           service: core
           root: cb00ed30-b743-4fda-a8a1-c27544374f2e
           action: register
-          payload: {}
+          payload:
+            group:
+              root: some-group-root
+              service: core
+              network: local.network
       context:
         principal:
           root: some-principal-root
+          service: core
+          network: local.network
       payload:
         scene:
           root: cb00ed30-b743-4fda-a8a1-c27544374f2e
@@ -78,10 +87,16 @@ testing:
           service: core
           root: db00ed30-b743-4fda-a8a1-c27544374f2e
           action: register
-          payload: {}
+          payload:
+            group:
+              root: some-random-group-root
+              service: core
+              network: local.network
       context:
         principal:
           root: some-principal-root
+          service: core
+          network: local.network
       payload:
         scene:
           root: db00ed30-b743-4fda-a8a1-c27544374f2e
@@ -103,6 +118,8 @@ testing:
       context:
         principal:
           root: some-principal-root
+          service: core
+          network: local.network
       code: 204
 
 #don't change

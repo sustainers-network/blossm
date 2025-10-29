@@ -1,7 +1,9 @@
 export default async (payload) => ({
   ...(payload.role && { role: payload.role }),
-  root: payload.root,
-  domain: payload.domain,
-  service: payload.service,
-  network: payload.network,
+  subject: {
+    root: payload.subject.root,
+    domain: payload.subject.domain,
+    service: payload.subject.service,
+    network: payload.subject.network,
+  },
 });
