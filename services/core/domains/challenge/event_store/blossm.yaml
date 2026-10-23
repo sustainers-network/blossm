@@ -12,6 +12,7 @@ schema:
   upgrade: Object
   issued: Date
   answered: String
+  answerId: String
   expires: Date
   events:
     - Object
@@ -48,7 +49,8 @@ testing:
           iss: 2020-01-03T00:02:15.000Z
     - action: answer
       payload:
-        code: "234567"
+        answered: "2020-01-03T00:02:13.000Z"
+        answerId: some-answer-id
 
   handlers:
     - action: issue
@@ -71,7 +73,8 @@ testing:
     - action: answer
       examples:
         - payload:
-            code: "123456"
+            answered: "2020-01-03T00:02:13.000Z"
+            answerId: some-answer-id
 
 #don't change
 procedure: event-store
