@@ -9,12 +9,14 @@ payload:
   code: string
 
 dependencies:
+  # Require the runtime that consumes explicit thenFn return values.
+  "@blossm/command": "^0.0.335"
   "@blossm/errors": "*"
   "@blossm/datetime": "*"
   "@blossm/crypt": "*"
 
 devDependencies:
-  "@blossm/command-post": "^0.0.308"
+  "@blossm/command-post": "^0.0.309"
   "mocha": "^11.6.0"
   "chai": "^5.2.0"
   "sinon": "^21.0.0"
