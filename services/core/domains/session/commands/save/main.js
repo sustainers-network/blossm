@@ -190,7 +190,7 @@ const getEventsForAccountRegistering = async ({
   const accountRoot = generateRootFn();
 
   // Hash the email and password if it exists.
-  const hashedPassword = payload.password && deps.hash(payload.password);
+  const hashedPassword = payload.password && (await deps.hash(payload.password));
 
   // If there is a context principal, use it. Else, create a new principal.
   const principal = context.principal
