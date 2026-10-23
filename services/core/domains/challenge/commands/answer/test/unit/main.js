@@ -82,7 +82,11 @@ describe("Command handler unit tests", () => {
     });
 
     expect(commandFnFake).not.to.have.been.called;
-    await thenFn();
+    const after = await thenFn();
+    expect(after).to.deep.equal({
+      response: { context: newContext },
+      tokens: _tokens,
+    });
 
     expect(result).to.deep.equal({
       events: [
@@ -96,8 +100,6 @@ describe("Command handler unit tests", () => {
           root: contextChallenge,
         },
       ],
-      response: { context: newContext },
-      tokens: _tokens,
       revoke: [
         {
           type: "challenge",

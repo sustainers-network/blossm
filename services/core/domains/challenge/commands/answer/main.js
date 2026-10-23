@@ -36,8 +36,6 @@ export default async ({
       info: { reason: "expired" },
     });
 
-  const response = {};
-  const tokens = [];
   const upgrade = challengeAggregate.state.upgrade;
 
   return {
@@ -58,7 +56,6 @@ export default async ({
     revoke: [
       { type: "challenge", network: context.network || process.env.NETWORK },
     ],
-    ...(upgrade && { response, tokens }),
     // The runtime invokes this only after the numbered answer commits.
     thenFn: async () => {
       // Unnumbered events await queue acceptance, not persistence. A later
@@ -80,8 +77,10 @@ export default async ({
         payload: upgrade,
       });
 
-      response.context = newContext;
-      tokens.push(..._tokens);
+      return {
+        response: { context: newContext },
+        tokens: _tokens,
+      };
     },
   };
 };
