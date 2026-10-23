@@ -18,6 +18,7 @@ const hashedCode = "some-hashed-code";
 const exp = "some-exp";
 const iss = "some-iss";
 const aud = "some-aud";
+const answerId = "some-answer-id";
 const challenge = {
   code: hashedCode,
   claims: {
@@ -40,7 +41,7 @@ const context = {
 const newContext = "some-new-context";
 const service = "some-service";
 const network = "some-network";
-const _tokens = "some-tokens";
+const _tokens = [{ type: "access", value: "some-token" }];
 const project = "some-projectl";
 
 process.env.SERVICE = service;
@@ -57,10 +58,11 @@ describe("Command handler unit tests", () => {
   });
   it("should return successfully", async () => {
     const aggregateFake = fake.returns({
+      lastEventNumber: 0,
       state: {
         ...challenge,
         upgrade: challengeUpgrade,
-        expires: deps.stringDate(),
+        expires: deps.moment().add(1, "m").toDate().toISOString(),
       },
     });
 
@@ -71,19 +73,25 @@ describe("Command handler unit tests", () => {
     const compareFake = fake.returns(true);
     replace(deps, "compare", compareFake);
 
-    const result = await main({
+    const { thenFn, ...result } = await main({
       payload,
       context,
       aggregateFn: aggregateFake,
       commandFn: commandFnFake,
+      generateRootFn: fake.returns(answerId),
     });
+
+    expect(commandFnFake).not.to.have.been.called;
+    await thenFn();
 
     expect(result).to.deep.equal({
       events: [
         {
           action: "answer",
+          correctNumber: 1,
           payload: {
             answered: deps.stringDate(),
+            answerId,
           },
           root: contextChallenge,
         },
@@ -112,27 +120,33 @@ describe("Command handler unit tests", () => {
   });
   it("should return successfully if upgrade is not provided.", async () => {
     const aggregateFake = fake.returns({
+      lastEventNumber: 0,
       state: {
         ...challenge,
-        expires: deps.stringDate(),
+        expires: deps.moment().add(1, "m").toDate().toISOString(),
       },
     });
 
     const compareFake = fake.returns(true);
     replace(deps, "compare", compareFake);
 
-    const result = await main({
+    const { thenFn, ...result } = await main({
       payload,
       context,
       aggregateFn: aggregateFake,
+      generateRootFn: fake.returns(answerId),
     });
+
+    await thenFn();
 
     expect(result).to.deep.equal({
       events: [
         {
           action: "answer",
+          correctNumber: 1,
           payload: {
             answered: deps.stringDate(),
+            answerId,
           },
           root: contextChallenge,
         },
@@ -158,10 +172,11 @@ describe("Command handler unit tests", () => {
   });
   it("should throw correctly if a challenge is with the wrong code", async () => {
     const aggregateFake = fake.returns({
+      lastEventNumber: 0,
       state: {
         ...challenge,
         code: "bogus",
-        expires: deps.stringDate(),
+        expires: deps.moment().add(1, "m").toDate().toISOString(),
       },
     });
 
@@ -187,6 +202,7 @@ describe("Command handler unit tests", () => {
   });
   it("should throw correctly if a challenge is expired", async () => {
     const aggregateFake = fake.returns({
+      lastEventNumber: 0,
       state: {
         ...challenge,
         expires: deps.moment().subtract(1, "s").toDate().toISOString(),
