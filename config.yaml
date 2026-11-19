@@ -1,72 +1,67 @@
-network: dianet.work
+# Blossm services configuration, read by the Toolbox CLI.
+#
+# Only the development environment is configured, and only for the
+# core/session PostgreSQL event store. See docs/DEVELOPMENT_SETUP.md for the
+# cloud prerequisites and for what is deliberately absent below.
+network: blossm.network
 # Once a day at 5 am
 blockSchedule: "0 5 * * *"
+# Full environment names. The matching DNS zone is development.blossm.network.
+environmentPrefixes:
+  development: "development."
+  staging: "staging."
+  production: ""
 vendors:
-  cache:
-    redis:
-      host:
-        production: 10.114.134.203
-        development: 10.114.134.203
-      port:
-        production: 6379
-        development: 6379
   cloud:
     gcp:
       projects:
-        production: production-462319
-        sandbox: playground-462319
-        staging: staging-462319
-        development: development-462319
+        development: blossm-network-development
+      # The project number, used for deterministic Cloud Run URLs.
       computeUrlIds:
-        production: 
-        sandbox: 
-        staging: 
-        development: 360683954392
-      dnsZone: network
-      secretsBuckets:
-        production: production-secrets-462319
-        sandbox: sandbox-secrets-462319
-        staging: staging-secrets-462319
-        development: development-secrets-462319
-      rolesBuckets:
-        production: production-roles-462319
-        sandbox: sandbox-roles-462319
-        staging: staging-roles-462319
-        development: development-roles-462319
+        development: 514604832519
+      # Cloud DNS managed zone name, passed as --zone by gateway deployments.
+      dnsZone: blossm-development
+      registries:
+        development: us-east1-docker.pkg.dev/blossm-network-development/blossm
+      buildServiceAccounts:
+        development: blossm-build@blossm-network-development.iam.gserviceaccount.com
+      # Applies to every procedure deployed to this environment. It is scoped
+      # to the session event store, so deploy nothing else with this profile.
+      runtimeServiceAccounts:
+        development: blossm-session@blossm-network-development.iam.gserviceaccount.com
+      # No VPC connector. Internal services still require an authenticated invoker.
+      vpcConnectors:
+        development: null
+      ingress:
+        development: all
+      maxInstances:
+        development: 1
+      minInstances:
+        development: 0
+      # No secrets or roles bucket exists, and the PostgreSQL event store reads
+      # neither. Name them here when a consumer (gateways, encrypted secrets) is deployed.
+      secretsBuckets: {}
+      rolesBuckets: {}
       defaults:
-        region: us-central1
+        region: us-east1
         timeout: 120s
         memory: 512Mi
-  viewStore:
-    mongodb:
-      users:
-        production: blossm
-        sandbox: blossm
-        staging: blossm
-        development: blossm
-      hosts:
-        production: view-store-pri.xpbhz.gcp.mongodb.net
-        sandbox: view-store-pri.fzyij.gcp.mongodb.net
-        staging: view-store-pri.ahi18.gcp.mongodb.net
-        development: view-store-pri.bn99nn.mongodb.net
-      protocol: mongodb+srv
   eventStore:
-    mongodb:
-      users:
-        production: blossm
-        sandbox: blossm
-        staging: blossm
-        development: blossm
-      hosts:
-        production: event-store-pri.7iksa.gcp.mongodb.net
-        sandbox: event-store-pri.dyntm.gcp.mongodb.net
-        staging: event-store-pri.zhvxy.gcp.mongodb.net
-        development: event-store-pri.czxzvwh.mongodb.net
-      protocol: mongodb+srv
+    postgres:
+      connections:
+        development:
+          database: blossm
+          user: blossm_runtime
+          max: 2
+          cloudSqlInstance: blossm-network-development:us-east1:blossm-pg
+          # Bound by Cloud Run as PG_PASSWORD. The value is never read by the CLI.
+          passwordSecret:
+            name: blossm-postgres-password
+            version: "1"
+# No view store or cache is configured: there is no PostgreSQL view-store
+# adapter yet, and the previous MongoDB Atlas and Redis addresses are removed.
 defaults:
-  viewStore: mongodb
-  eventStore: mongodb
+  eventStore: postgres
   cloud: gcp
-  cache: redis
 
 defaultEnv: development
