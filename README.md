@@ -20,10 +20,15 @@ environment in project `blossm-network-development`, region `us-east1`, network
 `blossm.network`, for the first service only, the **core/session event store on
 PostgreSQL**.
 
-- **Not deploy ready.** The pinned `@blossm/cli` `^0.0.1838` cannot select
-  PostgreSQL, and the cloud identities, permissions and password secret are
-  operator prerequisites. Both are covered in
+- **Not deploy ready.** The cloud identities, permissions and password secret
+  are operator prerequisites, covered in
   [the development setup guide](docs/DEVELOPMENT_SETUP.md).
+- **The Toolbox release is published.** Toolbox PRs 157 to 164 and release
+  PR 165 are merged, and all 29 npm packages are verified against release
+  source `bdb8a728dbf7735097817eaad9f20c3207ae1f8d`. `package.json` pins
+  `@blossm/cli` to exactly `0.0.1959`, which generates the session store with
+  `@blossm/postgres-event-store` `0.0.2`. Install with Node 24.22.1,
+  Yarn Classic 1.22.22 and `yarn install --frozen-lockfile`, see the guide.
 - **Views are not ready.** There is no PostgreSQL view-store adapter, so no view
   store, projection or view gateway can be deployed. The previous MongoDB Atlas
   and Redis addresses are removed, not replaced.

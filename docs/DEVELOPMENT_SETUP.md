@@ -41,7 +41,8 @@ re-checked since.
 | Dry run passed, generated names confirmed | Outstanding, step 5 |
 | Per-store KMS ring and keys | Outstanding, step 6 |
 | Deployment and runtime IAM bindings | Outstanding, steps 7, 8 and 10 |
-| Toolbox release with PostgreSQL support | Outstanding, see below |
+| Toolbox release with PostgreSQL support | Published and verified in the registry, see [Toolbox release](#toolbox-release) |
+| Fresh `yarn install --frozen-lockfile` of this repository with `@blossm/cli` `0.0.1959` | Verified locally on 2026-11-20; run the install in your checkout too |
 
 Existing resources that this service does **not** use, and that must not be
 repurposed for it:
@@ -51,29 +52,46 @@ repurposed for it:
 - Regional key `us-east1/blossm/network-jwt` and secret `network-jwt-public-key`
   are a different contract from the global per-store blockchain keys in step 6.
 
-## Toolbox release prerequisite
+## Toolbox release
 
-`package.json` pins `@blossm/cli` `^0.0.1838`. That version, and the newer
-published CLI, generate MongoDB event stores only and ignore the fields this
-profile depends on: `defaults.eventStore: postgres`,
+The Toolbox release this profile depends on is published. Toolbox PRs 157 to
+164 and release PR 165 are merged, and all 29 npm packages of the release are
+verified in the registry against release source
+`bdb8a728dbf7735097817eaad9f20c3207ae1f8d`. It includes `@blossm/cli`
+`0.0.1959` and `@blossm/postgres-event-store` `0.0.2`.
+
+`package.json` pins `@blossm/cli` to exactly `0.0.1959`. Do not deploy with an
+earlier CLI. Earlier versions generate MongoDB event stores only and ignore the
+fields this profile depends on: `defaults.eventStore: postgres`,
 `vendors.eventStore.postgres`, `environmentPrefixes`, `registries`,
 `buildServiceAccounts`, `runtimeServiceAccounts`, `vpcConnectors`, `ingress`,
-`maxInstances` and `minInstances`. **Do not deploy with it.** It would target
-`us.gcr.io`, attach a connector that does not exist and use the `dev.` prefix.
+`maxInstances` and `minInstances`.
 
-Required before any deployment:
+Install from the npm registry with Node 24.22.1, which the released CLI packages
+require and `package.json` `engines.node` enforces, and Yarn Classic 1.22.22:
 
-1. The companion Toolbox change is merged and published: the CLI and its changed
-   generator packages, the generic event-store packages containing the pre-hash
-   normalization hook, `@blossm/event-transaction-schema`, and the
-   `@blossm/postgres-*` packages. The new packages are unpublished at `0.0.1`.
-2. `@blossm/cli` here is raised to that published version. No version is named
-   in this repository because none exists yet.
+```bash
+node --version    # expect v24.22.1
+yarn --version    # expect 1.22.22
+COREPACK_ENABLE_AUTO_PIN=0 yarn install --frozen-lockfile
+yarn list --pattern @blossm/cli    # expect @blossm/cli@0.0.1959
+```
+
+Start from a checkout with no `node_modules`. The tracked `yarn.lock` is the
+install authority, and `--frozen-lockfile` fails instead of rewriting it.
+`COREPACK_ENABLE_AUTO_PIN=0` stops a Corepack-provided Yarn from adding a
+`packageManager` field to `package.json`. It has no effect otherwise.
+
+A fresh registry installation and frozen-lockfile check passed on 2026-11-20
+with lifecycle scripts disabled. The installed generator assembled the unchanged
+session procedure; its independently registry-installed service passed the
+handler fixture suite and all eight HTTP integration checks against disposable
+PostgreSQL 17.12. No workspace package links or local tarball overrides were used.
+The container build and live GCP behavior remain unverified until the steps below run.
 
 Linking a local CLI checkout is not a substitute. The generated service declares
 `@blossm/postgres-event-store` as a registry dependency, and both the Cloud Build
-install step and the image build fetch it from npm. A linked CLI can assemble
-the build but the build cannot install.
+install step and the image build fetch it from npm.
 
 ## Database role
 
@@ -279,10 +297,10 @@ done
 
 ### 5. Dry run
 
-Requires steps 1, 3 and 4, the
-[Toolbox release prerequisite](#toolbox-release-prerequisite), and `yarn install`
-run with the new CLI version. It does not require the secret, the KMS keys or
-any binding from steps 6 to 8.
+Requires steps 1, 3 and 4, and the Node 24.22.1 frozen Yarn install from
+[Toolbox release](#toolbox-release) so that `@blossm/cli` `0.0.1959` is the
+installed CLI. It does not require the secret, the KMS keys or any binding from
+steps 6 to 8.
 
 The CLI calls `gcloud builds submit` with the project but no account, so the
 active gcloud account is used. Setting it for the one command keeps the account
@@ -496,7 +514,10 @@ companion Toolbox source. Its generated Node24.22.1 service ran against a
 disposable PostgreSQL17 database, using workspace-linked packages: all nine
 generated handler and HTTP integration checks passed. The generated build names,
 Cloud SQL attachment, secret reference and service identities match this guide.
-This does not verify npm publication, the container build or live GCP permissions.
+That run predates the release. The published packages have since been verified
+in the registry, see [Toolbox release](#toolbox-release). The subsequent registry-installed session verification is recorded in
+[Toolbox release](#toolbox-release). These checks do not establish container-build
+or live GCP behavior.
 
 These follow from reading the generator and gcloud's documented behavior. None
 has been run.
