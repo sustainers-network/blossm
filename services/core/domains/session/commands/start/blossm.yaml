@@ -2,6 +2,17 @@ name: start
 domain: session
 service: core
 
+# Runtime identity of this service only, see docs/SESSION_START_DEPLOYMENT.md.
+# Signs with jwt/access and writes to the session event store. No database access.
+runtimeServiceAccounts:
+  development: blossm-session-start@blossm-network-development.iam.gserviceaccount.com
+
+# Granted to the runtime identity by the deployment.
+keys:
+  - ring: jwt
+    name: access
+    use: sign
+
 payload:
   device:
     type: object

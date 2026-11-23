@@ -1,8 +1,9 @@
 # Blossm services configuration, read by the Toolbox CLI.
 #
-# Only the development environment is configured, and only for the
-# core/session PostgreSQL event store. See docs/DEVELOPMENT_SETUP.md for the
-# cloud prerequisites and for what is deliberately absent below.
+# Only the development environment is configured: the core/session PostgreSQL
+# event store (docs/DEVELOPMENT_SETUP.md) and the prepared session start path
+# (docs/SESSION_START_DEPLOYMENT.md). Those guides list the cloud prerequisites
+# and what is deliberately absent below.
 network: blossm.network
 # Once a day at 5 am
 blockSchedule: "0 5 * * *"
@@ -25,8 +26,13 @@ vendors:
         development: us-east1-docker.pkg.dev/blossm-network-development/blossm
       buildServiceAccounts:
         development: blossm-build@blossm-network-development.iam.gserviceaccount.com
-      # Applies to every procedure deployed to this environment. It is scoped
-      # to the session event store, so deploy nothing else with this profile.
+      # The default runtime identity of every procedure in this environment.
+      # It is the session event store's identity and holds its database and
+      # block key access, so no other procedure may run as it. A procedure
+      # names its own identity with runtimeServiceAccounts in its blossm.yaml,
+      # which wins over this default. Deploy a procedure without that override
+      # only if it is the session event store. CLIs up to 0.0.1961 ignore the
+      # override and would deploy every procedure as this account.
       runtimeServiceAccounts:
         development: blossm-session@blossm-network-development.iam.gserviceaccount.com
       # No VPC connector. Internal services still require an authenticated invoker.

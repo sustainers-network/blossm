@@ -4,3 +4,8 @@ facts:
 
 #don't change
 procedure: fact-gateway
+
+# Runtime identity of this service only, see docs/SESSION_START_DEPLOYMENT.md.
+# Invokes the public-key fact. No key or database access.
+runtimeServiceAccounts:
+  development: blossm-public-key-gateway@blossm-network-development.iam.gserviceaccount.com
