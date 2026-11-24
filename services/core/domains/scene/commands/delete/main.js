@@ -1,43 +1,52 @@
 import deps from "./deps.js";
 
 export default async ({ payload, context, aggregateFn, queryAggregatesFn }) => {
-  console.log("context: ", context);
-  // Get the scene and principal aggregates.
-  const [sceneAggregate, principalGroupAggregates] = await Promise.all([
-    aggregateFn(payload.scene.root),
-    queryAggregatesFn({
-      domain: "group",
-      queryPairs: [{
-        key: "principals.root",
-        value: context.principal.root,
-      },
-      {
-        key: "principals.service",
-        value: context.principal.service,
-      },
-      {
-        key: "principals.network",
-        value: context.principal.network,
-      }],
-    }),
-  ]);
-  
-  console.log("hmm: ", principalGroupAggregates);
-   
-  // if (principalGroupAggregates && principalGroupAggregates.length) {
-  //   console.log("principalGroupAggregates: ", {root: principalGroupAggregates[0].state.group.root, service: principalGroupAggregates[0].state.group.service, network: principalGroupAggregates[0].state.group.network});
-  // }
-  console.log("sceneAggregate: ", sceneAggregate);
+  // Get the scene, the principal's groups and the principal's roles.
+  const [sceneAggregate, principalGroupAggregates, principalAggregate] =
+    await Promise.all([
+      aggregateFn(payload.scene.root),
+      queryAggregatesFn({
+        domain: "group",
+        queryPairs: [
+          {
+            key: "principals.root",
+            value: context.principal.root,
+          },
+          {
+            key: "principals.service",
+            value: context.principal.service,
+          },
+          {
+            key: "principals.network",
+            value: context.principal.network,
+          },
+        ],
+      }),
+      aggregateFn(context.principal.root, {
+        domain: "principal",
+        notFoundThrows: false,
+      }),
+    ]);
 
   // If the scene has already been deleted, return.
   if (sceneAggregate.state.deleted) return;
 
-  // Make sure the principal has the scene being deleted.
+  // Make sure the principal is in the scene's group and administers this
+  // scene. The gateway only checks for an admin role on some scene.
   if (
     !principalGroupAggregates.some(
-      (groupAggregate) => sceneAggregate.state.group.root == groupAggregate.root &&
+      (groupAggregate) =>
+        sceneAggregate.state.group.root == groupAggregate.root &&
         sceneAggregate.state.group.service == groupAggregate.service &&
         sceneAggregate.state.group.network == groupAggregate.network
+    ) ||
+    !((principalAggregate && principalAggregate.state.roles) || []).some(
+      (role) =>
+        role.id == "SceneAdmin" &&
+        role.subject.domain == "scene" &&
+        role.subject.root == payload.scene.root &&
+        role.subject.service == process.env.SERVICE &&
+        role.subject.network == process.env.NETWORK
     )
   )
     throw deps.forbiddenError.message("This scene isn't accessible.");

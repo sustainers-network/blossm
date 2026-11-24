@@ -53,6 +53,19 @@ testing:
 
   steps:
     - pre:
+        # The principal administers the scene being deleted.
+        - domain: principal
+          service: core
+          root: some-principal-root
+          action: add-roles
+          payload:
+            roles:
+              - id: SceneAdmin
+                subject:
+                  root: cb00ed30-b743-4fda-a8a1-c27544374f2e
+                  domain: scene
+                  service: core
+                  network: local.network
         - domain: group 
           service: core
           root: some-group-root
