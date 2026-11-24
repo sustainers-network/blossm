@@ -119,4 +119,18 @@ describe("Fact unit tests", () => {
     restore();
     await rejected({ name, context: queryContext, network }, undefined);
   });
+  it("should reject a context, name or key that is not a plain name", async () => {
+    const held = { "a.b": { root: "some-root" }, ...context };
+    for (const query of [
+      { name, context: "a.b", network },
+      { name: "a,b", context: queryContext, network },
+      { name: ["a", "b"], context: queryContext, network },
+      { context: queryContext, network },
+      { name, key: "a, b", context: queryContext, network },
+      { name, key: { a: 1 }, context: queryContext, network },
+    ]) {
+      await rejected(query, held);
+      restore();
+    }
+  });
 });
