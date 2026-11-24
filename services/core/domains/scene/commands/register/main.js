@@ -17,18 +17,19 @@ export default async ({ payload, context, commandFn }) => {
     network: process.env.NETWORK,
   };
 
-  // Give the principal admin privileges to this scene, if specified.
   const events = [
-    ...(payload.role
-      ? [
-          {
-            domain: "principal",
-            service: principal.service,
-            network: principal.network,
-            action: "add-roles",
-            root: principal.root,
-            payload: {
-              roles: [
+    // Make the principal the admin of the scene's group, so the group is never
+    // without one, and give it the scene role if one is specified.
+    {
+      domain: "principal",
+      service: principal.service,
+      network: principal.network,
+      action: "add-roles",
+      root: principal.root,
+      payload: {
+        roles: [
+          ...(payload.role
+            ? [
                 {
                   id: payload.role,
                   subject: {
@@ -38,11 +39,20 @@ export default async ({ payload, context, commandFn }) => {
                     network: process.env.NETWORK,
                   },
                 },
-              ],
+              ]
+            : []),
+          {
+            id: "GroupAdmin",
+            subject: {
+              root: group.root,
+              domain: "group",
+              service: group.service,
+              network: group.network,
             },
           },
-        ]
-      : []),
+        ],
+      },
+    },
     // Register the scene.
     {
       action: "register",
@@ -64,12 +74,22 @@ export default async ({ payload, context, commandFn }) => {
       payload: {
         principals: [
           {
-            roles: ["GroupAdmin"],
             root: principal.root,
             service: principal.service,
             network: principal.network,
           },
         ],
+      },
+    },
+    // Let the session's network reach the group.
+    {
+      domain: "group",
+      service: group.service,
+      network: group.network,
+      action: "add-networks",
+      root: group.root,
+      payload: {
+        networks: [context.network || process.env.NETWORK],
       },
     },
   ];

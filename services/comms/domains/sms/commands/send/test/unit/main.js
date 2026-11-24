@@ -2,6 +2,7 @@ import * as chai from "chai";
 import sinonChai from "sinon-chai";
 import { restore, replace, fake } from "sinon";
 
+import main from "../../main.js";
 import deps from "../../deps.js";
 
 chai.use(sinonChai);
@@ -25,17 +26,15 @@ process.env.SERVICE = service;
 process.env.NETWORK = network;
 process.env.TWILIO_SENDING_PHONE_NUMBER = sendingPhoneNumber;
 
-const main = require("../../main.js");
-
 describe("Command handler unit tests", () => {
   afterEach(() => {
     restore();
   });
   it("should return successfully", async () => {
-    const secretFake = fake.returns(secret);
+    const secretFake = fake.resolves(secret);
     replace(deps, "secret", secretFake);
 
-    const smsSendFake = fake();
+    const smsSendFake = fake.resolves();
     const smsFake = fake.returns({
       send: smsSendFake,
     });
@@ -53,7 +52,6 @@ describe("Command handler unit tests", () => {
           root,
           payload: {
             to,
-            message,
           },
         },
       ],

@@ -17,10 +17,12 @@ export default async ({ payload, context, commandFn }) => {
     service: "core",
     payload: {
       role: "SceneAdmin",
-      root: nodeRoot,
-      domain: process.env.DOMAIN,
-      service: process.env.SERVICE,
-      network: process.env.NETWORK,
+      subject: {
+        root: nodeRoot,
+        domain: process.env.DOMAIN,
+        service: process.env.SERVICE,
+        network: process.env.NETWORK,
+      },
     },
   });
 

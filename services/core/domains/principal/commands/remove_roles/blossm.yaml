@@ -2,6 +2,13 @@ name: remove-roles
 domain: principal
 service: core
 
+contexts:
+  - scene
+  - principal
+
+dependencies:
+  "@blossm/errors": "*"
+
 payload:
   roles:
     type:
@@ -128,6 +135,7 @@ testing:
   dependencies:
 
   steps:
+    # 0. A scene admin changes a role of the scene their session is in.
     - pre:
         - domain: principal
           service: core
@@ -135,36 +143,116 @@ testing:
           action: add-roles
           payload:
             roles:
-              - id: some-role-id
+              - id: SceneAdmin
                 subject:
-                  root: some-role-subject-root
-                  domain: some-role-subject-domain
-                  service: some-role-subject-service
-                  network: some.role-subject-network
+                  root: some-scene-root
+                  domain: scene
+                  service: core
+                  network: some.network
       payload:
         roles:
-          - id: some-role-id
+          - id: SceneAdmin
             subject:
-              root: some-role-subject-root
-              domain: some-role-subject-domain
-              service: some-role-subject-service
-              network: some.role-subject-network
+              root: some-scene-root
+              domain: scene
+              service: core
+              network: some.network
       context:
-        network: some.role-subject-network
+        network: some.network
+        scene:
+          root: some-scene-root
+          service: core
+          network: some.network
+        principal:
+          root: some-admin-root
+          service: core
+          network: some.network
       root: some-root
       code: 202
+    # 1. Nothing left to change.
     - payload:
         roles:
-          - id: some-role-id
+          - id: SceneAdmin
             subject:
-              root: some-role-subject-root
-              domain: some-role-subject-domain
-              service: some-role-subject-service
-              network: some.role-subject-network
+              root: some-scene-root
+              domain: scene
+              service: core
+              network: some.network
       context:
-        network: some.role-subject-network
+        network: some.network
+        scene:
+          root: some-scene-root
+          service: core
+          network: some.network
+        principal:
+          root: some-admin-root
+          service: core
+          network: some.network
       root: some-root
       code: 204
+    # 2. A role of a scene the session isn't in.
+    - payload:
+        roles:
+          - id: SceneAdmin
+            subject:
+              root: some-other-scene-root
+              domain: scene
+              service: core
+              network: some.network
+      context:
+        network: some.network
+        scene:
+          root: some-scene-root
+          service: core
+          network: some.network
+        principal:
+          root: some-admin-root
+          service: core
+          network: some.network
+      root: some-root
+      code: 403
+    # 3. A role that isn't a scene role.
+    - payload:
+        roles:
+          - id: NodeNetwork
+            subject:
+              root: some-scene-root
+              domain: scene
+              service: core
+              network: some.network
+      context:
+        network: some.network
+        scene:
+          root: some-scene-root
+          service: core
+          network: some.network
+        principal:
+          root: some-admin-root
+          service: core
+          network: some.network
+      root: some-root
+      code: 403
+    # 4. An admin removing their own admin role.
+    - payload:
+        roles:
+          - id: SceneAdmin
+            subject:
+              root: some-scene-root
+              domain: scene
+              service: core
+              network: some.network
+      context:
+        network: some.network
+        scene:
+          root: some-scene-root
+          service: core
+          network: some.network
+        principal:
+          root: some-admin-root
+          service: core
+          network: some.network
+      root: some-admin-root
+      code: 403
 
 #don't change
 procedure: command

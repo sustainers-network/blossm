@@ -5,11 +5,9 @@ commands:
   - name: create-token
     privileges: none
   - name: push
-    # context: node
-    # TODO revisit
+    context: node
     privileges:
-      none
-      # - create
+      - create
 
 #don't change
 procedure: command-gateway

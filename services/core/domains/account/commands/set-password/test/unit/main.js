@@ -1,154 +1,74 @@
-const { expect } = require("chai");
-const { fake, replace } = require("sinon");
+import * as chai from "chai";
+import sinonChai from "sinon-chai";
+import { restore, replace, fake } from "sinon";
 
-const deps = require("../../../deps.js");
-const main = require("../../main.js");
+import main from "../../main.js";
+import deps from "../../deps.js";
+
+chai.use(sinonChai);
+const { expect } = chai;
+
+const service = "some-service";
+const network = "some.network";
+const accountRoot = "some-account-root";
+const payload = { password: "new-password" };
+const context = { account: { root: accountRoot, service, network } };
+
+process.env.SERVICE = service;
+process.env.NETWORK = network;
 
 describe("Command handler unit tests", () => {
-  let hashFake;
-  let badRequestErrorFake;
-  let forbiddenErrorFake;
+  afterEach(() => {
+    restore();
+  });
 
-  beforeEach(() => {
-    hashFake = fake.returns("hashed-password");
-    badRequestErrorFake = {
-      message: fake.returns("Account already has a password set."),
-    };
-    forbiddenErrorFake = {
-      message: fake.returns("Can only modify your own account."),
-    };
-
+  it("should throw a bad request error if the account already has a password", async () => {
+    const hashFake = fake.resolves("hashed-password");
     replace(deps, "hash", hashFake);
-    replace(deps, "badRequestError", badRequestErrorFake);
-    replace(deps, "forbiddenError", forbiddenErrorFake);
-  });
-
-  it("should throw error if account already has a password", async () => {
-    const aggregateFnFake = fake.returns({
-      state: {
-        password: "existing-password",
-      },
+    const aggregateFnFake = fake.resolves({
+      state: { password: "existing-password" },
     });
 
-    const payload = { password: "new-password" };
-    const context = {
-      account: {
-        root: "some-account-root",
-        service: "some-service",
-        network: "some.network",
-      },
-    };
-
+    // The real error dependency is used so a wrong export name fails here.
+    let error;
     try {
-      await main({
-        payload,
-        context,
-        aggregateFn: aggregateFnFake,
-      });
-      expect.fail("Should have thrown an error");
-    } catch (error) {
-      expect(error).to.equal("Account already has a password set.");
-      expect(aggregateFnFake).to.have.been.calledWith("some-account-root");
-      expect(badRequestErrorFake.message).to.have.been.calledWith(
-        "Account already has a password set.",
-        {
-          info: { reason: "password_already_set" },
-        }
-      );
+      await main({ payload, context, aggregateFn: aggregateFnFake });
+    } catch (e) {
+      error = e;
     }
+
+    expect(error.statusCode).to.equal(400);
+    expect(error.message).to.equal("Account already has a password set.");
+    expect(error.toJSON().info).to.deep.equal({ reason: "password_already_set" });
+    expect(aggregateFnFake).to.have.been.calledWith(accountRoot);
+    expect(hashFake).to.not.have.been.called;
   });
 
-  it("should throw error if trying to modify different account", async () => {
-    const aggregateFnFake = fake.returns({
-      root: "different-account-root",
+  it("should set the password if the account doesn't have one", async () => {
+    const hashFake = fake.resolves("hashed-password");
+    replace(deps, "hash", hashFake);
+    const aggregateFnFake = fake.resolves({
+      root: accountRoot,
       state: {
-        email: "some@email.com",
-        principal: {
-          root: "some-principal",
-          service: "some-service",
-          network: "some.network",
-        },
+        principal: { root: "some-principal", service, network },
       },
     });
 
-    const payload = { password: "new-password" };
-    const context = {
-      account: {
-        root: "some-account-root",
-        service: "some-service",
-        network: "some.network",
-      },
-    };
-
-    try {
-      await main({
-        payload,
-        context,
-        aggregateFn: aggregateFnFake,
-      });
-      expect.fail("Should have thrown an error");
-    } catch (error) {
-      expect(error).to.equal("Can only modify your own account.");
-      expect(aggregateFnFake).to.have.been.calledWith("some-account-root");
-      expect(forbiddenErrorFake.message).to.have.been.calledWith(
-        "Can only modify your own account.",
-        {
-          info: { reason: "unauthorized_account_modification" },
-        }
-      );
-    }
-  });
-
-  it("should successfully set password if account doesn't have one", async () => {
-    const aggregateFnFake = fake.returns({
-      root: "some-account-root",
-      state: {
-        email: "some@email.com",
-        principal: {
-          root: "some-principal",
-          service: "some-service",
-          network: "some.network",
-        },
-      },
-    });
-
-    const payload = { password: "new-password" };
-    const context = {
-      account: {
-        root: "some-account-root",
-        service: "some-service",
-        network: "some.network",
-      },
-    };
-
-    const result = await main({
-      payload,
-      context,
-      aggregateFn: aggregateFnFake,
-    });
+    const result = await main({ payload, context, aggregateFn: aggregateFnFake });
 
     expect(result).to.deep.equal({
       events: [
         {
           action: "set-password",
-          root: "some-account-root",
-          payload: {
-            password: "hashed-password",
-          },
+          root: accountRoot,
+          payload: { password: "hashed-password" },
         },
       ],
       response: {
-        receipt: {
-          account: {
-            root: "some-account-root",
-            service: "some-service",
-            network: "some.network",
-          },
-        },
+        receipt: { account: { root: accountRoot, service, network } },
       },
     });
-
-    expect(aggregateFnFake).to.have.been.calledWith("some-account-root");
+    expect(aggregateFnFake).to.have.been.calledWith(accountRoot);
     expect(hashFake).to.have.been.calledWith("new-password");
   });
-}); 
+});

@@ -8,31 +8,25 @@ actions:
 
 schema:
   to: String
-  message: String
 
 testing:
   examples:
     - action: send
       payload:
         to: some-to
-        message: some-message
     - action: send
       payload:
         to: some-to
-        message: some-message
 
   handlers:
     - action: send
       examples:
         - state:
             to: some-to
-            message: some-message
           payload:
             to: some-other-to
-            message: some-other-message
           result:
             to: some-other-to
-            message: some-other-message
 
 #don't change
 procedure: event-store

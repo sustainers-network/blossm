@@ -90,10 +90,12 @@ describe("Command handler unit tests", () => {
       .onSecondCall()
       .returns({
         state: {
-          domain: sceneAggregateDomain,
-          service: sceneAggregateService,
-          network: sceneAggregateNetwork,
-          root: sceneAggregateRoot,
+          subject: {
+            domain: sceneAggregateDomain,
+            service: sceneAggregateService,
+            network: sceneAggregateNetwork,
+            root: sceneAggregateRoot,
+          },
           group: {
             root: groupRoot,
             service,
@@ -214,10 +216,12 @@ describe("Command handler unit tests", () => {
       .onSecondCall()
       .returns({
         state: {
-          domain: sceneAggregateDomain,
-          service: sceneAggregateService,
-          network: sceneAggregateNetwork,
-          root: sceneAggregateRoot,
+          subject: {
+            domain: sceneAggregateDomain,
+            service: sceneAggregateService,
+            network: sceneAggregateNetwork,
+            root: sceneAggregateRoot,
+          },
           group: {
             root: groupRoot,
             service,
@@ -350,10 +354,12 @@ describe("Command handler unit tests", () => {
       .onSecondCall()
       .returns({
         state: {
-          domain: sceneAggregateDomain,
-          service: sceneAggregateService,
-          network: sceneAggregateNetwork,
-          root: sceneAggregateRoot,
+          subject: {
+            domain: sceneAggregateDomain,
+            service: sceneAggregateService,
+            network: sceneAggregateNetwork,
+            root: sceneAggregateRoot,
+          },
           group: {
             root: "bogus",
             service,
@@ -411,10 +417,12 @@ describe("Command handler unit tests", () => {
       .onSecondCall()
       .returns({
         state: {
-          domain: sceneAggregateDomain,
-          service: sceneAggregateService,
-          network: sceneAggregateNetwork,
-          root: sceneAggregateRoot,
+          subject: {
+            domain: sceneAggregateDomain,
+            service: sceneAggregateService,
+            network: sceneAggregateNetwork,
+            root: sceneAggregateRoot,
+          },
           group: {
             root: groupRoot,
             service,
@@ -448,6 +456,59 @@ describe("Command handler unit tests", () => {
       expect(e).to.equal(error);
     }
   });
+  it("should throw correctly if the scene is deleted", async () => {
+    const createJwtFake = fake.returns(token);
+    replace(deps, "createJwt", createJwtFake);
+
+    const aggregateFake = stub()
+      .onFirstCall()
+      .returns({ state: {} })
+      .onSecondCall()
+      .returns({
+        state: {
+          deleted: deps.stringDate(),
+          subject: {
+            domain: sceneAggregateDomain,
+            service: sceneAggregateService,
+            network: sceneAggregateNetwork,
+            root: sceneAggregateRoot,
+          },
+          group: {
+            root: groupRoot,
+            service,
+            network,
+          }
+        },
+      });
+
+    const queryAggregatesFnFake = fake
+      .returns([{
+        root: groupRoot,
+        service,
+        network,
+      }]);
+    const error = "some-error";
+    const messageFake = fake.returns(error);
+    replace(deps, "badRequestError", {
+      message: messageFake,
+    });
+
+    let thrown;
+    try {
+      await main({
+        payload,
+        context,
+        claims,
+        aggregateFn: aggregateFake,
+        queryAggregatesFn: queryAggregatesFnFake,
+      });
+    } catch (e) {
+      thrown = e;
+    }
+    expect(thrown).to.equal(error);
+    expect(messageFake).to.have.been.calledWith("This scene has been deleted.");
+    expect(createJwtFake).to.not.have.been.called;
+  });
   it("should throw correctly if session terminated", async () => {
     const signature = "some-signature";
     const signFake = fake.returns(signature);
@@ -462,8 +523,12 @@ describe("Command handler unit tests", () => {
       .onSecondCall()
       .returns({
         state: {
-          domain: sceneAggregateDomain,
-          root: sceneAggregateRoot,
+          subject: {
+            domain: sceneAggregateDomain,
+            service: sceneAggregateService,
+            network: sceneAggregateNetwork,
+            root: sceneAggregateRoot,
+          },
           group: {
             root: groupRoot,
             service,
@@ -516,10 +581,12 @@ describe("Command handler unit tests", () => {
       .onSecondCall()
       .returns({
         state: {
-          domain: sceneAggregateDomain,
-          service: sceneAggregateService,
-          network: sceneAggregateNetwork,
-          root: sceneAggregateRoot,
+          subject: {
+            domain: sceneAggregateDomain,
+            service: sceneAggregateService,
+            network: sceneAggregateNetwork,
+            root: sceneAggregateRoot,
+          },
           group: {  
             root: groupRoot,
             service,

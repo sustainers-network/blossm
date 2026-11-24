@@ -10,10 +10,28 @@ const { expect } = chai;
 
 const name = "some-name";
 const key = "some-key";
-const context = "some-context";
 const network = "some-network";
+const coreNetwork = "some-core-network";
 
 const queryContext = "some-query-context";
+const context = { [queryContext]: { root: "some-context-root" } };
+
+process.env.NETWORK = network;
+process.env.CORE_NETWORK = coreNetwork;
+
+const rejected = async (query, context) => {
+  const getFake = fake.resolves({ body: "some-channel" });
+  replace(deps, "get", getFake);
+
+  let error;
+  try {
+    await main({ query, context });
+  } catch (e) {
+    error = e;
+  }
+  expect(error.statusCode).to.equal(403);
+  expect(getFake).to.not.have.been.called;
+};
 
 describe("Fact unit tests", () => {
   afterEach(() => {
@@ -29,7 +47,7 @@ describe("Fact unit tests", () => {
 
     const channel = "some-channel";
 
-    const getFake = fake.returns({ body: channel });
+    const getFake = fake.resolves({ body: channel });
 
     replace(deps, "get", getFake);
     const { response, headers } = await main({ query, context });
@@ -52,15 +70,15 @@ describe("Fact unit tests", () => {
       "Grip-Keep-Alive": ":\\n\\n; format=cstring; timeout=20",
     });
   });
-  it("should return successfully with domain and no context", async () => {
+  it("should return successfully with the core network and no context", async () => {
     const query = {
       name,
-      network,
+      network: coreNetwork,
     };
 
     const channel = "some-channel";
 
-    const getFake = fake.returns({ body: channel });
+    const getFake = fake.resolves({ body: channel });
 
     replace(deps, "get", getFake);
     const { response, headers } = await main({ query, context });
@@ -68,7 +86,7 @@ describe("Fact unit tests", () => {
     const padding = new Array(2048);
     const body = `:${padding.join(" ")}\n\n`;
     expect(response).to.deep.equal(body);
-    expect(getFake).to.have.been.calledWith(`v.${network}`, {
+    expect(getFake).to.have.been.calledWith(`v.${coreNetwork}`, {
       query: {
         context,
         name: query.name,
@@ -81,5 +99,24 @@ describe("Fact unit tests", () => {
       "Grip-Channel": channel,
       "Grip-Keep-Alive": ":\\n\\n; format=cstring; timeout=20",
     });
+  });
+  it("should reject a foreign network", async () => {
+    await rejected(
+      { name, context: queryContext, network: "some-foreign-network" },
+      context
+    );
+  });
+  it("should reject a missing network", async () => {
+    await rejected({ name, context: queryContext }, context);
+  });
+  it("should reject a network that is not a string", async () => {
+    await rejected({ name, network: [network] }, context);
+  });
+  it("should reject a context that the token doesn't hold", async () => {
+    await rejected({ name, context: "evil.example/?x=", network }, context);
+    restore();
+    await rejected({ name, context: "toString", network }, context);
+    restore();
+    await rejected({ name, context: queryContext, network }, undefined);
   });
 });

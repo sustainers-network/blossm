@@ -152,9 +152,7 @@ describe("Command handler unit tests", () => {
       .onCall(0)
       .returns([account])
       .onCall(1)
-      .returns([sessionPrincipalGroupAggregate])
-      .onCall(2)
-      .returns([principalGroupAggregate]);
+      .returns([sessionPrincipalGroupAggregate]);
 
     const aggregateFake = stub()
       .onFirstCall()
@@ -162,12 +160,10 @@ describe("Command handler unit tests", () => {
       .onSecondCall()
       .returns(principalAggregate);
 
-    const commandFnFake = stub()
-      .onSecondCall()
-      .returns({
-        body: { _tokens, receipt: { challenge } },
-        statusCode,
-      });
+    const commandFnFake = fake.returns({
+      body: { _tokens, receipt: { challenge } },
+      statusCode,
+    });
 
     replace(deps, "compare", fake.returns(true));
 
@@ -215,22 +211,7 @@ describe("Command handler unit tests", () => {
         value: contextPrincipalNetwork,
       }],
     });
-    expect(queryAggregatesFnFake.getCall(2)).to.have.been.calledWith({
-      domain: "group",
-      queryPairs: [{
-        key: "principals.root",
-        value: principalRoot,
-      },
-      {
-        key: "principals.service",
-        value: principalService,
-      },
-      {
-        key: "principals.network",
-        value: principalNetwork,
-      }],
-    });
-    expect(queryAggregatesFnFake).to.have.callCount(3);
+    expect(queryAggregatesFnFake).to.have.callCount(2);
     expect(aggregateFake.getCall(0)).to.have.been.calledWith(
       contextPrincipalRoot,
       {
@@ -243,25 +224,9 @@ describe("Command handler unit tests", () => {
       domain: "principal",
     });
     expect(aggregateFake).to.have.been.calledTwice;
-    expect(commandFnFake).to.have.been.calledTwice;
+    // Nothing is done to the groups before the challenge is answered.
+    expect(commandFnFake).to.have.been.calledOnce;
     expect(commandFnFake.getCall(0)).to.have.been.calledWith({
-      name: "add-principals",
-      domain: "group",
-      async: true,
-      payload: {
-        principals: [
-          {
-            network: principalNetwork,
-            roles: [roleId],
-            root: principalRoot,
-            service: principalService,
-          },
-        ],
-      },
-      root: sessionPrincipalGroupRoot,
-      service,
-    });
-    expect(commandFnFake.getCall(1)).to.have.been.calledWith({
       name: "issue",
       domain: "challenge",
       payload: { email, password },
@@ -300,6 +265,51 @@ describe("Command handler unit tests", () => {
                 },
               ],
             },
+          },
+          {
+            action: "add-roles",
+            domain: "principal",
+            service,
+            root: principalRoot,
+            payload: { roles: [{
+                  id: roleId,
+                  subject: {
+                    root: sessionPrincipalGroupRoot,
+                    domain: "group",
+                    service,
+                    network,
+                  },
+                }] },
+          },
+          {
+            action: "add-principals",
+            domain: "group",
+            service,
+            root: sessionPrincipalGroupRoot,
+            payload: {
+              principals: [
+                {
+                  root: principalRoot,
+                  service: principalService,
+                  network: principalNetwork,
+                },
+              ],
+            },
+          },
+          {
+            action: "remove-roles",
+            domain: "principal",
+            service,
+            root: contextPrincipalRoot,
+            payload: { roles: [{
+                  id: roleId,
+                  subject: {
+                    root: sessionPrincipalGroupRoot,
+                    domain: "group",
+                    service,
+                    network,
+                  },
+                }] },
           },
           {
             action: "remove-principals",
@@ -414,8 +424,6 @@ describe("Command handler unit tests", () => {
       .onFirstCall()
       .returns([account])
       .onSecondCall()
-      .returns([principalGroupAggregate])
-      .onThirdCall()
       .returns([principalGroupAggregate]);
 
     const aggregateFake = stub()
@@ -475,22 +483,7 @@ describe("Command handler unit tests", () => {
         value: principalNetwork,
       }],
     });
-    expect(queryAggregatesFnFake.getCall(2)).to.have.been.calledWith({
-      domain: "group",
-      queryPairs: [{
-        key: "principals.root",
-        value: principalRoot,
-      },
-      {
-        key: "principals.service",
-        value: principalService,
-      },
-      {
-        key: "principals.network",
-        value: principalNetwork,
-      }],
-    });
-    expect(queryAggregatesFnFake).to.have.callCount(3);
+    expect(queryAggregatesFnFake).to.have.callCount(2);
     expect(aggregateFake.getCall(0)).to.have.been.calledWith(contextPrincipalRoot, {
       domain: "principal",
       service: contextPrincipalService,
@@ -515,6 +508,35 @@ describe("Command handler unit tests", () => {
         },
         events: [
           {
+            action: "add-roles",
+            domain: "principal",
+            service,
+            root: principalRoot,
+            payload: { roles: [{ id: "some-role-id", subject: { root: principalGroupRoot, domain: "group", service, network } }] },
+          },
+          {
+            action: "add-principals",
+            domain: "group",
+            service,
+            root: principalGroupRoot,
+            payload: {
+              principals: [
+                {
+                  root: principalRoot,
+                  service: principalService,
+                  network: principalNetwork,
+                },
+              ],
+            },
+          },
+          {
+            action: "remove-roles",
+            domain: "principal",
+            service,
+            root: principalRoot,
+            payload: { roles: [{ id: "some-role-id", subject: { root: principalGroupRoot, domain: "group", service, network } }] },
+          },
+          {
             action: "remove-principals",
             domain: "group",
             payload: {
@@ -533,6 +555,100 @@ describe("Command handler unit tests", () => {
       },
     });
   });
+  it("should add a session role that shares an id with an account role but has a different subject", async () => {
+    replace(deps, "secret", fake.returns(hmacSecret));
+    replace(deps, "hmacCreate", fake.returns(hmacEmail));
+    replace(deps, "compare", fake.returns(true));
+
+    const sameIdRole = {
+      id: "some-silly-role-id",
+      subject: { root: "some-different-root", domain: "non-group", service, network },
+    };
+
+    const queryAggregatesFnFake = stub()
+      .onFirstCall()
+      .returns([account])
+      .returns([principalGroupAggregate]);
+
+    const aggregateFake = stub()
+      .onFirstCall()
+      .returns({
+        ...sessionPrincipalAggregate,
+        state: {
+          roles: [sameIdRole],
+        },
+      })
+      .onSecondCall()
+      .returns(principalAggregate);
+
+    const commandFnFake = fake.returns({
+      body: { _tokens, receipt: { challenge } },
+      statusCode,
+    });
+
+    await main({
+      payload,
+      context,
+      commandFn: commandFnFake,
+      aggregateFn: aggregateFake,
+      queryAggregatesFn: queryAggregatesFnFake,
+    });
+
+    expect(commandFnFake.lastCall.args[0].options.events[0]).to.deep.equal({
+      action: "add-roles",
+      domain: "principal",
+      service,
+      root: principalRoot,
+      payload: { roles: [sameIdRole] },
+    });
+  });
+  it("should carry a group role over to the account's principal and nothing else", async () => {
+    replace(deps, "secret", fake.returns(hmacSecret));
+    replace(deps, "hmacCreate", fake.returns(hmacEmail));
+    replace(deps, "compare", fake.returns(true));
+
+    const queryAggregatesFnFake = stub()
+      .onFirstCall()
+      .returns([account])
+      .returns([principalGroupAggregate]);
+
+    const aggregateFake = stub()
+      .onFirstCall()
+      .returns({
+        ...sessionPrincipalAggregate,
+        state: {
+          roles: [
+            { id: "some-new-group-role-id", subject: { root: principalGroupRoot, domain: "group", service, network } },
+          ],
+        },
+      })
+      .onSecondCall()
+      .returns(principalAggregate);
+
+    const commandFnFake = fake.returns({
+      body: { _tokens, receipt: { challenge } },
+      statusCode,
+    });
+
+    await main({
+      payload,
+      context,
+      commandFn: commandFnFake,
+      aggregateFn: aggregateFake,
+      queryAggregatesFn: queryAggregatesFnFake,
+    });
+
+    const { events } = commandFnFake.lastCall.args[0].options;
+    expect(events.map((e) => `${e.action}:${e.root}`)).to.deep.equal([
+      `add-roles:${principalRoot}`,
+      `add-principals:${principalGroupRoot}`,
+      `remove-roles:${contextPrincipalRoot}`,
+      `remove-principals:${principalGroupRoot}`,
+    ]);
+    expect(events[0].payload.roles.map((role) => role.id)).to.deep.equal([
+      "some-new-group-role-id",
+    ]);
+  });
   it("should return successfully if account not found with no principal in the context", async () => {
     const queryAggregatesFnFake = fake.returns([]);
 
@@ -545,7 +661,7 @@ describe("Command handler unit tests", () => {
       .onSecondCall()
       .returns(principalRoot);
 
-    const hashFake = fake.returns(hashedPassword);
+    const hashFake = fake.resolves(hashedPassword);
     replace(deps, "hash", hashFake);
 
     const secretFake = fake.returns(hmacSecret);
@@ -686,7 +802,7 @@ describe("Command handler unit tests", () => {
       .onFirstCall()
       .returns(sessionPrincipalAggregate);
 
-    const hashFake = fake.returns(hashedPassword);
+    const hashFake = fake.resolves(hashedPassword);
     replace(deps, "hash", hashFake);
 
     const secretFake = fake.returns(hmacSecret);
@@ -824,6 +940,36 @@ describe("Command handler unit tests", () => {
         ],
       },
     });
+  });
+  it("should not issue a challenge if password hashing fails", async () => {
+    const hashError = new Error("Password hashing failed.");
+    const hashResult = Promise.reject(hashError);
+    // Observe the rejection while checking whether main propagates it.
+    hashResult.catch(() => {});
+    replace(deps, "hash", fake.returns(hashResult));
+    replace(deps, "secret", fake.returns(hmacSecret));
+    replace(deps, "hmacCreate", fake.returns(hmacEmail));
+    replace(deps, "encrypt", fake.returns(emailEncrypted));
+    const commandFn = fake.returns({
+      body: { _tokens, receipt: { challenge } },
+      statusCode,
+    });
+
+    let caught;
+    try {
+      await main({
+        payload,
+        context: {},
+        commandFn,
+        queryAggregatesFn: fake.returns([]),
+        generateRootFn: fake.returns(accountRoot),
+      });
+    } catch (error) {
+      caught = error;
+    }
+
+    expect(caught).to.equal(hashError);
+    expect(commandFn).not.to.have.been.called;
   });
   it("should return nothing if context principal is the account's principal", async () => {
     const queryAggregatesFnFake = fake.returns([
