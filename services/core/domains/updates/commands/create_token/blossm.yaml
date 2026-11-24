@@ -1,6 +1,6 @@
 name: create-token
 domain: updates
-service: system
+service: core
 
 dependencies:
   "@blossm/jwt": "*"

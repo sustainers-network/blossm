@@ -1,6 +1,6 @@
 name: channel
 domain: updates
-service: system
+service: core
 
 dependencies:
   "@blossm/request": "*"

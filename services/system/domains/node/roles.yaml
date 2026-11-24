@@ -10,4 +10,4 @@ NodeNetwork:
   title: Node Network
   permissions:
     - system:connection:create
-    - system:updates:create
+    - core:updates:create

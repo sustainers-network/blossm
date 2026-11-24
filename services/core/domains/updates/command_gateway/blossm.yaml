@@ -1,5 +1,5 @@
 domain: updates
-service: system
+service: core
 
 commands:
   - name: create-token
