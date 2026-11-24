@@ -15,6 +15,24 @@ const network = "some-network";
 process.env.SERVICE = service;
 process.env.NETWORK = network;
 
+// The calling principal, as it appears in the session context.
+const caller = {
+  root: "caller-root",
+  service: "caller-service",
+  network: "caller-network",
+};
+
+const adminRole = {
+  id: "GroupAdmin",
+  subject: { root, domain: "group", service, network },
+};
+
+// The real aggregateFn is async and reads the store named by its options.
+const aggregateFnFake = ({ group, roles = [adminRole] }) =>
+  fake(async (_, { domain } = {}) =>
+    domain == "principal" ? { state: { roles } } : { state: group }
+  );
+
 describe("Command handler unit tests", () => {
   afterEach(() => {
     restore();
@@ -47,14 +65,15 @@ describe("Command handler unit tests", () => {
       ],
     };
 
-    const aggregateFake = fake.returns({
-      state: {
+    const aggregateFake = aggregateFnFake({
+      group: {
         networks: [network],
-        principals: [],
+        principals: [caller],
       },
     });
     const context = {
       network,
+      principal: caller,
     };
     const result = await main({
       payload,
@@ -63,6 +82,10 @@ describe("Command handler unit tests", () => {
       context,
     });
     expect(aggregateFake).to.have.been.calledWith(root);
+    expect(aggregateFake).to.have.been.calledWith(caller.root, {
+      domain: "principal",
+      notFoundThrows: false,
+    });
     expect(result).to.deep.equal({
       events: [
         {
@@ -188,10 +211,11 @@ describe("Command handler unit tests", () => {
       ],
     };
 
-    const aggregateFake = fake.returns({
-      state: {
+    const aggregateFake = aggregateFnFake({
+      group: {
         networks: [network],
         principals: [
+          caller,
           {
             root: principal2Root,
             service: principal2Service,
@@ -203,6 +227,7 @@ describe("Command handler unit tests", () => {
     });
     const context = {
       network,
+      principal: caller,
     };
     const result = await main({
       payload,
@@ -273,10 +298,11 @@ describe("Command handler unit tests", () => {
       ],
     };
 
-    const aggregateFake = fake.returns({
-      state: {
+    const aggregateFake = aggregateFnFake({
+      group: {
         networks: [network],
         principals: [
+          caller,
           {
             root: principal1Root,
             service: principal1Service,
@@ -294,6 +320,7 @@ describe("Command handler unit tests", () => {
     });
     const context = {
       network,
+      principal: caller,
     };
     const result = await main({
       payload,
@@ -465,6 +492,70 @@ describe("Command handler unit tests", () => {
       expect(e).to.equal(error);
     }
   });
+  const refusedCases = [
+    {
+      name: "a member without the GroupAdmin role",
+      context: { network, principal: caller },
+      principals: [caller],
+      roles: [{ ...adminRole, id: "GroupMember" }],
+    },
+    {
+      name: "a GroupAdmin of another group",
+      context: { network, principal: caller },
+      principals: [caller],
+      roles: [
+        { ...adminRole, subject: { ...adminRole.subject, root: "other-root" } },
+      ],
+    },
+    {
+      name: "a principal that holds the role but is not a member",
+      context: { network, principal: caller },
+      principals: [],
+      roles: [adminRole],
+    },
+    {
+      name: "a session with no principal",
+      context: { network },
+      principals: [caller],
+      roles: [adminRole],
+    },
+    {
+      name: "a same-network principal adding itself to a group it is not in",
+      context: { network, principal: caller },
+      principals: [],
+      roles: [],
+    },
+  ];
+  for (const { name, context, principals, roles } of refusedCases) {
+    it(`should refuse ${name}`, async () => {
+      const error = "some-error";
+      const messageFake = fake.returns(error);
+      replace(deps, "forbiddenError", {
+        message: messageFake,
+      });
+
+      try {
+        await main({
+          root,
+          context,
+          payload: {
+            principals: [{ ...caller, roles: ["GroupAdmin"] }],
+          },
+          aggregateFn: aggregateFnFake({
+            group: { networks: [network], principals },
+            roles,
+          }),
+        });
+        //shouldn't get called
+        expect(2).to.equal(3);
+      } catch (e) {
+        expect(messageFake).to.have.been.calledWith(
+          "This group isn't accessible."
+        );
+        expect(e).to.equal(error);
+      }
+    });
+  }
   it("should throw correctly too many principals with root", async () => {
     const error = "some-error";
     const messageFake = fake.returns(error);
@@ -481,11 +572,12 @@ describe("Command handler unit tests", () => {
         root,
         context: {
           network,
+          principal: caller,
         },
-        aggregateFn: fake.returns({
-          state: {
+        aggregateFn: aggregateFnFake({
+          group: {
             networks: [network],
-            principals: ["some-thing"],
+            principals: [caller],
           },
         }),
         payload: {

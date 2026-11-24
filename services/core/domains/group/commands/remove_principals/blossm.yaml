@@ -94,6 +94,27 @@ testing:
                 root: some-group-root
                 service: core
                 network: some.group-network
+        - domain: group
+          service: core
+          root: some-group-root
+          action: add-principals
+          payload:
+            principals:
+              - root: some-admin-root
+                service: core
+                network: some.group-network
+        - domain: principal
+          service: core
+          root: some-admin-root
+          action: add-roles
+          payload:
+            roles:
+              - id: GroupAdmin
+                subject:
+                  root: some-group-root
+                  domain: group
+                  service: core
+                  network: local.network
       payload:
         principals:
           - role: GroupAdmin
@@ -102,6 +123,10 @@ testing:
             network: some.group-network
       context:
         network: some.group-network
+        principal:
+          root: some-admin-root
+          service: core
+          network: some.group-network
       root: some-group-root
       code: 202
     - payload:
@@ -112,8 +137,27 @@ testing:
             network: some.network
       context:
         network: some.group-network
+        principal:
+          root: some-admin-root
+          service: core
+          network: some.group-network
       root: some-group-root
       code: 204
+    # A same-network principal that is not a GroupAdmin member of the group is refused.
+    - payload:
+        principals:
+          - role: GroupAdmin
+            root: some-admin-root
+            service: core
+            network: some.group-network
+      context:
+        network: some.group-network
+        principal:
+          root: some-outsider-root
+          service: core
+          network: some.group-network
+      root: some-group-root
+      code: 403
     - pre:
         - domain: group
           service: core
