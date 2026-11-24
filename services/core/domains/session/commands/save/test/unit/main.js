@@ -165,7 +165,6 @@ describe("Command handler unit tests", () => {
       statusCode,
     });
 
-    replace(deps, "compare", fake.returns(true));
 
     const result = await main({
       payload,
@@ -355,7 +354,6 @@ describe("Command handler unit tests", () => {
       statusCode,
     });
 
-    replace(deps, "compare", fake.returns(true));
 
     const context = {};
     const result = await main({
@@ -437,7 +435,6 @@ describe("Command handler unit tests", () => {
       statusCode,
     });
 
-    replace(deps, "compare", fake.returns(true));
 
     const result = await main({
       payload,
@@ -558,7 +555,6 @@ describe("Command handler unit tests", () => {
   it("should add a session role that shares an id with an account role but has a different subject", async () => {
     replace(deps, "secret", fake.returns(hmacSecret));
     replace(deps, "hmacCreate", fake.returns(hmacEmail));
-    replace(deps, "compare", fake.returns(true));
 
     const sameIdRole = {
       id: "some-silly-role-id",
@@ -605,7 +601,6 @@ describe("Command handler unit tests", () => {
   it("should carry a group role over to the account's principal and nothing else", async () => {
     replace(deps, "secret", fake.returns(hmacSecret));
     replace(deps, "hmacCreate", fake.returns(hmacEmail));
-    replace(deps, "compare", fake.returns(true));
 
     const queryAggregatesFnFake = stub()
       .onFirstCall()
@@ -678,7 +673,6 @@ describe("Command handler unit tests", () => {
       statusCode,
     });
 
-    replace(deps, "compare", fake.returns(true));
 
     const context = {};
     const result = await main({
@@ -819,7 +813,6 @@ describe("Command handler unit tests", () => {
       statusCode,
     });
 
-    replace(deps, "compare", fake.returns(true));
 
     const result = await main({
       payload,
@@ -984,7 +977,6 @@ describe("Command handler unit tests", () => {
       },
     ]);
 
-    replace(deps, "compare", fake.returns(true));
 
     const secretFake = fake.returns(hmacSecret);
     replace(deps, "secret", secretFake);
@@ -1023,7 +1015,6 @@ describe("Command handler unit tests", () => {
       }
     });
 
-    replace(deps, "compare", fake.returns(true));
 
     const secretFake = fake.returns(hmacSecret);
     replace(deps, "secret", secretFake);
@@ -1051,7 +1042,6 @@ describe("Command handler unit tests", () => {
 
     const queryAggregatesFnFake = fake.rejects(errorMessage);
 
-    replace(deps, "compare", fake.returns(true));
 
     const secretFake = fake.returns(hmacSecret);
     replace(deps, "secret", secretFake);
@@ -1071,28 +1061,21 @@ describe("Command handler unit tests", () => {
       expect(e.message).to.equal(errorMessage);
     }
   });
-  it("should throw if compare fails", async () => {
-    const queryAggregatesFnFake = fake.returns([{ ...account, state: { ...account.state, password: "some-weird-password" } }]);
-
+  it("should leave the password check to the issue command", async () => {
+    const queryAggregatesFnFake = stub()
+      .onCall(0)
+      .returns([account])
+      .onCall(1)
+      .returns([sessionPrincipalGroupAggregate]);
     const aggregateFake = stub()
       .onFirstCall()
-      .returns({
-        state: principalAggregate,
-      })
+      .returns(sessionPrincipalAggregate)
       .onSecondCall()
-      .returns({
-        state: sessionPrincipalAggregate,
-      });
-
-    const commandFnFake = fake.returns({ body: { _tokens }, statusCode });
-
-    replace(deps, "compare", fake.returns(false));
-
-    const secretFake = fake.returns(hmacSecret);
-    replace(deps, "secret", secretFake);
-
-    const hmacCreateFake = fake.returns(hmacEmail);
-    replace(deps, "hmacCreate", hmacCreateFake);
+      .returns(principalAggregate);
+    const wrongPassword = new Error("This password is incorrect.");
+    const commandFnFake = fake.rejects(wrongPassword);
+    replace(deps, "secret", fake.returns(hmacSecret));
+    replace(deps, "hmacCreate", fake.returns(hmacEmail));
 
     try {
       await main({
@@ -1102,11 +1085,14 @@ describe("Command handler unit tests", () => {
         aggregateFn: aggregateFake,
         queryAggregatesFn: queryAggregatesFnFake,
       });
-
-      //shouldn't get called
-      expect(2).to.equal(3);
+      expect.fail("should have thrown");
     } catch (e) {
-      expect(e.message).to.equal("This password isn't right.");
+      expect(e).to.equal(wrongPassword);
     }
+    expect(commandFnFake.firstCall.args[0]).to.deep.include({
+      name: "issue",
+      domain: "challenge",
+      payload: { email: payload.email, password: payload.password },
+    });
   });
 });

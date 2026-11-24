@@ -69,7 +69,7 @@ testing:
       service: core
 
   steps:
-    # 0. Should return 409 if the password is wrong.
+    # 0. Should return 400 if the password is wrong. The challenge issue command checks it.
     - pre:
         # Make sure there is an account registered.
         - domain: account
@@ -90,7 +90,7 @@ testing:
       payload:
         email: some@accountemail.com
         password: some-bogus
-      code: 409
+      code: 400
 
     # 1. Should return an empty response if saving isn't necessary.
     - pre:

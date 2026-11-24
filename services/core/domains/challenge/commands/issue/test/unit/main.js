@@ -106,7 +106,7 @@ describe("Command handler unit tests", () => {
     replace(deps, "hmacCreate", hmacCreateFake);
 
     const result = await main({
-        ...noRequestsYet,
+      ...noRequestsYet,
       payload,
       context,
       claims,
@@ -235,7 +235,7 @@ describe("Command handler unit tests", () => {
       network: contextNetwork,
     };
     const result = await main({
-        ...noRequestsYet,
+      ...noRequestsYet,
       payload,
       context,
       claims,
@@ -369,7 +369,7 @@ describe("Command handler unit tests", () => {
 
     const events = [{ a: 1 }, { b: 2 }];
     const result = await main({
-        ...noRequestsYet,
+      ...noRequestsYet,
       payload,
       context,
       claims,
@@ -506,12 +506,14 @@ describe("Command handler unit tests", () => {
 
     const upgrade = { some: "upgrade" };
     const result = await main({
-        ...noRequestsYet,
+      ...noRequestsYet,
       payload,
       context,
       claims,
       options: { upgrade },
       commandFn: commandFnFake,
+      // A new account is being registered, so there is no password to check.
+      queryAggregatesFn: fake.returns([]),
       generateRootFn: generateRootFake,
     });
 
@@ -702,7 +704,13 @@ describe("Command handler unit tests", () => {
 
   describe("request limit", () => {
     const upgrade = { some: "upgrade" };
-    const run = async ({ aggregate, logEventsFn = fake() } = {}) => {
+    const run = async ({
+      aggregate,
+      logEventsFn = fake(),
+      accounts = [],
+    } = {}) => {
+      const compare = fake.returns(false);
+      replace(deps, "compare", compare);
       replace(deps, "secret", fake.returns(hmacSecret));
       replace(deps, "hmacCreate", fake.returns(hmacEmail));
       replace(deps, "createJwt", fake.returns(token));
@@ -720,12 +728,13 @@ describe("Command handler unit tests", () => {
           commandFn,
           aggregateFn,
           logEventsFn,
+          queryAggregatesFn: fake.returns(accounts),
           generateRootFn: fake.returns(root),
         });
       } catch (e) {
         error = e;
       }
-      return { error, aggregateFn, logEventsFn, commandFn };
+      return { error, aggregateFn, logEventsFn, commandFn, compare };
     };
     const requestEvent = (correctNumber) => [
       {
@@ -789,6 +798,15 @@ describe("Command handler unit tests", () => {
         logEventsFn: fake.rejects(conflict),
       });
       expect(error).to.equal(conflict);
+      expect(commandFn).to.not.have.been.called;
+    });
+    it("checks the account's password even when the upgrade is passed in", async () => {
+      const { error, logEventsFn, commandFn, compare } = await run({
+        accounts: [account],
+      });
+      expect(error.message).to.equal("This password is incorrect.");
+      expect(compare).to.have.been.calledWith(payloadPassword, password);
+      expect(logEventsFn).to.have.been.calledBefore(compare);
       expect(commandFn).to.not.have.been.called;
     });
     it("counts the request before the password is checked", async () => {
