@@ -134,16 +134,16 @@ const getEventsForPermissionsMerge = async ({
       ...(sessionPrincipalAggregate
         ? deps.difference(
             sessionPrincipalAggregate.state.roles
-              .filter((role) => role.domain != "group")
+              .filter((role) => role.subject.domain != "group")
               .map(
                 (role) =>
-                  `${role.id}:${role.root}:${role.domain}:${role.service}:${role.network}`
+                  `${role.id}:${role.subject.root}:${role.subject.domain}:${role.subject.service}:${role.subject.network}`
               ),
             principalAggregate.state.roles
-              .filter((role) => role.domain != "group")
+              .filter((role) => role.subject.domain != "group")
               .map(
                 (role) =>
-                  `${role.id}:${role.root}:${role.domain}:${role.service}:${role.network}`
+                  `${role.id}:${role.subject.root}:${role.subject.domain}:${role.subject.service}:${role.subject.network}`
               )
           ).length
           ? [
