@@ -62,6 +62,7 @@ testing:
       procedure: event-store
 
   steps:
+    # 0. An admin removes a member.
     - pre:
         - domain: group
           service: core
@@ -70,7 +71,27 @@ testing:
           payload:
             networks:
               - some.group-network
-            principals: []
+        - domain: group
+          service: core
+          root: some-group-root
+          action: add-principals
+          payload:
+            principals:
+              - root: some-admin-root
+                service: core
+                network: some.group-network
+        - domain: principal
+          service: core
+          root: some-admin-root
+          action: add-roles
+          payload:
+            roles:
+              - id: GroupAdmin
+                subject:
+                  root: some-group-root
+                  domain: group
+                  service: core
+                  network: local.network
         - domain: group
           service: core
           root: some-group-root
@@ -98,16 +119,16 @@ testing:
           action: add-principals
           payload:
             principals:
-              - root: some-admin-root
+              - root: some-leaver-root
                 service: core
                 network: some.group-network
         - domain: principal
           service: core
-          root: some-admin-root
+          root: some-leaver-root
           action: add-roles
           payload:
             roles:
-              - id: GroupAdmin
+              - id: GroupMember
                 subject:
                   root: some-group-root
                   domain: group
@@ -115,8 +136,7 @@ testing:
                   network: local.network
       payload:
         principals:
-          - role: GroupAdmin
-            root: some-principal-root
+          - root: some-principal-root
             service: core
             network: some.group-network
       context:
@@ -127,12 +147,12 @@ testing:
           network: some.group-network
       root: some-group-root
       code: 202
+    # 1. Nothing left to remove.
     - payload:
         principals:
-          - role: GroupAdmin
-            root: some-principal-root
-            service: some-principal-service
-            network: some.network
+          - root: some-principal-root
+            service: core
+            network: some.group-network
       context:
         network: some.group-network
         principal:
@@ -141,11 +161,10 @@ testing:
           network: some.group-network
       root: some-group-root
       code: 204
-    # A same-network principal that is not a GroupAdmin member of the group is refused.
+    # 2. A principal that isn't a member is refused.
     - payload:
         principals:
-          - role: GroupAdmin
-            root: some-admin-root
+          - root: some-admin-root
             service: core
             network: some.group-network
       context:
@@ -156,6 +175,49 @@ testing:
           network: some.group-network
       root: some-group-root
       code: 403
+    # 3. A member that isn't an admin can't remove someone else.
+    - payload:
+        principals:
+          - root: some-admin-root
+            service: core
+            network: some.group-network
+      context:
+        network: some.group-network
+        principal:
+          root: some-leaver-root
+          service: core
+          network: some.group-network
+      root: some-group-root
+      code: 403
+    # 4. An admin can't remove themselves.
+    - payload:
+        principals:
+          - root: some-admin-root
+            service: core
+            network: some.group-network
+      context:
+        network: some.group-network
+        principal:
+          root: some-admin-root
+          service: core
+          network: some.group-network
+      root: some-group-root
+      code: 403
+    # 5. A member can leave.
+    - payload:
+        principals:
+          - root: some-leaver-root
+            service: core
+            network: some.group-network
+      context:
+        network: some.group-network
+        principal:
+          root: some-leaver-root
+          service: core
+          network: some.group-network
+      root: some-group-root
+      code: 202
+    # 6. A group that isn't in the caller's network is refused.
     - pre:
         - domain: group
           service: core
@@ -163,15 +225,17 @@ testing:
           action: add-networks
           payload:
             networks: []
-            principals: []
       payload:
         principals:
-          - role: GroupAdmin
-            root: some-principal-root
+          - root: some-principal-root
             service: core
             network: some.group-network
       context:
         network: some.group-network
+        principal:
+          root: some-admin-root
+          service: core
+          network: some.group-network
       root: some-other-group-root
       code: 403
 

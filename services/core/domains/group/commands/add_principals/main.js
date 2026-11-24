@@ -2,90 +2,89 @@ import deps from "./deps.js";
 
 const principalLimit = 100;
 
-// Whether the principal is a member of the group and holds its GroupAdmin role.
-const isGroupAdmin = async ({ principal, root, groupAggregate, aggregateFn }) => {
-  if (
-    !principal ||
-    !(groupAggregate.state.principals || []).some(
-      (p) =>
-        p.root == principal.root &&
-        p.service == principal.service &&
-        p.network == principal.network
-    )
-  )
-    return false;
+const same = (a, b) =>
+  a.root == b.root && a.service == b.service && a.network == b.network;
 
+// The ids of the roles a principal holds for this group.
+const groupRoles = async ({ principal, root, aggregateFn }) => {
   const principalAggregate = await aggregateFn(principal.root, {
     domain: "principal",
     notFoundThrows: false,
   });
 
-  return ((principalAggregate && principalAggregate.state.roles) || []).some(
-    (role) =>
-      role.id == "GroupAdmin" &&
-      role.subject.root == root &&
-      role.subject.domain == "group" &&
-      role.subject.service == process.env.SERVICE &&
-      role.subject.network == process.env.NETWORK
-  );
+  return ((principalAggregate && principalAggregate.state.roles) || [])
+    .filter(
+      (role) =>
+        role.subject.root == root &&
+        role.subject.domain == "group" &&
+        role.subject.service == process.env.SERVICE &&
+        role.subject.network == process.env.NETWORK
+    )
+    .map((role) => role.id);
 };
 
 export default async ({ context, payload, root, aggregateFn }) => {
-
-  // Get the principals being added to the group.
+  // The principals joining the group, and the members gaining a role in it.
   const principalsToAdd = [];
+  const principalsToPromote = [];
 
   if (root) {
     // If we're adding to a group that already exists, get the group's aggregate.
     const groupAggregate = await aggregateFn(root);
+    const members = groupAggregate.state.principals || [];
 
-    // Make sure the session's context network can access the group based on its networks. 
-    if (!groupAggregate.state.networks.includes(context.network))
+    // Make sure the session's context network can access the group based on its networks.
+    if (!(groupAggregate.state.networks || []).includes(context.network))
       throw deps.forbiddenError.message("This group isn't accessible.");
 
-    // Make sure the calling principal administers the group.
+    // Make sure the calling principal is a member of the group and administers it.
     if (
-      !(await isGroupAdmin({
-        principal: context.principal,
-        root,
-        groupAggregate,
-        aggregateFn,
-      }))
+      !members.some((p) => same(p, context.principal)) ||
+      !(
+        await groupRoles({ principal: context.principal, root, aggregateFn })
+      ).includes("GroupAdmin")
     )
       throw deps.forbiddenError.message("This group isn't accessible.");
+
+    for (const principal of payload.principals) {
+      if (!members.some((p) => same(p, principal))) {
+        principalsToAdd.push(principal);
+        continue;
+      }
+      // A member only gains the roles they don't hold yet.
+      const held = await groupRoles({ principal, root, aggregateFn });
+      const roles = principal.roles.filter((role) => !held.includes(role));
+      if (roles.length) principalsToPromote.push({ ...principal, roles });
+    }
 
     // Make sure the total principals in the group after adding won't exceed the limit.
-    if (
-      groupAggregate.state.principals.length + payload.principals.length >
-      principalLimit
-    )
+    if (members.length + principalsToAdd.length > principalLimit)
       throw deps.badRequestError.message(
         `A group has a max size of ${principalLimit}`,
         {
           info: {
-            currentCount: groupAggregate.state.principals.length,
+            currentCount: members.length,
           },
         }
       );
-      
-    // Filter for the principals not yet associated with the group.
-    for (const principal of payload.principals) {
-      if (
-        !groupAggregate.state.principals.some(
-          (p) =>
-            p.root == principal.root &&
-            p.service == principal.service &&
-            p.network == principal.network
-        )
-      )
-      principalsToAdd.push(principal);
-    }
 
-    // If there are no principals to add, return.
-    if (!principalsToAdd.length) return;
+    // If there is nothing to change, return.
+    if (!principalsToAdd.length && !principalsToPromote.length) return;
   } else {
-    // If we're making a new group, make sure the number of principals being passed in doesn't exceed the limit.
-    if (payload.principals.length > principalLimit)
+    // A new group always starts with its creator as an admin, so it is never without one.
+    const own = payload.principals.find((p) => same(p, context.principal));
+    principalsToAdd.push(
+      {
+        root: context.principal.root,
+        service: context.principal.service,
+        network: context.principal.network,
+        roles: [...new Set(["GroupAdmin", ...(own ? own.roles : [])])],
+      },
+      ...payload.principals.filter((p) => !same(p, context.principal))
+    );
+
+    // Make sure the number of principals doesn't exceed the limit.
+    if (principalsToAdd.length > principalLimit)
       throw deps.badRequestError.message(
         `A group has a max size of ${principalLimit}`,
         {
@@ -94,18 +93,15 @@ export default async ({ context, payload, root, aggregateFn }) => {
           },
         }
       );
-    
-    // Add all principals. 
-    principalsToAdd.push(...payload.principals);
   }
-  
+
   // Make a new root if needed.
   const groupRoot = root || deps.uuid();
 
   return {
     events: [
-      // Add the roles to the principals.
-      ...principalsToAdd.map((principal) => ({
+      // Add the roles to the principals. A member always holds a role for the group.
+      ...[...principalsToAdd, ...principalsToPromote].map((principal) => ({
         domain: "principal",
         service: process.env.SERVICE,
         network: process.env.NETWORK,
@@ -139,7 +135,7 @@ export default async ({ context, payload, root, aggregateFn }) => {
             },
           ]
         : []),
-        // If making a new group, add the session context's network to the group.
+      // If making a new group, add the session context's network to the group.
       ...(groupRoot != root
         ? [
             {

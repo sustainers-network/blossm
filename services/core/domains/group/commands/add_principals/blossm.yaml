@@ -2,6 +2,9 @@ name: add-principals
 domain: group
 service: core
 
+contexts:
+  - principal
+
 payload:
   principals:
     - roles:
@@ -74,6 +77,7 @@ testing:
       procedure: event-store
 
   steps:
+    # 0. An admin adds a principal to the group.
     - pre:
         - domain: group
           service: core
@@ -82,7 +86,6 @@ testing:
           payload:
             networks:
               - some.group-network
-            principals: []
         - domain: group
           service: core
           root: some-group-root
@@ -107,7 +110,7 @@ testing:
       payload:
         principals:
           - roles:
-              - GroupAdmin
+              - GroupMember
             root: some-principal-root
             service: core
             network: some.group-network
@@ -119,7 +122,7 @@ testing:
           network: some.group-network
       root: some-group-root
       code: 202
-    # A same-network principal that is not a GroupAdmin member of the group is refused.
+    # 1. A principal that isn't an admin member of the group is refused, even adding itself.
     - payload:
         principals:
           - roles:
@@ -135,15 +138,68 @@ testing:
           network: some.group-network
       root: some-group-root
       code: 403
+    # 2. A member that isn't an admin is refused.
+    - payload:
+        principals:
+          - roles:
+              - GroupMember
+            root: some-outsider-root
+            service: core
+            network: some.group-network
+      context:
+        network: some.group-network
+        principal:
+          root: some-principal-root
+          service: core
+          network: some.group-network
+      root: some-group-root
+      code: 403
+    # 3. An admin gives a member another role.
     - payload:
         principals:
           - roles:
               - GroupAdmin
             root: some-principal-root
-            service: some-principal-service
-            network: some.network
+            service: core
+            network: some.group-network
       context:
-        network: some.network
+        network: some.group-network
+        principal:
+          root: some-admin-root
+          service: core
+          network: some.group-network
+      root: some-group-root
+      code: 202
+    # 4. Nothing left to change.
+    - payload:
+        principals:
+          - roles:
+              - GroupAdmin
+            root: some-principal-root
+            service: core
+            network: some.group-network
+      context:
+        network: some.group-network
+        principal:
+          root: some-admin-root
+          service: core
+          network: some.group-network
+      root: some-group-root
+      code: 204
+    # 5. Anyone signed in can make a new group, and becomes its admin.
+    - payload:
+        principals:
+          - roles:
+              - GroupMember
+            root: some-principal-root
+            service: core
+            network: some.group-network
+      context:
+        network: some.group-network
+        principal:
+          root: some-outsider-root
+          service: core
+          network: some.group-network
       response:
         receipt:
           group:
@@ -151,6 +207,7 @@ testing:
             service:
             network:
       code: 202
+    # 6. A group that isn't in the caller's network is refused.
     - pre:
         - domain: group
           service: core
@@ -158,7 +215,6 @@ testing:
           action: add-networks
           payload:
             networks: []
-            principals: []
       payload:
         principals:
           - roles:
@@ -168,6 +224,10 @@ testing:
             network: some.group-network
       context:
         network: some.group-network
+        principal:
+          root: some-admin-root
+          service: core
+          network: some.group-network
       root: some-other-group-root
       code: 403
 

@@ -1,6 +1,6 @@
 import * as chai from "chai";
 import sinonChai from "sinon-chai";
-import { replace, restore, fake } from "sinon";
+import { restore, replace, fake } from "sinon";
 
 import main from "../../main.js";
 import deps from "../../deps.js";
@@ -8,625 +8,186 @@ import deps from "../../deps.js";
 chai.use(sinonChai);
 const { expect } = chai;
 
-const root = "some-root";
 const service = "some-service";
-const network = "some-network";
-
+const network = "some.network";
 process.env.SERVICE = service;
 process.env.NETWORK = network;
 
-// The calling principal, as it appears in the session context.
-const caller = {
-  root: "caller-root",
-  service: "caller-service",
-  network: "caller-network",
-};
+const root = "some-group-root";
+const who = (name) => ({ root: `${name}-root`, service, network });
+const admin = who("admin");
+const member = who("member");
+const outsider = who("outsider");
+const context = { network, principal: admin };
+const role = (id, groupRoot = root) => ({
+  id,
+  subject: { root: groupRoot, domain: "group", service, network },
+});
+const addRoles = (principal, ids, groupRoot = root) => ({
+  domain: "principal",
+  service,
+  network,
+  action: "add-roles",
+  root: principal.root,
+  payload: { roles: ids.map((id) => role(id, groupRoot)) },
+});
 
-const adminRole = {
-  id: "GroupAdmin",
-  subject: { root, domain: "group", service, network },
-};
-
-// The real aggregateFn is async and reads the store named by its options.
-const aggregateFnFake = ({ group, roles = [adminRole] }) =>
-  fake(async (_, { domain } = {}) =>
-    domain == "principal" ? { state: { roles } } : { state: group }
+// A group with an admin and a member, and each principal's roles.
+const stores = ({ principals = [admin, member], networks = [network], roles = {} } = {}) => {
+  const held = {
+    [admin.root]: [role("GroupAdmin")],
+    [member.root]: [role("GroupMember")],
+    ...roles,
+  };
+  return fake(async (aggregateRoot, { domain } = {}) =>
+    domain == "principal"
+      ? held[aggregateRoot] && { state: { roles: held[aggregateRoot] } }
+      : { state: { principals, networks } }
   );
+};
+const statusCode = async (args) => {
+  try {
+    await main(args);
+  } catch (e) {
+    return e.statusCode;
+  }
+};
 
 describe("Command handler unit tests", () => {
   afterEach(() => {
     restore();
   });
-  it("should return successfully", async () => {
-    const principal1Root = "principal1-root";
-    const principal1Service = "principal1-service";
-    const principal1Network = "principal1-network";
-    const principal1Role = "principal1-role";
-
-    const principal2Root = "principal2-root";
-    const principal2Service = "principal2-service";
-    const principal2Network = "principal2-network";
-    const principal2Role = "principal2-role";
-
-    const payload = {
-      principals: [
-        {
-          root: principal1Root,
-          service: principal1Service,
-          network: principal1Network,
-          roles: [principal1Role],
-        },
-        {
-          root: principal2Root,
-          service: principal2Service,
-          network: principal2Network,
-          roles: [principal2Role],
-        },
-      ],
-    };
-
-    const aggregateFake = aggregateFnFake({
-      group: {
-        networks: [network],
-        principals: [caller],
-      },
-    });
-    const context = {
-      network,
-      principal: caller,
-    };
+  it("should add a principal to a group the caller administers", async () => {
     const result = await main({
-      payload,
+      payload: { principals: [{ ...outsider, roles: ["GroupMember"] }] },
       root,
-      aggregateFn: aggregateFake,
       context,
+      aggregateFn: stores(),
     });
-    expect(aggregateFake).to.have.been.calledWith(root);
-    expect(aggregateFake).to.have.been.calledWith(caller.root, {
-      domain: "principal",
-      notFoundThrows: false,
-    });
+
     expect(result).to.deep.equal({
       events: [
-        {
-          domain: "principal",
-          service,
-          network,
-          action: "add-roles",
-          root: principal1Root,
-          payload: {
-            roles: [
-              {
-                id: principal1Role,
-                subject: { root, domain: "group", service, network },
-              },
-            ],
-          },
-        },
-        {
-          domain: "principal",
-          service,
-          network,
-          action: "add-roles",
-          root: principal2Root,
-          payload: {
-            roles: [
-              {
-                id: principal2Role,
-                subject: { root, domain: "group", service, network },
-              },
-            ],
-          },
-        },
-        {
-          action: "add-principals",
-          root,
-          payload: {
-            principals: [
-              {
-                root: principal1Root,
-                service: principal1Service,
-                network: principal1Network,
-              },
-              {
-                root: principal2Root,
-                service: principal2Service,
-                network: principal2Network,
-              },
-            ],
-          },
-        },
+        addRoles(outsider, ["GroupMember"]),
+        { action: "add-principals", root, payload: { principals: [outsider] } },
       ],
       response: {},
     });
   });
-  it("should return successfully with no principals", async () => {
-    const payload = {
-      principals: [],
-    };
-
-    const aggregateFake = fake.returns({
-      state: {
-        networks: [network],
-        principals: [],
-      },
-    });
-    const context = {
-      network,
-    };
-    const uuid = "some-uuid";
-    const uuidFake = fake.returns(uuid);
-    replace(deps, "uuid", uuidFake);
+  it("should give a member only the roles they don't hold yet", async () => {
     const result = await main({
-      payload,
-      aggregateFn: aggregateFake,
-      context,
-    });
-    expect(result).to.deep.equal({
-      events: [
-        {
-          action: "add-networks",
-          root: uuid,
-          payload: {
-            networks: [network],
-          },
-        },
-      ],
-      response: {
-        receipt: {
-          group: {
-            root: uuid,
-            service,
-            network,
-          },
-        },
+      payload: {
+        principals: [{ ...member, roles: ["GroupMember", "GroupAdmin"] }],
       },
-    });
-  });
-  it("should return successfully without duplicated", async () => {
-    const principal1Root = "principal1-root";
-    const principal1Service = "principal1-service";
-    const principal1Network = "principal1-network";
-    const principal1Role = "principal1-role";
-
-    const principal2Root = "principal2-root";
-    const principal2Service = "principal2-service";
-    const principal2Network = "principal2-network";
-    const principal2Role = "principal2-role";
-
-    const payload = {
-      principals: [
-        {
-          root: principal1Root,
-          service: principal1Service,
-          network: principal1Network,
-          roles: [principal1Role],
-        },
-        {
-          root: principal2Root,
-          service: principal2Service,
-          network: principal2Network,
-          roles: [principal2Role],
-        },
-      ],
-    };
-
-    const aggregateFake = aggregateFnFake({
-      group: {
-        networks: [network],
-        principals: [
-          caller,
-          {
-            root: principal2Root,
-            service: principal2Service,
-            network: principal2Network,
-            roles: [principal2Role],
-          },
-        ],
-      },
-    });
-    const context = {
-      network,
-      principal: caller,
-    };
-    const result = await main({
-      payload,
       root,
-      aggregateFn: aggregateFake,
       context,
+      aggregateFn: stores(),
     });
-    expect(aggregateFake).to.have.been.calledWith(root);
-    expect(result).to.deep.equal({
-      events: [
-        {
-          domain: "principal",
-          service,
-          network,
-          action: "add-roles",
-          root: principal1Root,
-          payload: {
-            roles: [
-              {
-                id: principal1Role,
-                subject: { root, domain: "group", service, network },
-              },
-            ],
-          },
-        },
-        {
-          action: "add-principals",
-          root,
-          payload: {
-            principals: [
-              {
-                root: principal1Root,
-                service: principal1Service,
-                network: principal1Network,
-              },
-            ],
-          },
-        },
-      ],
-      response: {},
-    });
+
+    expect(result.events).to.deep.equal([addRoles(member, ["GroupAdmin"])]);
   });
-  it("should return successfully with no events", async () => {
-    const principal1Root = "principal1-root";
-    const principal1Service = "principal1-service";
-    const principal1Network = "principal1-network";
-    const principal1Role = "principal1-role";
-
-    const principal2Root = "principal2-root";
-    const principal2Service = "principal2-service";
-    const principal2Network = "principal2-network";
-    const principal2Role = "principal2-role";
-
-    const payload = {
-      principals: [
-        {
-          root: principal1Root,
-          service: principal1Service,
-          network: principal1Network,
-          roles: [principal1Role],
-        },
-        {
-          root: principal2Root,
-          service: principal2Service,
-          network: principal2Network,
-          roles: [principal2Role],
-        },
-      ],
-    };
-
-    const aggregateFake = aggregateFnFake({
-      group: {
-        networks: [network],
-        principals: [
-          caller,
-          {
-            root: principal1Root,
-            service: principal1Service,
-            network: principal1Network,
-            role: principal1Role,
-          },
-          {
-            root: principal2Root,
-            service: principal2Service,
-            network: principal2Network,
-            role: principal2Role,
-          },
-        ],
-      },
-    });
-    const context = {
-      network,
-      principal: caller,
-    };
+  it("should return nothing if there is nothing to change", async () => {
     const result = await main({
-      payload,
+      payload: { principals: [{ ...member, roles: ["GroupMember"] }] },
       root,
-      aggregateFn: aggregateFake,
       context,
-    });
-    expect(aggregateFake).to.have.been.calledWith(root);
-    expect(result).to.deep.equal();
-  });
-  it("should return successfully with no root passed in", async () => {
-    const uuid = "some-uuid";
-    const uuidFake = fake.returns(uuid);
-    replace(deps, "uuid", uuidFake);
-
-    const principal1Root = "principal1-root";
-    const principal1Service = "principal1-service";
-    const principal1Network = "principal1-network";
-    const principal1Role = "principal1-role";
-
-    const principal2Root = "principal2-root";
-    const principal2Service = "principal2-service";
-    const principal2Network = "principal2-network";
-    const principal2Role = "principal2-role";
-
-    const payload = {
-      principals: [
-        {
-          root: principal1Root,
-          service: principal1Service,
-          network: principal1Network,
-          roles: [principal1Role],
-        },
-        {
-          root: principal2Root,
-          service: principal2Service,
-          network: principal2Network,
-          roles: [principal2Role],
-        },
-      ],
-    };
-
-    const result = await main({
-      payload,
-      context: {
-        network,
-      },
-    });
-    expect(result).to.deep.equal({
-      events: [
-        {
-          domain: "principal",
-          service,
-          network,
-          action: "add-roles",
-          root: principal1Root,
-          payload: {
-            roles: [
-              {
-                id: principal1Role,
-                subject: {
-                  root: uuid,
-                  domain: "group",
-                  service,
-                  network,
-                },
-              },
-            ],
-          },
-        },
-        {
-          domain: "principal",
-          service,
-          network,
-          action: "add-roles",
-          root: principal2Root,
-          payload: {
-            roles: [
-              {
-                id: principal2Role,
-                subject: {
-                  root: uuid,
-                  domain: "group",
-                  service,
-                  network,
-                },
-              },
-            ],
-          },
-        },
-        {
-          action: "add-principals",
-          root: uuid,
-          payload: {
-            principals: [
-              {
-                root: principal1Root,
-                service: principal1Service,
-                network: principal1Network,
-              },
-              {
-                root: principal2Root,
-                service: principal2Service,
-                network: principal2Network,
-              },
-            ],
-          },
-        },
-        {
-          action: "add-networks",
-          root: uuid,
-          payload: {
-            networks: [network],
-          },
-        },
-      ],
-      response: {
-        receipt: {
-          group: {
-            root: uuid,
-            service,
-            network,
-          },
-        },
-      },
-    });
-  });
-  it("should throw correctly", async () => {
-    const errorMessage = "some-error";
-    const uuidFake = fake.throws(errorMessage);
-    replace(deps, "uuid", uuidFake);
-    try {
-      await main({
-        payload: {
-          principals: [],
-        },
-      });
-      //shouldn't get called
-      expect(2).to.equal(3);
-    } catch (e) {
-      expect(e.message).to.equal(errorMessage);
-    }
-  });
-  it("should throw correctly if forbidden", async () => {
-    const error = "some-error";
-    const messageFake = fake.returns(error);
-    replace(deps, "forbiddenError", {
-      message: messageFake,
+      aggregateFn: stores(),
     });
 
-    try {
-      await main({
-        root,
-        context: {
-          network,
-        },
-        aggregateFn: fake.returns({
-          state: {
-            networks: ["bogus"],
-          },
-        }),
-      });
-      //shouldn't get called
-      expect(2).to.equal(3);
-    } catch (e) {
-      expect(messageFake).to.have.been.calledWith(
-        "This group isn't accessible."
-      );
-      expect(e).to.equal(error);
-    }
+    expect(result).to.be.undefined;
   });
-  const refusedCases = [
-    {
-      name: "a member without the GroupAdmin role",
-      context: { network, principal: caller },
-      principals: [caller],
-      roles: [{ ...adminRole, id: "GroupMember" }],
-    },
-    {
-      name: "a GroupAdmin of another group",
-      context: { network, principal: caller },
-      principals: [caller],
-      roles: [
-        { ...adminRole, subject: { ...adminRole.subject, root: "other-root" } },
-      ],
-    },
-    {
-      name: "a principal that holds the role but is not a member",
-      context: { network, principal: caller },
-      principals: [],
-      roles: [adminRole],
-    },
-    {
-      name: "a session with no principal",
-      context: { network },
-      principals: [caller],
-      roles: [adminRole],
-    },
-    {
-      name: "a same-network principal adding itself to a group it is not in",
-      context: { network, principal: caller },
-      principals: [],
-      roles: [],
-    },
-  ];
-  for (const { name, context, principals, roles } of refusedCases) {
+  for (const [name, caller, options] of [
+    ["a member that isn't an admin", member],
+    ["an outsider adding itself", outsider],
+    ["an admin of another group", outsider, { roles: { [outsider.root]: [role("GroupAdmin", "some-other-group-root")] } }],
+    ["a role holder that is no longer a member", outsider, { roles: { [outsider.root]: [role("GroupAdmin")] } }],
+    ["a caller on a network the group isn't in", admin, { networks: ["some.other-network"] }],
+    ["a group with no networks", admin, { networks: null }],
+  ])
     it(`should refuse ${name}`, async () => {
-      const error = "some-error";
-      const messageFake = fake.returns(error);
-      replace(deps, "forbiddenError", {
-        message: messageFake,
-      });
-
-      try {
-        await main({
+      expect(
+        await statusCode({
+          payload: { principals: [{ ...outsider, roles: ["GroupAdmin"] }] },
           root,
-          context,
-          payload: {
-            principals: [{ ...caller, roles: ["GroupAdmin"] }],
-          },
-          aggregateFn: aggregateFnFake({
-            group: { networks: [network], principals },
-            roles,
-          }),
-        });
-        //shouldn't get called
-        expect(2).to.equal(3);
-      } catch (e) {
-        expect(messageFake).to.have.been.calledWith(
-          "This group isn't accessible."
-        );
-        expect(e).to.equal(error);
-      }
+          context: { network, principal: caller },
+          aggregateFn: stores(options),
+        })
+      ).to.equal(403);
     });
-  }
-  it("should throw correctly too many principals with root", async () => {
-    const error = "some-error";
-    const messageFake = fake.returns(error);
-    replace(deps, "badRequestError", {
-      message: messageFake,
+  it("should make the creator an admin of a new group", async () => {
+    const groupRoot = "some-new-group-root";
+    replace(deps, "uuid", fake.returns(groupRoot));
+    const aggregateFn = fake();
+    const result = await main({
+      payload: { principals: [{ ...outsider, roles: ["GroupMember"] }] },
+      context,
+      aggregateFn,
     });
 
-    const principals = [];
-    for (let i = 0; i < 100; i++) {
-      principals.push("some");
-    }
-    try {
-      await main({
-        root,
-        context: {
-          network,
-          principal: caller,
-        },
-        aggregateFn: aggregateFnFake({
-          group: {
-            networks: [network],
-            principals: [caller],
-          },
-        }),
-        payload: {
-          principals,
-        },
-      });
-      //shouldn't get called
-      expect(2).to.equal(3);
-    } catch (e) {
-      expect(messageFake).to.have.been.calledWith(
-        `A group has a max size of 100`,
+    expect(aggregateFn).to.not.have.been.called;
+    expect(result).to.deep.equal({
+      events: [
+        addRoles(admin, ["GroupAdmin"], groupRoot),
+        addRoles(outsider, ["GroupMember"], groupRoot),
         {
-          info: {
-            currentCount: 1,
-          },
-        }
-      );
-      expect(e).to.equal(error);
-    }
+          action: "add-principals",
+          root: groupRoot,
+          payload: { principals: [admin, outsider] },
+        },
+        {
+          action: "add-networks",
+          root: groupRoot,
+          payload: { networks: [network] },
+        },
+      ],
+      response: {
+        receipt: { group: { root: groupRoot, service, network } },
+      },
+    });
   });
-  it("should throw correctly too many principals with no root", async () => {
-    const error = "some-error";
-    const messageFake = fake.returns(error);
-    replace(deps, "badRequestError", {
-      message: messageFake,
+  it("should keep the creator an admin when the payload lists them as a member", async () => {
+    const groupRoot = "some-new-group-root";
+    replace(deps, "uuid", fake.returns(groupRoot));
+    const result = await main({
+      payload: { principals: [{ ...admin, roles: ["GroupMember"] }] },
+      context,
+      aggregateFn: fake(),
     });
 
-    const principals = [];
-    for (let i = 0; i < 101; i++) {
-      principals.push("some");
-    }
-    try {
-      await main({
+    expect(result.events[0]).to.deep.equal(
+      addRoles(admin, ["GroupAdmin", "GroupMember"], groupRoot)
+    );
+    expect(result.events[1].payload.principals).to.deep.equal([admin]);
+  });
+  it("should refuse to grow a group past the limit", async () => {
+    const principals = [admin, ...[...Array(99)].map((_, i) => who(`m${i}`))];
+    const aggregateFn = stores({ principals });
+    const args = { root, context, aggregateFn };
+    // Promoting a member of a full group is fine.
+    expect(
+      await statusCode({
+        ...args,
+        payload: { principals: [{ ...who("m0"), roles: ["GroupAdmin"] }] },
+      })
+    ).to.be.undefined;
+    expect(
+      await statusCode({
+        ...args,
+        payload: { principals: [{ ...outsider, roles: ["GroupMember"] }] },
+      })
+    ).to.equal(400);
+  });
+  it("should refuse a new group past the limit", async () => {
+    expect(
+      await statusCode({
         payload: {
-          principals,
+          principals: [...Array(100)].map((_, i) => ({
+            ...who(`m${i}`),
+            roles: ["GroupMember"],
+          })),
         },
-      });
-      //shouldn't get called
-      expect(2).to.equal(3);
-    } catch (e) {
-      expect(messageFake).to.have.been.calledWith(
-        `A group has a max size of 100`,
-        {
-          info: {
-            currentCount: 0,
-          },
-        }
-      );
-      expect(e).to.equal(error);
-    }
+        context,
+        aggregateFn: fake(),
+      })
+    ).to.equal(400);
   });
 });

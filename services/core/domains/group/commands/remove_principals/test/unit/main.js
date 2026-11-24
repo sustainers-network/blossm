@@ -1,434 +1,117 @@
 import * as chai from "chai";
 import sinonChai from "sinon-chai";
-import { replace, restore, fake } from "sinon";
+import { restore, fake } from "sinon";
 
 import main from "../../main.js";
-import deps from "../../deps.js";
 
 chai.use(sinonChai);
 const { expect } = chai;
 
-const root = "some-root";
-const domain = "some-domain";
 const service = "some-service";
-const network = "some-network";
-
-process.env.DOMAIN = domain;
+const network = "some.network";
 process.env.SERVICE = service;
 process.env.NETWORK = network;
 
-// The calling principal, as it appears in the session context.
-const caller = {
-  root: "caller-root",
-  service: "caller-service",
-  network: "caller-network",
-};
-
-const adminRole = {
-  id: "GroupAdmin",
-  subject: { root, domain: "group", service, network },
-};
-
-// The real aggregateFn is async and reads the store named by its options.
-// `roles` are the caller's. `rolesByRoot` holds other principals' roles.
-const aggregateFnFake = ({ group, roles = [adminRole], rolesByRoot = {} }) =>
-  fake(async (aggregateRoot, { domain } = {}) =>
-    domain == "principal"
-      ? aggregateRoot == caller.root
-        ? { state: { roles } }
-        : rolesByRoot[aggregateRoot] && {
-            state: { roles: rolesByRoot[aggregateRoot] },
-          }
-      : { state: group }
-  );
-
-const memberRole = { ...adminRole, id: "GroupMember" };
-// Roles that must stay with a principal removed from this group.
+const root = "some-group-root";
+const who = (name) => ({ root: `${name}-root`, service, network });
+const admin = who("admin");
+const otherAdmin = who("other-admin");
+const member = who("member");
+const outsider = who("outsider");
+const role = (id, groupRoot = root, domain = "group") => ({
+  id,
+  subject: { root: groupRoot, domain, service, network },
+});
 const otherRoles = [
-  { ...adminRole, subject: { ...adminRole.subject, root: "other-root" } },
-  { ...adminRole, subject: { ...adminRole.subject, domain: "scene" } },
-  { ...adminRole, subject: { ...adminRole.subject, service: "other-service" } },
-  { ...adminRole, subject: { ...adminRole.subject, network: "other-network" } },
+  role("GroupAdmin", "some-other-group-root"),
+  role("SceneAdmin", root, "scene"),
+];
+
+const stores = ({ networks = [network], roles = {} } = {}) => {
+  const held = {
+    [admin.root]: [role("GroupAdmin")],
+    [otherAdmin.root]: [role("GroupAdmin"), role("GroupMember"), ...otherRoles],
+    [member.root]: [role("GroupMember"), ...otherRoles],
+    ...roles,
+  };
+  return fake(async (aggregateRoot, { domain } = {}) =>
+    domain == "principal"
+      ? held[aggregateRoot] && { state: { roles: held[aggregateRoot] } }
+      : { state: { principals: [admin, otherAdmin, member], networks } }
+  );
+};
+const run = (caller, principals, options) =>
+  main({
+    payload: { principals },
+    root,
+    context: { network, principal: caller },
+    aggregateFn: stores(options),
+  });
+const statusCode = async (...args) => {
+  try {
+    await run(...args);
+  } catch (e) {
+    return e.statusCode;
+  }
+};
+const removed = (principal, ids) => [
+  {
+    domain: "principal",
+    service,
+    network,
+    action: "remove-roles",
+    root: principal.root,
+    payload: { roles: ids.map((id) => role(id)) },
+  },
+  { action: "remove-principals", root, payload: { principals: [principal] } },
 ];
 
 describe("Command handler unit tests", () => {
   afterEach(() => {
     restore();
   });
-  it("should return successfully", async () => {
-    const principal1Root = "principal1-root";
-    const principal1Service = "principal1-service";
-    const principal1Network = "principal1-network";
-    const principal1Role = "principal1-role";
-
-    const principal2Root = "principal2-root";
-    const principal2Service = "principal2-service";
-    const principal2Network = "principal2-network";
-    const principal2Role = "principal2-role";
-
-    const payload = {
-      principals: [
-        {
-          root: principal1Root,
-          service: principal1Service,
-          network: principal1Network,
-          role: principal1Role,
-        },
-        {
-          root: principal2Root,
-          service: principal2Service,
-          network: principal2Network,
-          role: principal2Role,
-        },
-      ],
-    };
-
-    const aggregateFake = aggregateFnFake({
-      rolesByRoot: {
-        [principal1Root]: [adminRole, ...otherRoles, memberRole],
-      },
-      group: {
-        networks: [network],
-        principals: [
-          caller,
-          {
-            root: principal1Root,
-            service: principal1Service,
-            network: principal1Network,
-            role: principal1Role,
-          },
-          {
-            root: principal2Root,
-            service: principal2Service,
-            network: principal2Network,
-            role: principal2Role,
-          },
-        ],
-      },
-    });
-    const context = {
-      network,
-      principal: caller,
-    };
-    const result = await main({
-      payload,
-      root,
-      aggregateFn: aggregateFake,
-      context,
-    });
-    expect(aggregateFake).to.have.been.calledWith(principal1Root, {
-      domain: "principal",
-      notFoundThrows: false,
-    });
-    expect(aggregateFake).to.have.been.calledWith(caller.root, {
-      domain: "principal",
-      notFoundThrows: false,
-    });
-    expect(aggregateFake).to.have.been.calledWith(root);
-    expect(result).to.deep.equal({
-      events: [
-        {
-          domain: "principal",
-          service,
-          network,
-          action: "remove-roles",
-          root: principal1Root,
-          payload: {
-            roles: [adminRole, memberRole],
-          },
-        },
-        {
-          domain: "principal",
-          service,
-          network,
-          action: "remove-roles",
-          root: principal2Root,
-          payload: {
-            roles: [],
-          },
-        },
-        // {
-        //   domain: "principal",
-        //   service,
-        //   network,
-        //   action: "remove-groups",
-        //   root: principal1Root,
-        //   payload: {
-        //     groups: [{ root, service, network }],
-        //   },
-        // },
-        // {
-        //   domain: "principal",
-        //   service,
-        //   network,
-        //   action: "remove-groups",
-        //   root: principal2Root,
-        //   payload: {
-        //     groups: [{ root, service, network }],
-        //   },
-        // },
-        {
-          action: "remove-principals",
-          root,
-          payload: {
-            principals: [
-              {
-                root: principal1Root,
-                service: principal1Service,
-                network: principal1Network,
-              },
-              {
-                root: principal2Root,
-                service: principal2Service,
-                network: principal2Network,
-              },
-            ],
-          },
-        },
-      ],
-    });
+  it("should let an admin remove a member, with only the member's roles for this group", async () => {
+    expect((await run(admin, [member])).events).to.deep.equal(
+      removed(member, ["GroupMember"])
+    );
   });
-  it("should return successfully with no duplicates", async () => {
-    const principal1Root = "principal1-root";
-    const principal1Service = "principal1-service";
-    const principal1Network = "principal1-network";
-    const principal1Role = "principal1-role";
-
-    const principal2Root = "principal2-root";
-    const principal2Service = "principal2-service";
-    const principal2Network = "principal2-network";
-    const principal2Role = "principal2-role";
-
-    const payload = {
-      principals: [
-        {
-          root: principal1Root,
-          service: principal1Service,
-          network: principal1Network,
-          role: principal1Role,
-        },
-        {
-          root: principal2Root,
-          service: principal2Service,
-          network: principal2Network,
-          role: principal2Role,
-        },
-      ],
-    };
-
-    const aggregateFake = aggregateFnFake({
-      rolesByRoot: { [principal1Root]: [memberRole] },
-      group: {
-        networks: [network],
-        principals: [
-          caller,
-          {
-            root: principal1Root,
-            service: principal1Service,
-            network: principal1Network,
-            role: principal1Role,
-          },
-        ],
-      },
-    });
-    const context = {
-      network,
-      principal: caller,
-    };
-    const result = await main({
-      payload,
-      root,
-      aggregateFn: aggregateFake,
-      context,
-    });
-    expect(aggregateFake).to.have.been.calledWith(root);
-    expect(result).to.deep.equal({
-      events: [
-        {
-          domain: "principal",
-          service,
-          network,
-          action: "remove-roles",
-          root: principal1Root,
-          payload: {
-            roles: [memberRole],
-          },
-        },
-        // {
-        //   domain: "principal",
-        //   service,
-        //   network,
-        //   action: "remove-groups",
-        //   root: principal1Root,
-        //   payload: {
-        //     groups: [{ root, service, network }],
-        //   },
-        // },
-        {
-          action: "remove-principals",
-          root,
-          payload: {
-            principals: [
-              {
-                root: principal1Root,
-                service: principal1Service,
-                network: principal1Network,
-              },
-            ],
-          },
-        },
-      ],
-    });
+  it("should let an admin remove another admin", async () => {
+    expect((await run(admin, [otherAdmin])).events).to.deep.equal(
+      removed(otherAdmin, ["GroupAdmin", "GroupMember"])
+    );
   });
-  it("should return successfully with no events", async () => {
-    const principal1Root = "principal1-root";
-    const principal1Service = "principal1-service";
-    const principal1Network = "principal1-network";
-    const principal1Role = "principal1-role";
-
-    const principal2Root = "principal2-root";
-    const principal2Service = "principal2-service";
-    const principal2Network = "principal2-network";
-    const principal2Role = "principal2-role";
-
-    const payload = {
-      principals: [
-        {
-          root: principal1Root,
-          service: principal1Service,
-          network: principal1Network,
-          role: principal1Role,
-        },
-        {
-          root: principal2Root,
-          service: principal2Service,
-          network: principal2Network,
-          role: principal2Role,
-        },
-      ],
-    };
-
-    const aggregateFake = aggregateFnFake({
-      group: {
-        networks: [network],
-        principals: [caller],
-      },
-    });
-    const context = {
-      network,
-      principal: caller,
-    };
-    const result = await main({
-      payload,
-      root,
-      aggregateFn: aggregateFake,
-      context,
-    });
-    expect(aggregateFake).to.have.been.calledWith(root);
-    expect(result).to.deep.equal();
+  it("should let a member leave", async () => {
+    expect((await run(member, [member])).events).to.deep.equal(
+      removed(member, ["GroupMember"])
+    );
   });
-  const refusedCases = [
-    {
-      name: "a member without the GroupAdmin role",
-      context: { network, principal: caller },
-      principals: [caller],
-      roles: [{ ...adminRole, id: "GroupMember" }],
-    },
-    {
-      name: "a GroupAdmin of another group",
-      context: { network, principal: caller },
-      principals: [caller],
-      roles: [
-        { ...adminRole, subject: { ...adminRole.subject, root: "other-root" } },
-      ],
-    },
-    {
-      name: "a principal that holds the role but is not a member",
-      context: { network, principal: caller },
-      principals: [],
-      roles: [adminRole],
-    },
-    {
-      name: "a session with no principal",
-      context: { network },
-      principals: [caller],
-      roles: [adminRole],
-    },
-  ];
-  for (const { name, context, principals, roles } of refusedCases) {
-    it(`should refuse ${name}`, async () => {
-      const error = "some-error";
-      const messageFake = fake.returns(error);
-      replace(deps, "forbiddenError", {
-        message: messageFake,
-      });
-      const target = {
-        root: "target-root",
-        service: "target-service",
-        network: "target-network",
-      };
-      try {
-        await main({
-          root,
-          context,
-          payload: { principals: [target] },
-          aggregateFn: aggregateFnFake({
-            group: { networks: [network], principals: [...principals, target] },
-            roles,
-          }),
-        });
-        //shouldn't get called
-        expect(2).to.equal(3);
-      } catch (e) {
-        expect(messageFake).to.have.been.calledWith(
-          "This group isn't accessible."
-        );
-        expect(e).to.equal(error);
-      }
-    });
-  }
-  it("should throw correctly", async () => {
-    const errorMessage = "some-error";
-    const aggregateFake = fake.throws(errorMessage);
-    try {
-      await main({
-        payload: {
-          principals: [],
-        },
-        aggregateFn: aggregateFake,
-      });
-      //shouldn't get called
-      expect(2).to.equal(3);
-    } catch (e) {
-      expect(e.message).to.equal(errorMessage);
-    }
+  it("should return nothing if the principal isn't in the group", async () => {
+    expect(await run(admin, [outsider])).to.be.undefined;
   });
-  it("should throw correctly if forbidden", async () => {
-    const error = "some-error";
-    const messageFake = fake.returns(error);
-    replace(deps, "forbiddenError", {
-      message: messageFake,
-    });
-
-    try {
-      await main({
-        root,
-        context: {
-          network,
-        },
-        aggregateFn: fake.returns({
-          state: {
-            networks: ["bogus"],
-          },
-        }),
-      });
-      //shouldn't get called
-      expect(2).to.equal(3);
-    } catch (e) {
-      expect(messageFake).to.have.been.calledWith(
-        "This group isn't accessible."
-      );
-      expect(e).to.equal(error);
-    }
+  it("should refuse an admin removing themselves", async () => {
+    expect(await statusCode(admin, [admin])).to.equal(403);
+    expect(await statusCode(admin, [member, admin])).to.equal(403);
+  });
+  it("should refuse a member removing someone else", async () => {
+    expect(await statusCode(member, [admin])).to.equal(403);
+    expect(await statusCode(member, [member, otherAdmin])).to.equal(403);
+  });
+  it("should refuse a caller that isn't a member", async () => {
+    expect(await statusCode(outsider, [member])).to.equal(403);
+    expect(await statusCode(outsider, [outsider])).to.equal(403);
+    // Holding the role without being a member isn't enough.
+    expect(
+      await statusCode(outsider, [member], {
+        roles: { [outsider.root]: [role("GroupAdmin")] },
+      })
+    ).to.equal(403);
+  });
+  it("should refuse a caller on a network the group isn't in", async () => {
+    expect(
+      await statusCode(admin, [member], { networks: ["some.other-network"] })
+    ).to.equal(403);
+    expect(await statusCode(admin, [member], { networks: null })).to.equal(
+      403
+    );
   });
 });
