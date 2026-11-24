@@ -11,19 +11,10 @@ import { report } from "./gate.mjs";
 
 const REPO = fileURLToPath(new URL("..", import.meta.url));
 
-// Known failures on master, keyed by exact finding. Each is being fixed in its
-// own pull request. Delete an entry when its fix merges; the gate warns when
+// Known failures on master, keyed by exact finding, with a reason each.
+// Delete an entry when its fix merges; the gate warns when
 // an entry no longer matches anything.
-const KNOWN = {
-  "handler-undeclared services/core/domains/role/event_store add-permissions":
-    "role store handles an action its blossm.yaml does not declare",
-  "handler-undeclared services/core/domains/role/event_store remove-permissions":
-    "role store handles an action its blossm.yaml does not declare",
-  "action-without-handler services/core/domains/session/event_store save":
-    "session store declares `save` but has no handler for it",
-  "undeclared-import services/system/domains/updates/commands/create_token deps.js:@blossm/uuid":
-    "`@blossm/uuid` is only a devDependency of the command base config",
-};
+const KNOWN = {};
 
 const SKIP_DIRS = new Set(["node_modules", ".git", "docs", "tasks", "tools"]);
 // The files the generated service imports at startup, per procedure kind.

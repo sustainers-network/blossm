@@ -5,6 +5,8 @@ isPublic: true
 
 actions:
   - create
+  - add-permissions
+  - remove-permissions
 
 schema:
   name: String
