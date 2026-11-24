@@ -8,15 +8,47 @@ import deps from "./deps.js";
 const ONE_HOUR = MILLISECONDS_IN_HOUR;
 const THREE_MINUTES = 3 * SECONDS_IN_MINUTE;
 const CODE_LENGTH = 6;
+// Challenges one email can request within the window.
+const MAX_REQUESTS = 5;
+const REQUEST_WINDOW = 15 * SECONDS_IN_MINUTE * 1000;
 
-const determineUpgrade = async (payload, context, queryAggregatesFn) => {
-  
-  // Get the hmac encrypted email.
-  const hmacEmail = await deps.hmacCreate({
-    secret: await deps.secret("email-hmac-key"),
-    message: payload.email
-  })
+// Counts this request against the email, and refuses it if the email has had
+// its share. The count is an aggregate of its own in the challenge store, keyed
+// by the email's hmac. Its event is numbered and written before anything else
+// happens, so requests sent at once compete for one slot and the rest fail
+// without a code being sent or a password being checked.
+const countRequest = async ({ hmacEmail, aggregateFn, logEventsFn }) => {
+  const root = `email-${Buffer.from(String(hmacEmail)).toString("hex")}`;
+  const aggregate = await aggregateFn(root, { notFoundThrows: false });
 
+  const recent = ((aggregate && aggregate.state.requests) || []).filter(
+    (requested) => Date.now() - new Date(requested).getTime() < REQUEST_WINDOW
+  );
+
+  if (recent.length >= MAX_REQUESTS)
+    throw deps.invalidArgumentError.message(
+      "Too many codes have been requested. Try again in a few minutes.",
+      {
+        info: { reason: "requests" },
+      }
+    );
+
+  await logEventsFn([
+    {
+      root,
+      action: "request",
+      correctNumber: aggregate ? aggregate.lastEventNumber + 1 : 0,
+      payload: { requested: deps.stringDate() },
+    },
+  ]);
+};
+
+const determineUpgrade = async (
+  payload,
+  context,
+  queryAggregatesFn,
+  hmacEmail
+) => {
   // Check to see if the email is recognized.
   // If the principal is being upgraded, use a placeholder account with it instead.
   const [account] = await queryAggregatesFn({
@@ -68,13 +100,23 @@ export default async ({
   // access token returned by answering this issued challenge.
   options: { events, upgrade } = {},
   commandFn,
+  aggregateFn,
+  logEventsFn,
   queryAggregatesFn,
   generateRootFn,
 }) => {
+  // Get the hmac encrypted email.
+  const hmacEmail = await deps.hmacCreate({
+    secret: await deps.secret("email-hmac-key"),
+    message: payload.email,
+  });
+
+  await countRequest({ hmacEmail, aggregateFn, logEventsFn });
 
   // If a context upgrade object isn't provided, determine what it should be.
   upgrade =
-    upgrade || (await determineUpgrade(payload, context, queryAggregatesFn));
+    upgrade ||
+    (await determineUpgrade(payload, context, queryAggregatesFn, hmacEmail));
 
   // Create the root for this challenge.
   const root = generateRootFn();

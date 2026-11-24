@@ -59,6 +59,15 @@ process.env.GCP_REGION = region;
 
 import main from "../../main.js";
 
+// An email that has not requested a challenge before.
+const noRequestsYet = {
+  aggregateFn: async () => undefined,
+  logEventsFn: async () => {},
+};
+const requestRoot = `email-${Buffer.from(hmacEmail).toString("hex")}`;
+const minutesAgo = (minutes) =>
+  new Date(now.getTime() - minutes * 60 * 1000).toISOString();
+
 describe("Command handler unit tests", () => {
   beforeEach(() => {
     clock = useFakeTimers(now.getTime());
@@ -97,6 +106,7 @@ describe("Command handler unit tests", () => {
     replace(deps, "hmacCreate", hmacCreateFake);
 
     const result = await main({
+        ...noRequestsYet,
       payload,
       context,
       claims,
@@ -225,6 +235,7 @@ describe("Command handler unit tests", () => {
       network: contextNetwork,
     };
     const result = await main({
+        ...noRequestsYet,
       payload,
       context,
       claims,
@@ -358,6 +369,7 @@ describe("Command handler unit tests", () => {
 
     const events = [{ a: 1 }, { b: 2 }];
     const result = await main({
+        ...noRequestsYet,
       payload,
       context,
       claims,
@@ -494,6 +506,7 @@ describe("Command handler unit tests", () => {
 
     const upgrade = { some: "upgrade" };
     const result = await main({
+        ...noRequestsYet,
       payload,
       context,
       claims,
@@ -559,9 +572,12 @@ describe("Command handler unit tests", () => {
     });
     expect(randomIntFake).to.have.been.calledWith(6);
     expect(hashFake).to.have.been.calledWith(code.toString());
-    // The account isn't looked up when the upgrade is given.
-    expect(secretFake).to.not.have.been.called;
-    expect(hmacCreateFake).to.not.have.been.called;
+    // The request is still counted against the email.
+    expect(secretFake).to.have.been.calledWith("email-hmac-key");
+    expect(hmacCreateFake).to.have.been.calledWith({
+      secret: hmacSecret,
+      message: email,
+    });
 
     expect(Math.abs(deps.moment().add(3, "m").toDate() - new Date())).to.equal(
       180000
@@ -575,6 +591,7 @@ describe("Command handler unit tests", () => {
 
     try {
       await main({
+        ...noRequestsYet,
         payload,
         context,
         claims,
@@ -600,6 +617,7 @@ describe("Command handler unit tests", () => {
 
     try {
       await main({
+        ...noRequestsYet,
         payload,
         claims,
         context,
@@ -632,6 +650,7 @@ describe("Command handler unit tests", () => {
     });
     try {
       await main({
+        ...noRequestsYet,
         payload,
         context,
         queryAggregatesFn: queryAggregatesFnFake,
@@ -664,6 +683,7 @@ describe("Command handler unit tests", () => {
     });
     try {
       await main({
+        ...noRequestsYet,
         payload,
         context: { principal: { root: "some-bogus " } },
         queryAggregatesFn: queryAggregatesFnFake,
@@ -678,5 +698,118 @@ describe("Command handler unit tests", () => {
       );
       expect(e).to.equal(error);
     }
+  });
+
+  describe("request limit", () => {
+    const upgrade = { some: "upgrade" };
+    const run = async ({ aggregate, logEventsFn = fake() } = {}) => {
+      replace(deps, "secret", fake.returns(hmacSecret));
+      replace(deps, "hmacCreate", fake.returns(hmacEmail));
+      replace(deps, "createJwt", fake.returns(token));
+      replace(deps, "randomIntOfLength", fake.returns(code));
+      replace(deps, "hash", fake.returns(hashedCode));
+      const aggregateFn = fake.returns(aggregate);
+      const commandFn = fake();
+      let error;
+      try {
+        await main({
+          payload,
+          context,
+          claims,
+          options: { upgrade },
+          commandFn,
+          aggregateFn,
+          logEventsFn,
+          generateRootFn: fake.returns(root),
+        });
+      } catch (e) {
+        error = e;
+      }
+      return { error, aggregateFn, logEventsFn, commandFn };
+    };
+    const requestEvent = (correctNumber) => [
+      {
+        root: requestRoot,
+        action: "request",
+        correctNumber,
+        payload: { requested: now.toISOString() },
+      },
+    ];
+
+    it("counts an email's first request before sending the code", async () => {
+      const { error, aggregateFn, logEventsFn, commandFn } = await run();
+      expect(error).to.be.undefined;
+      expect(aggregateFn).to.have.been.calledWith(requestRoot, {
+        notFoundThrows: false,
+      });
+      expect(logEventsFn).to.have.been.calledOnceWith(requestEvent(0));
+      expect(commandFn).to.have.been.calledOnce;
+      expect(logEventsFn).to.have.been.calledBefore(commandFn);
+    });
+    it("counts a later request on the email's next event number", async () => {
+      const { error, logEventsFn } = await run({
+        aggregate: {
+          state: { requests: [minutesAgo(1), minutesAgo(2)] },
+          lastEventNumber: 6,
+        },
+      });
+      expect(error).to.be.undefined;
+      expect(logEventsFn).to.have.been.calledOnceWith(requestEvent(7));
+    });
+    it("refuses a sixth request within fifteen minutes and sends nothing", async () => {
+      const { error, logEventsFn, commandFn } = await run({
+        aggregate: {
+          state: { requests: [14, 5, 4, 3, 2].map(minutesAgo) },
+          lastEventNumber: 4,
+        },
+      });
+      expect(error.statusCode).to.equal(409);
+      expect(error.info()).to.deep.equal({ reason: "requests" });
+      expect(logEventsFn).to.not.have.been.called;
+      expect(commandFn).to.not.have.been.called;
+    });
+    it("doesn't count requests older than fifteen minutes", async () => {
+      const { error, commandFn } = await run({
+        // Dates, as the event store returns them.
+        aggregate: {
+          state: {
+            requests: [90, 60, 16, 15, 3, 2].map(
+              (minutes) => new Date(minutesAgo(minutes))
+            ),
+          },
+          lastEventNumber: 5,
+        },
+      });
+      expect(error).to.be.undefined;
+      expect(commandFn).to.have.been.calledOnce;
+    });
+    it("sends nothing when the request can't be counted", async () => {
+      const conflict = new Error("wrong event number");
+      const { error, commandFn } = await run({
+        logEventsFn: fake.rejects(conflict),
+      });
+      expect(error).to.equal(conflict);
+      expect(commandFn).to.not.have.been.called;
+    });
+    it("counts the request before the password is checked", async () => {
+      replace(deps, "secret", fake.returns(hmacSecret));
+      replace(deps, "hmacCreate", fake.returns(hmacEmail));
+      const compareFake = fake.returns(false);
+      replace(deps, "compare", compareFake);
+      const logEventsFn = fake();
+      try {
+        await main({
+          payload,
+          context,
+          aggregateFn: fake.returns(undefined),
+          logEventsFn,
+          queryAggregatesFn: fake.returns([account]),
+        });
+        expect.fail("should have thrown");
+      } catch (e) {
+        expect(e.message).to.equal("This password is incorrect.");
+      }
+      expect(logEventsFn).to.have.been.calledBefore(compareFake);
+    });
   });
 });

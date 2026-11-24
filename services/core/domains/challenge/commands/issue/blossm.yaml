@@ -197,6 +197,29 @@ testing:
         email: yet@anotheremail.com
         password: some-bogus
       code: 400
+    # 6 to 8. The same email can request a challenge five times in fifteen minutes.
+    # Steps 3 and 4 were its first two.
+    - context: {}
+      payload:
+        password: "some-password"
+        email: some@otheremail.com
+      code: 202
+    - context: {}
+      payload:
+        password: "some-password"
+        email: some@otheremail.com
+      code: 202
+    - context: {}
+      payload:
+        password: "some-password"
+        email: some@otheremail.com
+      code: 202
+    # 9. Its sixth request is refused.
+    - context: {}
+      payload:
+        password: "some-password"
+        email: some@otheremail.com
+      code: 409
 
 #don't change
 procedure: command

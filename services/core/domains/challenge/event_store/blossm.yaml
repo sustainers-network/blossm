@@ -7,6 +7,7 @@ actions:
   - issue
   - answer
   - fail
+  - request
 
 schema:
   code: String
@@ -16,6 +17,9 @@ schema:
   answerId: String
   attempts: Number
   attemptId: String
+  # Only on an email's request count, see handlers.js.
+  requests:
+    - Date
   expires: Date
   events:
     - Object
@@ -57,6 +61,9 @@ testing:
     - action: fail
       payload:
         attemptId: some-attempt-id
+    - action: request
+      payload:
+        requested: "2020-01-03T00:02:12.000Z"
 
   handlers:
     - action: issue
@@ -95,6 +102,23 @@ testing:
           result:
             code: some-code
             attempts: 2
+
+    - action: request
+      examples:
+        - payload:
+            requested: "2020-01-03T00:02:12.000Z"
+          result:
+            requests:
+              - "2020-01-03T00:02:12.000Z"
+        - state:
+            requests:
+              - "2020-01-03T00:02:12.000Z"
+          payload:
+            requested: "2020-01-03T00:03:12.000Z"
+          result:
+            requests:
+              - "2020-01-03T00:02:12.000Z"
+              - "2020-01-03T00:03:12.000Z"
 
 #don't change
 procedure: event-store
