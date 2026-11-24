@@ -134,6 +134,15 @@ describe("Command handler unit tests", () => {
           root: principalRoot,
         },
         {
+          domain: "principal",
+          service: "core",
+          action: "set-subject",
+          payload: {
+            subject: { domain: "key", root: keyRoot, service, network },
+          },
+          root: principalRoot,
+        },
+        {
           action: "create",
           payload: {
             name: payload.name,
