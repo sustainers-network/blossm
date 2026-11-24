@@ -20,6 +20,7 @@
     "precommit": "lint-staged",
     "format": "eslint --fix .",
     "check-wiring": "node tools/check_wiring.mjs",
+    "check-imports": "node tools/check_imports.mjs",
     "test-tools": "node --test \"tools/test/*.test.mjs\""
   },
   "devDependencies": {
