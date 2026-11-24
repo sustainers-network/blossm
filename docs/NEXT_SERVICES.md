@@ -70,7 +70,7 @@ Procedures that read a secret, and so cannot work until it exists:
 | `email-hmac-key` | `core.challenge.issue`, `core.session.save` |
 | `railgun-authenticator-password` | `comms.email.send-auth-code` |
 | `twilio-account-sid`, `twilio-auth-token` | `comms.sms.send` |
-| `fanout-realm-key` | `updates.push` |
+| `fanout-realm-key` | `system.updates.push` |
 
 The email command's own README names its secret `mailgun-api-key`, and the
 code reads `railgun-authenticator-password`. Settle the name before storing it.
@@ -142,7 +142,10 @@ cd services/core/domains/scene && blossm roles upload -e development
 ```
 
 Roles files exist for `core.account`, `core.group`, `core.scene` and
-`system.node`. Each gateway identity needs read on the bucket, which the
+`system.node`. The routes that require a privilege today, and so need the
+bucket, are `core.principal` `add-roles` and `remove-roles`, `core.scene`
+`delete`, `system.key` `create`, `system.connection` `open` and
+`system.updates` `push`. Each gateway identity needs read on the bucket, which the
 deployment does not grant:
 
 ```bash
@@ -159,17 +162,27 @@ kind of procedure. Packages listed only as development dependencies are not
 in the image. A procedure that imports a package it does not list starts only
 if another package happens to bring it along.
 
-Known cases: `comms.sms.send` and `updates.create-token` import
-`@blossm/uuid` without listing it.
+`yarn check-wiring` fails a pull request that adds such an import, and
+`yarn check-imports` fails one that imports a name a package does not export.
+One known case remains and is listed in `tools/check_wiring.mjs`:
+`system.updates.create-token` imports `@blossm/uuid` without listing it.
 
-## 5. Environments
+## 5. Session gateway routes
+
+The session command gateway routes only `start`. When `save`, `terminate` or
+`change-scene` is deployed, add its route back to
+`services/core/domains/session/command_gateway/blossm.yaml` and redeploy the
+gateway.
+
+## 6. Environments
 
 `config.yaml` defines only `development`. Some procedures carry `env` blocks
 for `production`, `staging` and `sandbox` from earlier use. They are inert
 until those environments get a project, registry and identities.
 
-## 6. Views
+## 7. Views
 
 No PostgreSQL view-store adapter exists, and `config.yaml` has no
 `vendors.viewStore`, so view stores, projections and the view gateway cannot
-be generated yet.
+be generated yet. The view gateway is scoped to the `session` context: a view
+with another scope needs its own gateway.
