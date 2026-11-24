@@ -128,6 +128,28 @@ describe("Command handler unit tests", () => {
       ],
     });
   });
+  it("should add a role that differs from an existing one only by subject domain", async () => {
+    const id = "some-id";
+    const root = "some-root";
+    const service = "some-service";
+    const network = "some-network";
+
+    const role = {
+      id,
+      subject: { root, domain: "some-other-domain", service, network },
+    };
+
+    const aggregateFn = fake.returns({
+      state: {
+        roles: [{ id, subject: { root, domain: "some-domain", service, network } }],
+      },
+    });
+    const result = await main({ payload: { roles: [role] }, root, aggregateFn });
+
+    expect(result).to.deep.equal({
+      events: [{ action: "add-roles", payload: { roles: [role] }, root }],
+    });
+  });
   it("should return successfully if no roles", async () => {
     const id = "some-id";
     const root = "some-root";

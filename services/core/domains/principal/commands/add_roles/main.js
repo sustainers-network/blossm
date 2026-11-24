@@ -10,6 +10,7 @@ export default async ({ payload, root, aggregateFn }) => {
         (r) =>
           r.id == role.id &&
           r.subject.root == role.subject.root &&
+          r.subject.domain == role.subject.domain &&
           r.subject.service == role.subject.service &&
           r.subject.network == role.subject.network
       )
