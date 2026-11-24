@@ -17,7 +17,12 @@ const REQUEST_WINDOW = 15 * SECONDS_IN_MINUTE * 1000;
 // by the email's hmac. Its event is numbered and written before anything else
 // happens, so requests sent at once compete for one slot and the rest fail
 // without a code being sent or a password being checked.
-const countRequest = async ({ hmacEmail, aggregateFn, logEventsFn }) => {
+const countRequest = async ({
+  hmacEmail,
+  aggregateFn,
+  logEventsFn,
+  generateRootFn,
+}) => {
   const root = `email-${Buffer.from(String(hmacEmail)).toString("hex")}`;
   const aggregate = await aggregateFn(root, { notFoundThrows: false });
 
@@ -38,7 +43,9 @@ const countRequest = async ({ hmacEmail, aggregateFn, logEventsFn }) => {
       root,
       action: "request",
       correctNumber: aggregate ? aggregate.lastEventNumber + 1 : 0,
-      payload: { requested: deps.stringDate() },
+      // The id keeps a repeated idempotency key from making two requests look
+      // like one event, which the store would drop without counting.
+      payload: { requested: deps.stringDate(), requestId: generateRootFn() },
     },
   ]);
 };
@@ -93,7 +100,7 @@ export default async ({
     message: payload.email,
   });
 
-  await countRequest({ hmacEmail, aggregateFn, logEventsFn });
+  await countRequest({ hmacEmail, aggregateFn, logEventsFn, generateRootFn });
 
   // Check to see if there is an account with the provided email.
   const [account] = await queryAggregatesFn({

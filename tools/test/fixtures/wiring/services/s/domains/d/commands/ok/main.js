@@ -8,6 +8,7 @@ import crypto from "crypto";
 export default ({ payload, root }) => ({
   events: [
     { action: "declared", root, payload },
+    { action: "declared", root, payload: { kept: 1, dropped: { a: 1 } } },
     { action: "undeclared", root, payload },
     { action: "declared", domain: "missing", service: "s", root, payload },
     { action: payload.action, root, payload },
