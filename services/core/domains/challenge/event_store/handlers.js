@@ -11,4 +11,10 @@ export default {
       ...payload,
     };
   },
+  fail: (state) => {
+    return {
+      ...state,
+      attempts: (state.attempts || 0) + 1,
+    };
+  },
 };

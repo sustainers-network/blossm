@@ -84,9 +84,9 @@ const fixture = ({
         }
         count++;
         seen.add(event.headers.idempotency);
-        current = handlers.answer(current, event.payload);
+        current = handlers[event.headers.action](current, event.payload);
         committed.push({ event, number, async });
-        order.push("answer");
+        order.push(event.headers.action);
       }
     },
   });
@@ -197,11 +197,77 @@ describe("Challenge consumption through the command runtime", () => {
     it(`rejects ${name} expiry before persistence or side effects`, async () => {
       const f = fixture({ state: { expires } });
       await assert.rejects(f.run(), (e) => e.info().reason === "expired");
+      assert.equal(deps.compare.callCount, 0);
       assert.equal(f.committed.length, 0);
       assert.equal(f.dispatched.length, 0);
       assert.equal(f.upgradeFn.callCount, 0);
     });
   }
+
+  it("records a wrong code before rejecting it", async () => {
+    deps.compare = fake.resolves(false);
+    const f = fixture();
+    await assert.rejects(f.run(), (e) => e.info().reason === "wrong");
+    assert.deepEqual(f.order, ["fail"]);
+    assert.equal(f.committed[0].number, 1);
+    assert.equal(f.committed[0].async, false);
+    assert.equal(f.state().attempts, 1);
+    assert.equal(f.state().answered, undefined);
+    assert.equal(f.dispatched.length, 0);
+    assert.equal(f.upgradeFn.callCount, 0);
+  });
+
+  it("stops accepting answers after five wrong codes, even the right one", async () => {
+    deps.compare = fake.resolves(false);
+    const f = fixture();
+    for (let i = 0; i < 5; i++)
+      await assert.rejects(f.run(), (e) => e.info().reason === "wrong");
+    assert.equal(f.state().attempts, 5);
+
+    deps.compare = fake.resolves(true);
+    await assert.rejects(f.run(), (e) => e.info().reason === "attempts");
+    assert.equal(deps.compare.callCount, 0);
+    assert.equal(f.committed.length, 5);
+    assert.equal(f.dispatched.length, 0);
+    assert.equal(f.upgradeFn.callCount, 0);
+  });
+
+  it("accepts the right code after four wrong ones", async () => {
+    deps.compare = fake.resolves(false);
+    const f = fixture();
+    for (let i = 0; i < 4; i++)
+      await assert.rejects(f.run(), (e) => e.info().reason === "wrong");
+
+    deps.compare = fake.resolves(true);
+    const reply = await f.run();
+    assert.equal(reply.status, 202);
+    assert.equal(f.committed[4].number, 5);
+    assert(f.state().answered);
+  });
+
+  it("tells only one of several concurrent wrong guesses that it was wrong", async () => {
+    deps.compare = fake.resolves(false);
+    const f = fixture();
+    const results = await Promise.allSettled([f.run(), f.run(), f.run()]);
+    assert.equal(results.filter((r) => r.status === "fulfilled").length, 0);
+    assert.equal(
+      results.filter((r) => r.reason.statusCode === 412).length,
+      2
+    );
+    assert.equal(
+      results.filter((r) => r.reason.statusCode !== 412)[0].reason.info()
+        .reason,
+      "wrong"
+    );
+    assert.equal(f.state().attempts, 1);
+  });
+
+  it("does not say a code is wrong when the failed attempt cannot be stored", async () => {
+    deps.compare = fake.resolves(false);
+    const failure = new Error("Persistence failed.");
+    const f = fixture({ failAnswer: failure });
+    await assert.rejects(f.run(), (e) => e === failure);
+  });
 
   it("does not dispatch or upgrade after answer persistence fails", async () => {
     const failure = new Error("Persistence failed.");

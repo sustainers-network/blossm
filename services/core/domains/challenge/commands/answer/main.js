@@ -1,5 +1,8 @@
 import deps from "./deps.js";
 
+// Wrong codes allowed before a challenge stops accepting answers.
+const maxFailedAttempts = 5;
+
 export default async ({
   payload,
   context,
@@ -23,18 +26,44 @@ export default async ({
       }
     );
 
-  // Make sure the code is correct.
-  if (!(await deps.compare(payload.code, challengeAggregate.state.code)))
-    throw deps.invalidArgumentError.message("This code is wrong.", {
-      info: { reason: "wrong" },
-    });
-
-  // Make sure the challenge isn't expired.
+  // Make sure the challenge isn't expired. This comes before the code is
+  // compared so an expired challenge says nothing about the code.
   const expiresAt = Date.parse(challengeAggregate.state.expires);
   if (Number.isNaN(expiresAt) || expiresAt <= Date.now())
     throw deps.invalidArgumentError.message("This code expired.", {
       info: { reason: "expired" },
     });
+
+  // Make sure the code hasn't been guessed wrong too many times.
+  if ((challengeAggregate.state.attempts || 0) >= maxFailedAttempts)
+    throw deps.invalidArgumentError.message(
+      "This code has been tried too many times.",
+      {
+        info: { reason: "attempts" },
+      }
+    );
+
+  // Make sure the code is correct.
+  if (!(await deps.compare(payload.code, challengeAggregate.state.code))) {
+    // Record the failed attempt before saying the code is wrong. The event is
+    // numbered, so concurrent guesses compete for one slot and a guess that
+    // isn't recorded fails on the event number without learning anything.
+    await logEventsFn([
+      {
+        root,
+        action: "fail",
+        correctNumber: challengeAggregate.lastEventNumber + 1,
+        payload: {
+          // Distinct attempts must reach the event-number check even when the
+          // caller reuses an idempotency key.
+          attemptId: generateRootFn(),
+        },
+      },
+    ]);
+    throw deps.invalidArgumentError.message("This code is wrong.", {
+      info: { reason: "wrong" },
+    });
+  }
 
   const upgrade = challengeAggregate.state.upgrade;
 

@@ -170,6 +170,66 @@ testing:
       payload:
         code: "11111"
       code: 409
+    # An answered challenge can't be answered again.
+    - payload:
+        code: "123456"
+      context:
+        challenge:
+          root: some-root
+          service: some-service
+          network: some.network
+        session:
+          root: some-session-root
+          service: some-service
+          network: some.network
+      code: 409
+    # A challenge with five wrong answers refuses the right code.
+    - pre:
+        - domain: challenge
+          service: core
+          root: some-locked-root
+          action: issue
+          payload:
+            code: "#456789"
+            expires: 9999-12-31T00:00:00.000Z
+        - domain: challenge
+          service: core
+          root: some-locked-root
+          action: fail
+          payload:
+            attemptId: some-attempt-1
+        - domain: challenge
+          service: core
+          root: some-locked-root
+          action: fail
+          payload:
+            attemptId: some-attempt-2
+        - domain: challenge
+          service: core
+          root: some-locked-root
+          action: fail
+          payload:
+            attemptId: some-attempt-3
+        - domain: challenge
+          service: core
+          root: some-locked-root
+          action: fail
+          payload:
+            attemptId: some-attempt-4
+        - domain: challenge
+          service: core
+          root: some-locked-root
+          action: fail
+          payload:
+            attemptId: some-attempt-5
+      payload:
+        code: "456789"
+      context:
+        challenge:
+          root: some-locked-root
+          service: some-service
+          network: some.network
+      code: 409
 
 #don't change
 procedure: command
