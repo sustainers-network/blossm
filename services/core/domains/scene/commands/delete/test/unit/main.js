@@ -25,6 +25,19 @@ const groupRoot = "some-group-root";
 const groupService = "some-group-service";
 const groupNetwork = "some-group-network";
 
+process.env.SERVICE = sceneService;
+process.env.NETWORK = sceneNetwork;
+
+const adminOf = (root) => ({
+  id: "SceneAdmin",
+  subject: {
+    root,
+    domain: "scene",
+    service: sceneService,
+    network: sceneNetwork,
+  },
+});
+
 describe("Command handler unit tests", () => {
   beforeEach(() => {
     clock = useFakeTimers(now.getTime());
@@ -42,6 +55,7 @@ describe("Command handler unit tests", () => {
       },
     };
 
+    // One fake stands in for the scene and the principal aggregates.
     const aggregateFake = fake.returns({
         state: {
           group: {
@@ -49,6 +63,7 @@ describe("Command handler unit tests", () => {
             service: groupService,
             network: groupNetwork,
           },
+          roles: [adminOf(sceneRoot)],
         },
       });
 
@@ -77,6 +92,10 @@ describe("Command handler unit tests", () => {
       ],
     });
     expect(aggregateFake).to.have.been.calledWith(sceneRoot);
+    expect(aggregateFake).to.have.been.calledWith(root, {
+      domain: "principal",
+      notFoundThrows: false,
+    });
     expect(queryAggregatesFnFake).to.have.been.calledWith({
       domain: "group",
       queryPairs: [{
@@ -186,6 +205,34 @@ describe("Command handler unit tests", () => {
         "This scene isn't accessible."
       );
       expect(e).to.equal(error);
+    }
+  });
+  it("should throw if the principal doesn't administer this scene", async () => {
+    const payload = {
+      scene: { root: sceneRoot, service: sceneService, network: sceneNetwork },
+    };
+    const group = {
+      root: groupRoot,
+      service: groupService,
+      network: groupNetwork,
+    };
+    for (const roles of [
+      undefined,
+      [adminOf("some-other-scene-root")],
+      [{ ...adminOf(sceneRoot), id: "SceneViewer" }],
+    ]) {
+      let error;
+      try {
+        await main({
+          context,
+          payload,
+          aggregateFn: fake.returns({ state: { group, roles } }),
+          queryAggregatesFn: fake.returns([group]),
+        });
+      } catch (e) {
+        error = e;
+      }
+      expect(error && error.statusCode).to.equal(403);
     }
   });
 });
