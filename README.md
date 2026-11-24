@@ -24,9 +24,9 @@ else is deployed, and `config.yaml` holds that one environment.
 - **How it was deployed and verified.** See
   [the session start guide](docs/SESSION_START_DEPLOYMENT.md) and
   [the development setup guide](docs/DEVELOPMENT_SETUP.md).
-- **Toolbox CLI.** `package.json` pins `@blossm/cli` to exactly `0.0.1964`,
-  whose deployments create each service's runtime identity and grant its
-  access. Install with Node 24.22.1, Yarn Classic 1.22.22 and
+- **Toolbox CLI.** `package.json` pins `@blossm/cli` to exactly `0.0.1965`.
+  From `0.0.1964` a deployment creates each service's runtime identity and
+  grants its access. Install with Node 24.22.1, Yarn Classic 1.22.22 and
   `yarn install --frozen-lockfile`, see the guides.
 - **Views are not ready.** There is no PostgreSQL view-store adapter, so no view
   store, projection or view gateway can be deployed. The previous MongoDB Atlas

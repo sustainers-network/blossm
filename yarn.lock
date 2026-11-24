@@ -31,13 +31,13 @@
     find-up "^7.0.0"
     yaml "^2.9.1"
 
-"@blossm/cli@0.0.1964":
-  version "0.0.1964"
-  resolved "https://registry.yarnpkg.com/@blossm/cli/-/cli-0.0.1964.tgz#7faecdca00a3e441753195a91668511bb5021d39"
-  integrity sha512-LDVNcEz+N0/lD0KSIGtNAG0cMtI+L7i3cD+CA0fUgWqo3CsoTssEDWdA6+e35t9++o4zIwX9n5R427yMYyQr0g==
+"@blossm/cli@0.0.1965":
+  version "0.0.1965"
+  resolved "https://registry.yarnpkg.com/@blossm/cli/-/cli-0.0.1965.tgz#0b6647daa389c28cab9e2aee047575a371b44a36"
+  integrity sha512-FZaAoMRmVRUqtUYcRwOYt0R4fD//fHhqzRmjLLvJ7S/qauMnoDhD9MV2AFP20bl20iitiRZ6V87VRc8UHcmsDg==
   dependencies:
     "@blossm/cli-root-dir" "^0.0.17"
-    "@blossm/deploy-cli-template" "^0.0.687"
+    "@blossm/deploy-cli-template" "^0.0.688"
     "@blossm/execute-cli-template" "^0.0.80"
     "@blossm/gcp-queue" "^0.0.38"
     "@blossm/gcp-secret" "^0.0.65"
@@ -79,13 +79,13 @@
     moment "^2.31.0"
     moment-timezone "^0.6.5"
 
-"@blossm/deploy-cli-template@^0.0.687":
-  version "0.0.687"
-  resolved "https://registry.yarnpkg.com/@blossm/deploy-cli-template/-/deploy-cli-template-0.0.687.tgz#1d47668a099b27b457b8b8520032bf5de689ccd4"
-  integrity sha512-uHdg8D5kgF9DGC6MlESvwnNCYUiUiWoYzrUdooPFQRGoxd5g2OSI/34fEW/7HPv3bKGR5LKsji7OMicFQj5saw==
+"@blossm/deploy-cli-template@^0.0.688":
+  version "0.0.688"
+  resolved "https://registry.yarnpkg.com/@blossm/deploy-cli-template/-/deploy-cli-template-0.0.688.tgz#41ffa93e6b363a672d42ca28d0630a46b937c63b"
+  integrity sha512-gRR8abcd6hYdf/G+6vTsW9vtWG0s5vlgysY7tnBwLufXQJ5od+om1H9zgHMKMEINPbhjVtfWpHwspNe/LkurwA==
   dependencies:
     "@blossm/cli-root-dir" "^0.0.17"
-    "@blossm/merge-cli-template" "^0.0.651"
+    "@blossm/merge-cli-template" "^0.0.652"
     "@blossm/normalize-cli" "^0.0.23"
     "@blossm/robo-say" "^0.0.12"
     "@blossm/test-cli-template" "^0.0.24"
@@ -197,10 +197,10 @@
   dependencies:
     "@blossm/gcp-log-transports" "^0.0.8"
 
-"@blossm/merge-cli-template@^0.0.651":
-  version "0.0.651"
-  resolved "https://registry.yarnpkg.com/@blossm/merge-cli-template/-/merge-cli-template-0.0.651.tgz#29c7d87745e74b4d210147eb7e42f1cc0694b646"
-  integrity sha512-dJQnhFQTtYmQSBypqD/Iipihr83dp5lfp7YIPe/qJi1f7OjodO0ay6mV3Vhw4KtYdyUkgccy98Ff4DQhWO932Q==
+"@blossm/merge-cli-template@^0.0.652":
+  version "0.0.652"
+  resolved "https://registry.yarnpkg.com/@blossm/merge-cli-template/-/merge-cli-template-0.0.652.tgz#df8fe8eea9698d52bb6df6cd4f38376152f3caab"
+  integrity sha512-iZIqz3zrsxIiZH5KRCBigFyRsEOhSUVpLN/aPE8zBYpcufKQhFDtYuQFbupz6kX4GYwZbDg2nihDfAlpsQOcEw==
   dependencies:
     "@blossm/cli-root-dir" "^0.0.17"
     "@blossm/node-external-token" "^0.0.205"
