@@ -73,13 +73,6 @@ describe("Command handler unit tests", () => {
               service: sceneService,
               network: sceneNetwork,
             },
-          },
-        },
-      })
-      .onSecondCall()
-      .returns({
-        body: {
-          receipt: {
             group: {
               root: groupRoot,
               service: groupService,
@@ -126,13 +119,6 @@ describe("Command handler unit tests", () => {
               network: sceneNetwork,
             },
           },
-          groupsAdded: [
-            {
-              root: groupRoot,
-              service: groupService,
-              network: groupNetwork,
-            },
-          ],
         },
       ],
       response: {
@@ -158,31 +144,18 @@ describe("Command handler unit tests", () => {
       },
       tokens: _tokens,
     });
-    expect(commandFnFake.getCall(0)).to.have.been.calledWith({
+    expect(commandFnFake).to.have.been.calledOnceWithExactly({
       name: "register",
       domain: "scene",
       service: "core",
       payload: {
         role: "SceneAdmin",
-        root: nodeRoot,
-        domain,
-        service,
-        network,
-      },
-    });
-    expect(commandFnFake.getCall(1)).to.have.been.calledWith({
-      name: "add-principals",
-      domain: "group",
-      service: "core",
-      payload: {
-        principals: [
-          {
-            roles: ["GroupAdmin"],
-            root: principalRoot,
-            service: principalService,
-            network: principalNetwork,
-          },
-        ],
+        subject: {
+          root: nodeRoot,
+          domain,
+          service,
+          network,
+        },
       },
     });
   });
@@ -213,13 +186,6 @@ describe("Command handler unit tests", () => {
               service: sceneService,
               network: sceneNetwork,
             },
-          },
-        },
-      })
-      .onSecondCall()
-      .returns({
-        body: {
-          receipt: {
             group: {
               root: groupRoot,
               service: groupService,
@@ -294,13 +260,6 @@ describe("Command handler unit tests", () => {
               network: sceneNetwork,
             },
           },
-          groupsAdded: [
-            {
-              root: groupRoot,
-              service: groupService,
-              network: groupNetwork,
-            },
-          ],
         },
       ],
       response: {
@@ -320,31 +279,18 @@ describe("Command handler unit tests", () => {
       },
       tokens: _tokens,
     });
-    expect(commandFnFake.getCall(0)).to.have.been.calledWith({
+    expect(commandFnFake).to.have.been.calledOnceWithExactly({
       name: "register",
       domain: "scene",
       service: "core",
       payload: {
         role: "SceneAdmin",
-        root: nodeRoot,
-        domain,
-        service,
-        network,
-      },
-    });
-    expect(commandFnFake.getCall(1)).to.have.been.calledWith({
-      name: "add-principals",
-      domain: "group",
-      service: "core",
-      payload: {
-        principals: [
-          {
-            roles: ["GroupAdmin"],
-            root: contextPrincipalRoot,
-            service: contextPrincipalService,
-            network: contextPrincipalNetwork,
-          },
-        ],
+        subject: {
+          root: nodeRoot,
+          domain,
+          service,
+          network,
+        },
       },
     });
   });
