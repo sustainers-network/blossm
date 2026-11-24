@@ -1,9 +1,9 @@
 import * as chai from "chai";
 import chaiDateTime from "chai-datetime";
 import sinonChai from "sinon-chai";
-const { restore, replace, fake, match, useFakeTimers } = require("sinon");
+import { restore, replace, fake, match, useFakeTimers } from "sinon";
 
-const deps = require("../../deps.js");
+import deps from "../../deps.js";
 
 chai.use(chaiDateTime);
 chai.use(sinonChai);
@@ -57,7 +57,7 @@ process.env.NETWORK = network;
 process.env.GCP_PROJECT = project;
 process.env.GCP_REGION = region;
 
-const main = require("../../main.js");
+import main from "../../main.js";
 
 describe("Command handler unit tests", () => {
   beforeEach(() => {
@@ -170,7 +170,7 @@ describe("Command handler unit tests", () => {
     expect(Math.abs(deps.moment().add(3, "m").toDate() - new Date())).to.equal(
       180000
     );
-    expect(hashFake).to.have.been.calledWith(code);
+    expect(hashFake).to.have.been.calledWith(code.toString());
     expect(secretFake).to.have.been.calledWith("email-hmac-key");
     expect(hmacCreateFake).to.have.been.calledWith({
       secret: hmacSecret,
@@ -182,7 +182,7 @@ describe("Command handler unit tests", () => {
       domain: "email",
       service: "comms",
       payload: {
-        from: "Authenticator",
+        from: "authenticator",
         to: email,
         subject: "Auth code",
         message: `${code} is your verification code.`,
@@ -211,7 +211,7 @@ describe("Command handler unit tests", () => {
     replace(deps, "randomIntOfLength", randomIntFake);
 
     const hashFake = fake.returns(hashedCode);
-    replace(deps, "hash", hashedFakse);
+    replace(deps, "hash", hashFake);
 
     const secretFake = fake.returns(hmacSecret);
     replace(deps, "secret", secretFake);
@@ -305,7 +305,7 @@ describe("Command handler unit tests", () => {
     expect(Math.abs(deps.moment().add(3, "m").toDate() - new Date())).to.equal(
       180000
     );
-    expect(hashFake).to.have.been.calledWith(code);
+    expect(hashFake).to.have.been.calledWith(code.toString());
     expect(secretFake).to.have.been.calledWith("email-hmac-key");
     expect(hmacCreateFake).to.have.been.calledWith({
       secret: hmacSecret,
@@ -317,7 +317,7 @@ describe("Command handler unit tests", () => {
       domain: "email",
       service: "comms",
       payload: {
-        from: "Authenticator",
+        from: "authenticator",
         to: email,
         subject: "Auth code",
         message: `${code} is your verification code.`,
@@ -410,7 +410,7 @@ describe("Command handler unit tests", () => {
       domain: "account",
       queryPairs: [{
         key: "emailHmac",
-        value: emailHmac,
+        value: hmacEmail,
       }],
     });
     expect(createJwtFake).to.have.been.calledWith({
@@ -445,7 +445,7 @@ describe("Command handler unit tests", () => {
     expect(Math.abs(deps.moment().add(3, "m").toDate() - new Date())).to.equal(
       180000
     );
-    expect(hashFake).to.have.been.calledWith(code);
+    expect(hashFake).to.have.been.calledWith(code.toString());
     expect(secretFake).to.have.been.calledWith("email-hmac-key");
     expect(hmacCreateFake).to.have.been.calledWith({
       secret: hmacSecret,
@@ -457,7 +457,7 @@ describe("Command handler unit tests", () => {
       domain: "email",
       service: "comms",
       payload: {
-        from: "Authenticator",
+        from: "authenticator",
         to: email,
         subject: "Auth code",
         message: `${code} is your verification code.`,
@@ -558,18 +558,18 @@ describe("Command handler unit tests", () => {
       }),
     });
     expect(randomIntFake).to.have.been.calledWith(6);
-    expect(hashFake).to.have.been.calledWith(code);
-    expect(secretFake).to.have.been.calledWith("email-hmac-key");
-    expect(hmacCreateFake).to.have.been.calledWith({
-      secret: hmacSecret,
-      message: email
-    });
+    expect(hashFake).to.have.been.calledWith(code.toString());
+    // The account isn't looked up when the upgrade is given.
+    expect(secretFake).to.not.have.been.called;
+    expect(hmacCreateFake).to.not.have.been.called;
 
     expect(Math.abs(deps.moment().add(3, "m").toDate() - new Date())).to.equal(
       180000
     );
   });
   it("should throw correctly", async () => {
+    replace(deps, "secret", fake.returns(hmacSecret));
+    replace(deps, "hmacCreate", fake.returns(hmacEmail));
     const errorMessage = "some-error";
     const queryAggregatesFnFake = fake.rejects(new Error(errorMessage));
 
@@ -588,6 +588,8 @@ describe("Command handler unit tests", () => {
     }
   });
   it("should throw correctly if no emails found", async () => {
+    replace(deps, "secret", fake.returns(hmacSecret));
+    replace(deps, "hmacCreate", fake.returns(hmacEmail));
     const queryAggregatesFnFake = fake.returns([]);
 
     const error = "some-error";
@@ -614,6 +616,8 @@ describe("Command handler unit tests", () => {
     }
   });
   it("should throw correctly if password comparing fails.", async () => {
+    replace(deps, "secret", fake.returns(hmacSecret));
+    replace(deps, "hmacCreate", fake.returns(hmacEmail));
     const generateRootFake = fake.returns(root);
 
     const queryAggregatesFnFake = fake.returns([account]);
@@ -644,6 +648,8 @@ describe("Command handler unit tests", () => {
     }
   });
   it("should throw correctly if context.principal doesn't match the account's principal", async () => {
+    replace(deps, "secret", fake.returns(hmacSecret));
+    replace(deps, "hmacCreate", fake.returns(hmacEmail));
     const generateRootFake = fake.returns(root);
 
     const queryAggregatesFnFake = fake.returns([account]);

@@ -4,12 +4,11 @@ import sinonChai from "sinon-chai";
 import { restore, fake, replace } from "sinon";
 
 import deps from "../../deps.js";
+import main from "../../main.js";
 
 chai.use(chaiDateTime);
 chai.use(sinonChai);
 const { expect } = chai;
-
-let main;
 
 const fanoutRealmId = "some-fanout-realm-id";
 
@@ -40,8 +39,6 @@ const secret = "some-secret";
 
 describe("Command handler unit tests", () => {
   beforeEach(() => {
-    delete require.cache[require.resolve("../../main.js")];
-    main = require("../../main.js");
     delete process.env.GRIP_URL;
     delete process.env.NODE_ENV;
   });
