@@ -82,8 +82,14 @@ Final release verification: all three exact npm versions and latest tags passed,
 - **Resource budget:** Parallel implementation in isolated worktrees, one group of related PRs each. Stop at open PRs. No gcloud, no merge, no publish.
 
 ## Steps
-- [ ] Runtime bugs: save hash, set-password errors, change-scene fields, node.register payload, startup imports, updates service.
-- [ ] Security: principal roles, group membership, challenge answers, sessions view, updates push and channel, email code storage, secure random in Toolbox.
-- [ ] Configuration: identities, buckets, declared dependencies, leftovers, documented against the inherited README.
-- [ ] Gates: wiring check and import check in CI.
-- [ ] Review every PR diff, then report.
+- [x] Runtime bugs: save hash, set-password errors, change-scene fields, node.register payload, startup imports, updates service.
+- [x] Security: principal roles, group membership, challenge answers, sessions view, updates push and channel, email code storage, secure random in Toolbox.
+- [x] Configuration: identities, buckets, declared dependencies, leftovers, documented against the inherited README.
+- [x] Gates: wiring check and import check in CI.
+- [x] Review every PR diff, then report.
+
+## Review (audit fixes, 2026-11-23)
+- Open, unmerged: PRs 23, 24, 26 to 43 (26 stacks on the older 19, 42 on the older 20). PR 25 closed as a duplicate of 19.
+- Unit tests were run locally before and after each fix where the suite could load. No procedure build, integration step or deployment ran.
+- No Toolbox PR: the released random packages already use crypto.randomInt. The audit finding came from the stale toolbox checkout (lesson recorded).
+- Left open for the owner: group store public or private (41), session merge under the new group check (34), client hosts after the updates move (31), an ESLint upgrade, root dev dependencies to widen the import check (37).
