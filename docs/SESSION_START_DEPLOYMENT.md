@@ -85,21 +85,24 @@ From the render evidence. The event store name matches the live service.
 
 ## CLI release
 
-Required version: `@blossm/cli` `0.0.1964`, with
+Minimum version: `@blossm/cli` `0.0.1964`, with
 `@blossm/deploy-cli-template` `0.0.687` and `@blossm/merge-cli-template`
-`0.0.651` (Toolbox PR 174, release source `1941b149e`). What each release added:
+`0.0.651` (Toolbox PR 174, release source `1941b149e`). The four services
+below were deployed with it. The repository now pins `0.0.1965`, which has
+not built or deployed anything here yet. What each release added:
 
 | CLI | Adds |
 | --- | --- |
 | `0.0.1962` | A procedure names its own runtime identity in `blossm.yaml`. |
 | `0.0.1963` | Public gateways turn the invoker check off instead of binding `allUsers`. |
 | `0.0.1964` | `blossm deploy` creates a missing runtime identity, and each build grants the service, queue and key access its procedure needs. |
+| `0.0.1965` | A command gateway's suite sends each command its first valid example payload, so the request reaches the command. A suite can now fail where a command's prerequisites, such as a secret, do not exist yet. Projections push to the `updates` domain in the `system` service. |
 
 The commands below use the operator's global `blossm`, and only that one.
 `npx --no-install blossm` would run this repository's older pinned copy.
 
 ```bash
-npm install -g @blossm/cli@0.0.1964
+npm install -g @blossm/cli@0.0.1965
 npm ls -g @blossm/cli
 command -v blossm
 ```
