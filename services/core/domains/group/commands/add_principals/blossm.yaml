@@ -70,6 +70,26 @@ testing:
             root: some-root
             service: some-service
             network: some.network
+    - payload:
+        principals:
+          - roles:
+              - some-role
+            root: some-root
+            service: some-service
+            network: some.network
+          - roles:
+              - some-other-role
+            root: some-root
+            service: some-service
+            network: some.network
+      normalized:
+        principals:
+          - roles:
+              - some-role
+              - some-other-role
+            root: some-root
+            service: some-service
+            network: some.network
 
   dependencies:
     - domain: principal

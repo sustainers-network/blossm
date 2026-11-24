@@ -26,8 +26,7 @@ testing:
   validate:
     ok:
       - principals:
-          - role: GroupAdmin
-            root: some-root
+          - root: some-root
             service: some-service
             network: some.network
     bad:
@@ -44,15 +43,16 @@ testing:
   normalize:
     - payload:
         principals:
-          - role: some-role
-            root: some-root
+          - root: some-root
             service: some-service
             network: some.network
             bogus: some-bogus
+          - root: some-root
+            service: some-service
+            network: some.network
       normalized:
         principals:
-          - role: some-role
-            root: some-root
+          - root: some-root
             service: some-service
             network: some.network
 
