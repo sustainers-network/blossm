@@ -1,4 +1,25 @@
-export default async ({ payload, root, aggregateFn }) => {
+import { forbidden } from "@blossm/errors";
+
+// The roles a scene admin may hand out, and only for the scene their session is in.
+// The gateway has already checked that the caller administers that scene.
+const sceneRoles = ["SceneAdmin", "SceneViewer"];
+const isCallersScene = (subject, scene) =>
+  scene != undefined &&
+  subject.domain == "scene" &&
+  subject.root == scene.root &&
+  subject.service == scene.service &&
+  subject.network == scene.network;
+
+export default async ({ payload, root, context, aggregateFn }) => {
+  if (
+    !payload.roles.every(
+      (role) =>
+        sceneRoles.includes(role.id) &&
+        isCallersScene(role.subject, context.scene)
+    )
+  )
+    throw forbidden.message("These roles can't be added from this scene.");
+
   // Get the principal's aggregate.
   const principalAggregate = await aggregateFn(root);
   
@@ -10,6 +31,7 @@ export default async ({ payload, root, aggregateFn }) => {
         (r) =>
           r.id == role.id &&
           r.subject.root == role.subject.root &&
+          r.subject.domain == role.subject.domain &&
           r.subject.service == role.subject.service &&
           r.subject.network == role.subject.network
       )

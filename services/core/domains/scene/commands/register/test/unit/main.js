@@ -82,6 +82,10 @@ describe("Command handler unit tests", () => {
                 id: role,
                 subject: { root, domain: "scene", service, network },
               },
+              {
+                id: "GroupAdmin",
+                subject: { root: groupRoot, domain: "group", service, network },
+              },
             ],
           },
         },
@@ -112,12 +116,19 @@ describe("Command handler unit tests", () => {
           root: groupRoot,
           payload: {
             principals: [{ 
-              roles: ["GroupAdmin"],
               root: uuid, 
               service, 
               network 
             }],
           },
+        },
+        {
+          domain: "group",
+          service,
+          network,
+          action: "add-networks",
+          root: groupRoot,
+          payload: { networks: [network] },
         },
       ],
       response: {
@@ -186,6 +197,21 @@ describe("Command handler unit tests", () => {
     expect(result).to.deep.equal({
       events: [
         {
+          domain: "principal",
+          service: service,
+          network: network,
+          action: "add-roles",
+          root: uuid,
+          payload: {
+            roles: [
+              {
+                id: "GroupAdmin",
+                subject: { root: groupRoot, domain: "group", service, network },
+              },
+            ],
+          },
+        },
+        {
           action: "register",
           payload: {
             subject: {
@@ -212,12 +238,19 @@ describe("Command handler unit tests", () => {
           root: groupRoot,
           payload: {
             principals: [{ 
-              roles: ["GroupAdmin"],
               root: uuid, 
               service, 
               network 
             }],
           },
+        },
+        {
+          domain: "group",
+          service,
+          network,
+          action: "add-networks",
+          root: groupRoot,
+          payload: { networks: [network] },
         },
       ],
       response: {
@@ -278,6 +311,10 @@ describe("Command handler unit tests", () => {
                 id: role,
                 subject: { root, domain: "scene", service, network },
               },
+              {
+                id: "GroupAdmin",
+                subject: { root: groupRoot, domain: "group", service, network },
+              },
             ],
           },
         },
@@ -308,12 +345,19 @@ describe("Command handler unit tests", () => {
           root: groupRoot,
           payload: {
             principals: [{ 
-              roles: ["GroupAdmin"],
               root: principalRoot, 
               service: principalService, 
               network: principalNetwork 
             }],
           },
+        },
+        {
+          domain: "group",
+          service,
+          network,
+          action: "add-networks",
+          root: groupRoot,
+          payload: { networks: [network] },
         },
       ],
       response: {
@@ -369,6 +413,21 @@ describe("Command handler unit tests", () => {
     expect(result).to.deep.equal({
       events: [
         {
+          domain: "principal",
+          service: principalService,
+          network: principalNetwork,
+          action: "add-roles",
+          root: principalRoot,
+          payload: {
+            roles: [
+              {
+                id: "GroupAdmin",
+                subject: { root: groupRoot, domain: "group", service, network },
+              },
+            ],
+          },
+        },
+        {
           action: "register",
           payload: {
             subject: {
@@ -395,12 +454,19 @@ describe("Command handler unit tests", () => {
           root: groupRoot,
           payload: {
             principals: [{ 
-              roles: ["GroupAdmin"],
               root: principalRoot, 
               service: principalService, 
               network: principalNetwork 
             }],
           },
+        },
+        {
+          domain: "group",
+          service,
+          network,
+          action: "add-networks",
+          root: groupRoot,
+          payload: { networks: [network] },
         },
       ],
       response: {

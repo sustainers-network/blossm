@@ -1,0 +1,4 @@
+name: out-of-scope
+domain: w
+service: wallet
+procedure: command

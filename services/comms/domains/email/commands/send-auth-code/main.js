@@ -63,9 +63,11 @@ export default async ({ payload, context, generateRootFn }) => {
     events: [
       {
         action: "send-auth-code",
+        // Only what is needed to audit that a mail was sent. The subject and
+        // message carry the login code and must not be stored.
         payload: {
-          ...payload,
-          to: encryptedTo
+          from: payload.from,
+          to: encryptedTo,
         },
         root,
       },

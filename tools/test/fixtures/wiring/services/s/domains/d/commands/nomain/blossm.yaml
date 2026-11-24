@@ -1,0 +1,4 @@
+name: nomain
+domain: d
+service: s
+procedure: command

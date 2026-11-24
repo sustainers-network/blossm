@@ -23,7 +23,8 @@ export default async ({ payload }) => {
     events: [
       {
         action: "send",
-        payload,
+        // The message can carry a login code and must not be stored.
+        payload: { to: payload.to },
         root,
       },
     ],

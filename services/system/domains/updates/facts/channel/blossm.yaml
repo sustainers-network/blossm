@@ -4,11 +4,12 @@ service: system
 
 dependencies:
   "@blossm/request": "*"
+  "@blossm/errors": "*"
 
 testing:
   dependencies:
     - procedure: http
-      host: v.some-context.some-network
+      host: v.some-context.local.network
       mocks:
         - method: get
           path: /
@@ -19,18 +20,43 @@ testing:
     - query:
         name: some-name
         context: some-context
-        network: some-network
+        network: local.network
       context:
-        some: context
+        some-context:
+          root: some-context-root
+          service: some-context-service
+          network: some-context-network
       code: 200
     - query:
         name: some-name
         source: some-source
         context: some-context
+        network: local.network
+      context:
+        some-context:
+          root: some-context-root
+          service: some-context-service
+          network: some-context-network
+      code: 200
+    # A network this service does not serve.
+    - query:
+        name: some-name
+        context: some-context
         network: some-network
       context:
+        some-context:
+          root: some-context-root
+          service: some-context-service
+          network: some-context-network
+      code: 403
+    # A context the token does not hold.
+    - query:
+        name: some-name
+        context: some-context
+        network: local.network
+      context:
         some: context
-      code: 200
+      code: 403
 
 #don't change
 procedure: fact

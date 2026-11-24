@@ -70,3 +70,26 @@ Final release verification: all three exact npm versions and latest tags passed,
 - Not shown: the block's signature field and readable block contents, since the store is private. Block inclusion is inferred from its time window, chain link and sizes.
 - Operator setup roles run.admin, dns.admin and cloudkms.admin were removed. Temporary cloudscheduler.jobRunner and cloudsql.client were added for verification and removed.
 - Follow-ups: gateway test that sends a valid example payload, Toolbox README amendments, the next strict-protection session command.
+
+# Audit fixes (2026-11-23)
+
+## Plan refinement
+- **Objective:** Suggested fixes, as small reviewable PRs, for the audit findings the user selected on 2026-11-23: the procedures that cannot run, the security bugs, the configuration gaps and the audit's improvement suggestions. Wallet, Juicebox and revnet code is out of scope. Nothing is merged, released or deployed here.
+- **System fit:** None of the affected procedures is deployed, so each fix changes source, its unit tests and its blossm.yaml examples only. The four live services are untouched. Fixes are verified by unit tests and static checks now and by each procedure's build when it is first deployed. Random generation is owned by Toolbox packages, so that fix is a Toolbox PR. Configuration follows the inherited Toolbox README (secrets bucket, roles bucket, identities), with deviations recorded in Dia's docs.
+- **Reuse and simplicity:** One PR per defect, based on master unless it touches the same files as another, then stacked. Use what each command already has (aggregate state, context, existing error helpers). Prefer removing an unsafe public route over inventing a permission scheme. Where a durable fix needs a framework change, say so in the PR instead of working around it.
+- **Evidence and unknowns:** Five audit reports with file and line references, top findings re-read against source. Unknown: whether any client depends on the public principal role routes, how a command can persist a failed challenge attempt, and the intended service for the updates domain beyond the projection template naming `core`.
+- **Verification:** Unit tests updated to real shapes and run locally where the tooling allows, a tree-wide wiring check and an import check added as CI gates, eslint on changed files. Cloud behavior is not exercised.
+- **Resource budget:** Parallel implementation in isolated worktrees, one group of related PRs each. Stop at open PRs. No gcloud, no merge, no publish.
+
+## Steps
+- [x] Runtime bugs: save hash, set-password errors, change-scene fields, node.register payload, startup imports, updates service.
+- [x] Security: principal roles, group membership, challenge answers, sessions view, updates push and channel, email code storage, secure random in Toolbox.
+- [x] Configuration: identities, buckets, declared dependencies, leftovers, documented against the inherited README.
+- [x] Gates: wiring check and import check in CI.
+- [x] Review every PR diff, then report.
+
+## Review (audit fixes, 2026-11-23)
+- Open, unmerged: PRs 23, 24, 26 to 43 (26 stacks on the older 19, 42 on the older 20). PR 25 closed as a duplicate of 19.
+- Unit tests were run locally before and after each fix where the suite could load. No procedure build, integration step or deployment ran.
+- No Toolbox PR: the released random packages already use crypto.randomInt. The audit finding came from the stale toolbox checkout (lesson recorded).
+- Left open for the owner: group store public or private (41), session merge under the new group check (34), client hosts after the updates move (31), an ESLint upgrade, root dev dependencies to widen the import check (37).
