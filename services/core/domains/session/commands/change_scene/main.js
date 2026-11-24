@@ -1,5 +1,19 @@
 import deps from "./deps.js";
 
+// Context keys a token carries for itself. A scene's subject domain becomes a
+// context key, so it must never be one of these.
+const RESERVED = [
+  "session",
+  "principal",
+  "account",
+  "scene",
+  "domain",
+  "network",
+  "challenge",
+  "connection",
+  "key",
+];
+
 export default async ({ payload, context, claims, aggregateFn, queryAggregatesFn }) => {
   // Get aggregates for the principal, this session, and the context to be switched in to.
   const [sessionAggregate, sceneAggregate, principalGroupAggregates] = await Promise.all([
@@ -47,6 +61,18 @@ export default async ({ payload, context, claims, aggregateFn, queryAggregatesFn
 
   // Remove the old context domain.
   delete context[context.domain];
+
+  // Make sure the scene's subject can't replace a part of the session.
+  const subjectDomain = sceneAggregate.state.subject.domain;
+  if (
+    typeof subjectDomain != "string" ||
+    !/^[a-z][a-z0-9-]*$/.test(subjectDomain) ||
+    RESERVED.includes(subjectDomain) ||
+    Object.hasOwn(context, subjectDomain)
+  )
+    throw deps.forbiddenError.message("This scene isn't accessible.", {
+      info: { scene: payload.scene },
+    });
 
   // Create a new token inheriting from the current session.
   const token = await deps.createJwt({
