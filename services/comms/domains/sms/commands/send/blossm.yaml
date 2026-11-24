@@ -15,6 +15,7 @@ dependencies:
   "@blossm/phone-number": "*"
   "@blossm/gcp-secret": "*"
   "@blossm/twilio-sms": "*"
+  "@blossm/uuid": "*"
 
 devDependencies:
   "mocha": "^11.6.0"
