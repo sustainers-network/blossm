@@ -3,6 +3,8 @@ SceneAdmin:
   permissions:
     - core:scene:delete
     - core:scene:read
+    # Grant and revoke this scene's roles (SceneAdmin, SceneViewer) only.
+    # The scope is enforced by the principal add-roles and remove-roles commands.
     - core:principal:update
 
 SceneViewer:
