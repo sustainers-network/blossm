@@ -1,90 +1,11 @@
 import deps from "./deps.js";
 
-const mergeGroups = async ({
-  sessionPrincipalAggregate,
-  sessionPrincipalGroupAggregates,
-  principal,
-  commandFn,
-  queryAggregatesFn,
-}) => {
-  
-  // Get the groups that the principal is in.
-  const principalGroupAggregates = await queryAggregatesFn({
-    domain: "group",
-    queryPairs: [{
-      key: "principals.root",
-      value: principal.root,
-    },
-    {
-      key: "principals.service",
-      value: principal.service,
-    },
-    {
-      key: "principals.network",
-      value: principal.network,
-    }],
-  });
-
-  const groupCommandFns = [];
-
-  // Get the groups that are in the session principal but not in the account principal.
-  deps
-    .difference(
-      sessionPrincipalGroupAggregates.map(
-        (groupAggregate) => `${groupAggregate.root}:${groupAggregate.service}:${groupAggregate.network}`
-      ),
-      principalGroupAggregates.map(
-        (groupAggregate) => `${groupAggregate.root}:${groupAggregate.service}:${groupAggregate.network}`
-      )
-    )
-    // For each group, add the principals to the group.
-    .forEach((groupString) => {
-      const [root, service, network] = groupString.split(":");
-      
-      // Get the roles that the session principal has for the groups being added to the account principal.
-      const roles = sessionPrincipalAggregate.state.roles.filter(
-        (role) =>
-          role.subject.root == root &&
-          role.subject.domain == "group" &&
-          role.subject.service == service &&
-          role.subject.network == network
-      ); 
-
-      // TODO why not add the principal with no roles?
-      if (!roles.length) return;
-
-      groupCommandFns.push(
-        commandFn({
-          name: "add-principals",
-          domain: "group",
-          service,
-          root,
-          async: true,
-          payload: {
-            principals: [
-              {
-                roles: roles.map((role) => role.id),
-                root: principal.root,
-                service: principal.service,
-                network: principal.network,
-              },
-            ],
-          },
-        })
-      ); 
-      // The session principal will be removed from all of its groups in the next step.
-    });
-  
-  await Promise.all(groupCommandFns);
-};
-
 const getEventsForPermissionsMerge = async ({
   principal,
   sessionPrincipalAggregate,
   accountRoot,
   aggregateFn,
   queryAggregatesFn,
-  commandFn,
 }) => {
 
   // Get the aggregates of the principal of the account and the current principal of the session if one exists.
@@ -113,16 +34,19 @@ const getEventsForPermissionsMerge = async ({
       : []),
   ]);
   
-  // Merge the session principal's groups into the account principal.
-  if (sessionPrincipalAggregate && sessionPrincipalGroupAggregates) {
-    await mergeGroups({
-      sessionPrincipalAggregate,
-      sessionPrincipalGroupAggregates,
-      principal,
-      commandFn,
-      queryAggregatesFn,
-    });
-  }
+  // The roles the session principal holds for each of its groups.
+  const sessionGroups = (sessionPrincipalGroupAggregates || []).map(
+    (groupAggregate) => ({
+      groupAggregate,
+      roles: sessionPrincipalAggregate.state.roles.filter(
+        (role) =>
+          role.subject.root == groupAggregate.root &&
+          role.subject.domain == "group" &&
+          role.subject.service == groupAggregate.service &&
+          role.subject.network == groupAggregate.network
+      ),
+    })
+  );
 
   return {
     accountRoot,
@@ -134,16 +58,16 @@ const getEventsForPermissionsMerge = async ({
       ...(sessionPrincipalAggregate
         ? deps.difference(
             sessionPrincipalAggregate.state.roles
-              .filter((role) => role.domain != "group")
+              .filter((role) => role.subject.domain != "group")
               .map(
                 (role) =>
-                  `${role.id}:${role.root}:${role.domain}:${role.service}:${role.network}`
+                  `${role.id}:${role.subject.root}:${role.subject.domain}:${role.subject.service}:${role.subject.network}`
               ),
             principalAggregate.state.roles
-              .filter((role) => role.domain != "group")
+              .filter((role) => role.subject.domain != "group")
               .map(
                 (role) =>
-                  `${role.id}:${role.root}:${role.domain}:${role.service}:${role.network}`
+                  `${role.id}:${role.subject.root}:${role.subject.domain}:${role.subject.service}:${role.subject.network}`
               )
           ).length
           ? [
@@ -160,6 +84,48 @@ const getEventsForPermissionsMerge = async ({
               },
             ]
           : []
+        : []),
+      // The account's principal takes the session principal's place in each of its groups,
+      // with the same roles. These events only happen once the challenge is answered.
+      ...sessionGroups
+        .filter(({ roles }) => roles.length)
+        .flatMap(({ groupAggregate, roles }) => [
+          {
+            domain: "principal",
+            service: process.env.SERVICE,
+            action: "add-roles",
+            root: principal.root,
+            payload: { roles },
+          },
+          {
+            domain: "group",
+            service: groupAggregate.service,
+            action: "add-principals",
+            root: groupAggregate.root,
+            payload: {
+              principals: [
+                {
+                  root: principal.root,
+                  service: principal.service,
+                  network: principal.network,
+                },
+              ],
+            },
+          },
+        ]),
+      // The session principal gives up its roles for those groups.
+      ...(sessionGroups.some(({ roles }) => roles.length)
+        ? [
+            {
+              domain: "principal",
+              service: process.env.SERVICE,
+              action: "remove-roles",
+              root: sessionPrincipalAggregate.root,
+              payload: {
+                roles: sessionGroups.flatMap(({ roles }) => roles),
+              },
+            },
+          ]
         : []),
       // If there is a session principal, remove it from all of its groups.
       ...(sessionPrincipalGroupAggregates ? sessionPrincipalGroupAggregates.map((groupAggregate) => ({
@@ -190,7 +156,7 @@ const getEventsForAccountRegistering = async ({
   const accountRoot = generateRootFn();
 
   // Hash the email and password if it exists.
-  const hashedPassword = payload.password && deps.hash(payload.password);
+  const hashedPassword = payload.password && (await deps.hash(payload.password));
 
   // If there is a context principal, use it. Else, create a new principal.
   const principal = context.principal
@@ -346,7 +312,6 @@ export default async ({
         sessionPrincipalAggregate,
         aggregateFn,
         queryAggregatesFn,
-        commandFn,
       })
     : await getEventsForAccountRegistering({
         context,

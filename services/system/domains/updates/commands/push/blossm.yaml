@@ -1,6 +1,6 @@
 name: push
 domain: updates
-service: core
+service: system
 
 payload:
   view:

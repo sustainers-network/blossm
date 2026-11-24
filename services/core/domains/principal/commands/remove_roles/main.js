@@ -1,4 +1,34 @@
-export default async ({ payload, root, aggregateFn }) => {
+import { forbidden } from "@blossm/errors";
+
+// The roles a scene admin may hand out, and only for the scene their session is in.
+// The gateway has already checked that the caller administers that scene.
+const sceneRoles = ["SceneAdmin", "SceneViewer"];
+const isCallersScene = (subject, scene) =>
+  scene != undefined &&
+  subject.domain == "scene" &&
+  subject.root == scene.root &&
+  subject.service == scene.service &&
+  subject.network == scene.network;
+
+export default async ({ payload, root, context, aggregateFn }) => {
+  if (
+    !payload.roles.every(
+      (role) =>
+        sceneRoles.includes(role.id) &&
+        isCallersScene(role.subject, context.scene)
+    ) ||
+    !payload.subjects.every((subject) => isCallersScene(subject, context.scene))
+  )
+    throw forbidden.message("These roles can't be removed from this scene.");
+
+  // An admin can't remove their own admin role, so a scene always keeps one.
+  if (
+    root == context.principal.root &&
+    (payload.subjects.length > 0 ||
+      payload.roles.some((role) => role.id == "SceneAdmin"))
+  )
+    throw forbidden.message("You can't remove your own admin role.");
+
 
   // Get the principal's aggregate.
   const principalAggregate = await aggregateFn(root);
