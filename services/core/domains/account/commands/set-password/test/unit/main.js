@@ -49,6 +49,7 @@ describe("Command handler unit tests", () => {
     replace(deps, "hash", hashFake);
     const aggregateFnFake = fake.resolves({
       root: accountRoot,
+      lastEventNumber: 0,
       state: {
         principal: { root: "some-principal", service, network },
       },
@@ -61,6 +62,7 @@ describe("Command handler unit tests", () => {
         {
           action: "set-password",
           root: accountRoot,
+          correctNumber: 1,
           payload: { password: "hashed-password" },
         },
       ],
@@ -70,5 +72,24 @@ describe("Command handler unit tests", () => {
     });
     expect(aggregateFnFake).to.have.been.calledWith(accountRoot);
     expect(hashFake).to.have.been.calledWith("new-password");
+  });
+
+  it("should refuse a password that is too short or too long", async () => {
+    const hashFake = fake.resolves("hashed-password");
+    replace(deps, "hash", hashFake);
+    for (const password of ["", "1234567", "a".repeat(73), "é".repeat(37)]) {
+      let error;
+      try {
+        await main({
+          payload: { password },
+          context,
+          aggregateFn: fake.resolves({ lastEventNumber: 0, state: {} }),
+        });
+      } catch (e) {
+        error = e;
+      }
+      expect(error && error.statusCode, password).to.equal(400);
+    }
+    expect(hashFake).to.not.have.been.called;
   });
 });
