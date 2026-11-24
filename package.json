@@ -18,7 +18,9 @@
   },
   "scripts": {
     "precommit": "lint-staged",
-    "format": "eslint --fix ."
+    "format": "eslint --fix .",
+    "check-wiring": "node tools/check_wiring.mjs",
+    "test-tools": "node --test \"tools/test/*.test.mjs\""
   },
   "devDependencies": {
     "chai": "^5.2.0",
@@ -30,7 +32,8 @@
     "lint-staged": "^10.1.3",
     "mocha": "^11.6.0",
     "prettier": "^2.0.4",
-    "sinon": "^21.0.0"
+    "sinon": "^21.0.0",
+    "yaml": "^2.9.1"
   },
   "lint-staged": {
     "*.js": [

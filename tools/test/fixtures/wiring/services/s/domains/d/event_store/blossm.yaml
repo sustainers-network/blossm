@@ -1,0 +1,6 @@
+domain: d
+service: s
+actions:
+  - declared
+  - unhandled
+procedure: event-store
