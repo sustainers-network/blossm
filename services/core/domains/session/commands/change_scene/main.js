@@ -37,6 +37,10 @@ export default async ({ payload, context, claims, aggregateFn, queryAggregatesFn
       info: { scene: payload.scene },
     });
 
+  // Make sure the scene hasn't been deleted.
+  if (sceneAggregate.state.deleted != undefined)
+    throw deps.badRequestError.message("This scene has been deleted.");
+
   // Make sure the session hasn't already been terminated.
   if (sessionAggregate.state.terminated)
     throw deps.badRequestError.message("This session is terminated.");
@@ -63,13 +67,13 @@ export default async ({ payload, context, claims, aggregateFn, queryAggregatesFn
           network: process.env.NETWORK,
         },
         // Add the domain of the new scene.
-        domain: sceneAggregate.state.domain,
+        domain: sceneAggregate.state.subject.domain,
 
         // Add the routing information of the new scene.
-        [sceneAggregate.state.domain]: {
-          root: sceneAggregate.state.root,
-          service: sceneAggregate.state.service,
-          network: sceneAggregate.state.network,
+        [sceneAggregate.state.subject.domain]: {
+          root: sceneAggregate.state.subject.root,
+          service: sceneAggregate.state.subject.service,
+          network: sceneAggregate.state.subject.network,
         },
       },
     },

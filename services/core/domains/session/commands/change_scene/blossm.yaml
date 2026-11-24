@@ -63,8 +63,11 @@ testing:
           root: some-scene-root
           action: register
           payload:
-            domain: some-scene-domain
-            root: some-scene-root
+            subject:
+              domain: some-scene-domain
+              root: some-scene-subject-root
+              service: core
+              network: local.network
             group:
               root: some-group-root
               service: core
@@ -142,7 +145,58 @@ testing:
         session:
           root: some-root
       code: 403
-    # 2. Should throw if the session has been terminated.
+    # 2. Should throw if the scene has been deleted.
+    - pre:
+        # Make sure the scene is registered, has a group, and is deleted.
+        - domain: scene
+          service: core
+          root: some-deleted-scene-root
+          action: register
+          payload:
+            subject:
+              domain: some-scene-domain
+              root: some-deleted-scene-subject-root
+              service: core
+              network: local.network
+            group:
+              root: some-deleted-scene-group-root
+              service: core
+              network: local.network
+        - domain: scene
+          service: core
+          root: some-deleted-scene-root
+          action: delete
+          payload:
+            deleted: 2025-01-01T00:00:00.000Z
+        # Make sure the scene's group has the context principal.
+        - domain: group
+          service: core
+          root: some-deleted-scene-group-root
+          action: add-principals
+          payload:
+            principals:
+              - root: some-principal-root
+                service: some-principal-service
+                network: local.network
+      # Change into the scene.
+      payload:
+        scene: some-deleted-scene-root
+      # Fill some arbitrary claims.
+      claims:
+        iss: some-iss
+        aud: some-aud
+        exp: 20000
+      context:
+        # Make sure the context principal is in the scene's group.
+        principal:
+          root: some-principal-root
+          service: some-principal-service
+          network: local.network
+        # Use the session that hasn't terminated.
+        session:
+          root: some-root
+      code: 400
+    # 3. Should throw if the session has been terminated.
     - pre:
         # Make sure the session is terminated.
         - domain: session
