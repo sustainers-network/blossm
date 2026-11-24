@@ -17,6 +17,7 @@ test("reports one finding per mismatch in the fixture tree", () => {
     "missing-file noproc blossm.yaml:procedure",
     `missing-file ${d}/commands/nomain main.js`,
     "missing-file services/wallet/domains/w/commands/x main.js",
+    `payload-field-not-in-schema ${d}/commands/ok declared.dropped->s.d`,
     `route-without-procedure ${d}/command_gateway command:ghost`,
     `undeclared-import ${d}/commands/ok main.js:dev-only-package`,
     `undeclared-import ${d}/commands/ok main.js:undeclared-package`,

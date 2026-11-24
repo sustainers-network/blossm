@@ -18,6 +18,8 @@ schema:
   attempts: Number
   attemptId: String
   # Only on an email's request count, see handlers.js.
+  requested: Date
+  requestId: String
   requests:
     - Date
   expires: Date

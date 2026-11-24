@@ -296,6 +296,20 @@ export const check = (
           `${action}->${target.join(".")}`,
           `main.js emits \`${action}\` to ${store.dir}, which does not declare that action`
         );
+      // The store saves only the payload fields its schema declares.
+      const payloadAt = balanced(src, open).search(/[,{]\s*payload\s*:\s*\{/);
+      if (store && payloadAt >= 0) {
+        const event = balanced(src, open);
+        const literal = balanced(event, event.indexOf("{", payloadAt + 1));
+        for (const field of handlerKeys(`export default ${literal}`) || [])
+          if (!(field in (store.config.schema || {})))
+            add(
+              "payload-field-not-in-schema",
+              p.dir,
+              `${action}.${field}->${target.join(".")}`,
+              `main.js emits \`${action}\` with payload field \`${field}\`, which the schema of ${store.dir} does not declare, so the store drops it`
+            );
+      }
     }
   }
 

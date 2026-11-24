@@ -63,6 +63,7 @@ import main from "../../main.js";
 const noRequestsYet = {
   aggregateFn: async () => undefined,
   logEventsFn: async () => {},
+  generateRootFn: () => root,
 };
 const requestRoot = `email-${Buffer.from(hmacEmail).toString("hex")}`;
 const minutesAgo = (minutes) =>
@@ -741,7 +742,7 @@ describe("Command handler unit tests", () => {
         root: requestRoot,
         action: "request",
         correctNumber,
-        payload: { requested: now.toISOString() },
+        payload: { requested: now.toISOString(), requestId: root },
       },
     ];
 
@@ -822,6 +823,7 @@ describe("Command handler unit tests", () => {
           aggregateFn: fake.returns(undefined),
           logEventsFn,
           queryAggregatesFn: fake.returns([account]),
+          generateRootFn: fake.returns(root),
         });
         expect.fail("should have thrown");
       } catch (e) {

@@ -3,4 +3,6 @@ service: s
 actions:
   - declared
   - unhandled
+schema:
+  kept: Number
 procedure: event-store
