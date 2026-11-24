@@ -60,10 +60,6 @@ testing:
     - domain: principal
       service: core
       procedure: event-store
-    - name: roles
-      domain: principal
-      service: core
-      procedure: fact
 
   steps:
     - pre:
@@ -90,10 +86,12 @@ testing:
           action: add-roles
           payload:
             roles:
-              - id: some-role-id
-                root: some-group-root
-                service: core
-                network: some.group-network
+              - id: GroupMember
+                subject:
+                  root: some-group-root
+                  domain: group
+                  service: core
+                  network: local.network
         - domain: group
           service: core
           root: some-group-root
