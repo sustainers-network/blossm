@@ -2,13 +2,22 @@ import { forbidden } from "@blossm/errors";
 
 import deps from "./deps.js";
 
+const plain = (value) =>
+  typeof value == "string" && /^[A-Za-z0-9][A-Za-z0-9_-]*$/.test(value);
+
 export default async ({ query, context }) => {
   // The host below is built from the query, so only ask a view gateway of
   // this network or its core network, for a context that the token holds.
+  // The name and key become part of the channel, where a comma would add a
+  // second channel, so those take plain names only.
   if (
     !query.network ||
     ![process.env.NETWORK, process.env.CORE_NETWORK].includes(query.network) ||
-    (query.context && !Object.hasOwn(context || {}, query.context))
+    (query.context &&
+      (!plain(query.context) ||
+        !Object.hasOwn(context || {}, query.context))) ||
+    !plain(query.name) ||
+    (query.key && !plain(query.key))
   )
     throw forbidden.message("This channel isn't accessible.");
 
