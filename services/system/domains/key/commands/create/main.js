@@ -48,9 +48,11 @@ export default async ({ payload, context, aggregateFn }) => {
             domain: "key",
             root: keyRoot,
             service: process.env.SERVICE,
-            network: process.env.NETWORK
-          }
-        }
+            network: process.env.NETWORK,
+          },
+        },
+        // The key's own principal. Without a root the event would start a new one.
+        root: principalRoot,
       },
       {
         action: "create",
