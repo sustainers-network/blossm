@@ -1,7 +1,9 @@
 #
 # The core URL of this gateway will be v(.context)?.[network].
 #
-# context: sessions
+# Requests must carry a token with a session context, and the view store only
+# returns views that belong to that session.
+context: session
 
 #
 # Specify the views that this gateway should accept requests for.
@@ -28,12 +30,10 @@ views:
   #     - some-service:some-domain:some-privilege
   - name: sessions 
     procedure: view-store
-    protection: none
 
 # Allow access from origins other than your network.
 # Use "*" to allow access from anywhere.
-allow: 
-  - "*" 
+allow: []
 
 #don't change
 procedure: view-gateway

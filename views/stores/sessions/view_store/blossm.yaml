@@ -1,4 +1,6 @@
 name: sessions
+# Each view belongs to one session, and is only returned to requests from that session.
+context: session
 
 # If the requesting principal needs to be in one of the matching view's groups. Defaults to false.
 # Defaults false.
