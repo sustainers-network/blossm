@@ -119,7 +119,9 @@ export default async ({
   if (
     account &&
     account.state.password &&
-    !(await deps.compare(payload.password, account.state.password))
+    // A missing password is a wrong password, not an error in the comparison.
+    (typeof payload.password != "string" ||
+      !(await deps.compare(payload.password, account.state.password)))
   )
     throw deps.badRequestError.message("This password is incorrect.");
 

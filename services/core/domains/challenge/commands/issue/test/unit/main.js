@@ -810,6 +810,28 @@ describe("Command handler unit tests", () => {
       expect(logEventsFn).to.have.been.calledBefore(compare);
       expect(commandFn).to.not.have.been.called;
     });
+    it("treats a missing password as a wrong one, without comparing", async () => {
+      replace(deps, "secret", fake.returns(hmacSecret));
+      replace(deps, "hmacCreate", fake.returns(hmacEmail));
+      const compareFake = fake.rejects(new Error("data and hash arguments required"));
+      replace(deps, "compare", compareFake);
+      let error;
+      try {
+        await main({
+          payload: { email: payload.email },
+          context,
+          aggregateFn: fake.returns(undefined),
+          logEventsFn: fake(),
+          queryAggregatesFn: fake.returns([account]),
+          generateRootFn: fake.returns(root),
+        });
+      } catch (e) {
+        error = e;
+      }
+      expect(error.statusCode).to.equal(400);
+      expect(error.message).to.equal("This password is incorrect.");
+      expect(compareFake).to.not.have.been.called;
+    });
     it("counts the request before the password is checked", async () => {
       replace(deps, "secret", fake.returns(hmacSecret));
       replace(deps, "hmacCreate", fake.returns(hmacEmail));
