@@ -43,30 +43,12 @@ const countRequest = async ({ hmacEmail, aggregateFn, logEventsFn }) => {
   ]);
 };
 
-const determineUpgrade = async (
-  payload,
-  context,
-  queryAggregatesFn,
-  hmacEmail
-) => {
-  // Check to see if the email is recognized.
-  // If the principal is being upgraded, use a placeholder account with it instead.
-  const [account] = await queryAggregatesFn({
-    domain: "account",
-    queryPairs: [{
-      key: "emailHmac",
-      value: hmacEmail,
-    }],
-  });
-
+const determineUpgrade = (account, payload, context) => {
+  // Make sure the email is recognized.
   if (!account)
     throw deps.invalidArgumentError.message("This email isn't recognized.", {
       info: { email: payload.email },
     });
-  
-  // If the account has a password, make sure the matches the password passed in the payload.
-  if (account.state.password && !(await deps.compare(payload.password, account.state.password)))
-    throw deps.badRequestError.message("This password is incorrect.");
 
   // If the context already has a principal, don't allow another principal to be challenged.
   if (
@@ -113,10 +95,29 @@ export default async ({
 
   await countRequest({ hmacEmail, aggregateFn, logEventsFn });
 
+  // Check to see if there is an account with the provided email.
+  const [account] = await queryAggregatesFn({
+    domain: "account",
+    queryPairs: [
+      {
+        key: "emailHmac",
+        value: hmacEmail,
+      },
+    ],
+  });
+
+  // If the account has a password, make sure it matches the password passed in
+  // the payload. This is the one place an account's password is checked, so
+  // every check is counted above, whoever supplies the upgrade.
+  if (
+    account &&
+    account.state.password &&
+    !(await deps.compare(payload.password, account.state.password))
+  )
+    throw deps.badRequestError.message("This password is incorrect.");
+
   // If a context upgrade object isn't provided, determine what it should be.
-  upgrade =
-    upgrade ||
-    (await determineUpgrade(payload, context, queryAggregatesFn, hmacEmail));
+  upgrade = upgrade || determineUpgrade(account, payload, context);
 
   // Create the root for this challenge.
   const root = generateRootFn();

@@ -263,9 +263,8 @@ export default async ({
     }],
   });
 
-  // If the account has a password, make sure the matches the password passed in the payload.
-  if (account && account.state.password && !(await deps.compare(payload.password, account.state.password)))
-    throw deps.invalidArgumentError.message("This password isn't right.");
+  // The account's password is checked by the challenge issue command below,
+  // which counts each check against the email.
 
   // Don't log an event or issue a challange if
   // the context already has the account's principal.
