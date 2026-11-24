@@ -1,0 +1,8 @@
+name: ok
+domain: d
+service: s
+dependencies:
+  declared-package: "*"
+devDependencies:
+  dev-only-package: "*"
+procedure: command

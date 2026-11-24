@@ -1,0 +1,8 @@
+domain: d
+service: s
+commands:
+  - name: ok
+  - name: ghost
+  - name: elsewhere
+    network: some.other.network
+procedure: command-gateway
