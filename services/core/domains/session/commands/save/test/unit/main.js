@@ -545,7 +545,7 @@ describe("Command handler unit tests", () => {
       .onSecondCall()
       .returns(principalRoot);
 
-    const hashFake = fake.returns(hashedPassword);
+    const hashFake = fake.resolves(hashedPassword);
     replace(deps, "hash", hashFake);
 
     const secretFake = fake.returns(hmacSecret);
@@ -686,7 +686,7 @@ describe("Command handler unit tests", () => {
       .onFirstCall()
       .returns(sessionPrincipalAggregate);
 
-    const hashFake = fake.returns(hashedPassword);
+    const hashFake = fake.resolves(hashedPassword);
     replace(deps, "hash", hashFake);
 
     const secretFake = fake.returns(hmacSecret);
