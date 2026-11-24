@@ -37,7 +37,10 @@ const stores = ({ networks = [network], roles = {} } = {}) => {
   return fake(async (aggregateRoot, { domain } = {}) =>
     domain == "principal"
       ? held[aggregateRoot] && { state: { roles: held[aggregateRoot] } }
-      : { state: { principals: [admin, otherAdmin, member], networks } }
+      : {
+          state: { principals: [admin, otherAdmin, member], networks },
+          lastEventNumber: 7,
+        }
   );
 };
 const run = (caller, principals, options) =>
@@ -63,7 +66,13 @@ const removed = (principal, ids) => [
     root: principal.root,
     payload: { roles: ids.map((id) => role(id)) },
   },
-  { action: "remove-principals", root, payload: { principals: [principal] } },
+  // On the group's next event number, so concurrent removals can't both land.
+  {
+    action: "remove-principals",
+    root,
+    correctNumber: 8,
+    payload: { principals: [principal] },
+  },
 ];
 
 describe("Command handler unit tests", () => {
