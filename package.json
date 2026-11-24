@@ -21,10 +21,12 @@
     "format": "eslint --fix .",
     "check-wiring": "node tools/check_wiring.mjs",
     "check-imports": "node tools/check_imports.mjs",
+    "test-units": "node tools/test_units.mjs",
     "test-tools": "node --test \"tools/test/*.test.mjs\""
   },
   "devDependencies": {
     "@blossm/array-difference": "^0.0.11",
+    "@blossm/command-post": ">=0.0.312",
     "@blossm/crypt": "^0.0.10",
     "@blossm/duration-consts": "^0.0.7",
     "@blossm/gcp-token": "^0.0.89",
@@ -34,6 +36,7 @@
     "@blossm/twilio-sms": "^0.0.10",
     "@blossm/validator": "^0.0.60",
     "chai": "^5.2.0",
+    "chai-datetime": "^1.8.1",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.1",
     "eslint-plugin-import": "^2.20.2",
@@ -46,6 +49,7 @@
     "nodemailer": "7.0.4",
     "prettier": "^2.0.4",
     "sinon": "^21.0.0",
+    "sinon-chai": "^4.0.0",
     "yaml": "^2.9.1"
   },
   "lint-staged": {
