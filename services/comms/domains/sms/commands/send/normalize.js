@@ -1,6 +1,6 @@
-import { format } from "@blossm/phone-number";
+import phoneNumber from "@blossm/phone-number";
 
 export default async (payload) => ({
-  to: format(payload.to),
+  to: phoneNumber.format(payload.to),
   message: payload.message,
 });

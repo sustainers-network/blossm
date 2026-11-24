@@ -1,5 +1,5 @@
-import { get } from "@blossm/request";
+import request from "@blossm/request";
 
 export default {
-  get,
+  get: request.get,
 };
