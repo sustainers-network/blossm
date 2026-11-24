@@ -15,18 +15,12 @@ const REPO = fileURLToPath(new URL("..", import.meta.url));
 // own pull request. Delete an entry when its fix merges; the gate warns when
 // an entry no longer matches anything.
 const KNOWN = {
-  "route-without-procedure services/system/domains/updates/command_gateway command:push":
-    "the updates gateway says service `system`, the push command says `core`",
   "handler-undeclared services/core/domains/role/event_store add-permissions":
     "role store handles an action its blossm.yaml does not declare",
   "handler-undeclared services/core/domains/role/event_store remove-permissions":
     "role store handles an action its blossm.yaml does not declare",
   "action-without-handler services/core/domains/session/event_store save":
     "session store declares `save` but has no handler for it",
-  "emit-to-missing-store services/core/domains/role/commands/_create some-action->core.some-domain":
-    "unfilled command template, removed by the leftovers pull request",
-  "undeclared-import services/comms/domains/sms/commands/send deps.js:@blossm/uuid":
-    "`@blossm/uuid` is only a devDependency of the command base config",
   "undeclared-import services/system/domains/updates/commands/create_token deps.js:@blossm/uuid":
     "`@blossm/uuid` is only a devDependency of the command base config",
 };
