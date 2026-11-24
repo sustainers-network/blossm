@@ -2,7 +2,7 @@
 # Specify the name and context of the view store that this projection maps to.
 #
 name: sessions
-# context: some-context
+context: session
 
 #
 # Set the events that this projection listens to.
@@ -60,6 +60,10 @@ testing:
               agent: some-agent
           result:
             id: some-id
+            context:
+              root: some-id
+              service: core
+              network: local.network
             update:
               device:
                 ip: some-ip
@@ -76,6 +80,10 @@ testing:
               agent: some-other-agent
           result:
             id: some-id
+            context:
+              root: some-id
+              service: core
+              network: local.network
             update:
               device:
                 ip: some-other-ip
@@ -118,6 +126,11 @@ testing:
           platform: ios
           agent: some-agent
       result:
+        # The view is scoped to its own session.
+        context:
+          root: some-session-root
+          service: core
+          network: local.network
         query: {}
         values:
           - body:
