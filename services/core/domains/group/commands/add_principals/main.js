@@ -2,6 +2,34 @@ import deps from "./deps.js";
 
 const principalLimit = 100;
 
+// Whether the principal is a member of the group and holds its GroupAdmin role.
+const isGroupAdmin = async ({ principal, root, groupAggregate, aggregateFn }) => {
+  if (
+    !principal ||
+    !(groupAggregate.state.principals || []).some(
+      (p) =>
+        p.root == principal.root &&
+        p.service == principal.service &&
+        p.network == principal.network
+    )
+  )
+    return false;
+
+  const principalAggregate = await aggregateFn(principal.root, {
+    domain: "principal",
+    notFoundThrows: false,
+  });
+
+  return ((principalAggregate && principalAggregate.state.roles) || []).some(
+    (role) =>
+      role.id == "GroupAdmin" &&
+      role.subject.root == root &&
+      role.subject.domain == "group" &&
+      role.subject.service == process.env.SERVICE &&
+      role.subject.network == process.env.NETWORK
+  );
+};
+
 export default async ({ context, payload, root, aggregateFn }) => {
 
   // Get the principals being added to the group.
@@ -14,7 +42,18 @@ export default async ({ context, payload, root, aggregateFn }) => {
     // Make sure the session's context network can access the group based on its networks. 
     if (!groupAggregate.state.networks.includes(context.network))
       throw deps.forbiddenError.message("This group isn't accessible.");
-    
+
+    // Make sure the calling principal administers the group.
+    if (
+      !(await isGroupAdmin({
+        principal: context.principal,
+        root,
+        groupAggregate,
+        aggregateFn,
+      }))
+    )
+      throw deps.forbiddenError.message("This group isn't accessible.");
+
     // Make sure the total principals in the group after adding won't exceed the limit.
     if (
       groupAggregate.state.principals.length + payload.principals.length >
