@@ -533,6 +533,93 @@ describe("Command handler unit tests", () => {
       },
     });
   });
+  it("should add a session role that shares an id with an account role but has a different subject", async () => {
+    replace(deps, "secret", fake.returns(hmacSecret));
+    replace(deps, "hmacCreate", fake.returns(hmacEmail));
+    replace(deps, "compare", fake.returns(true));
+
+    const sameIdRole = {
+      id: "some-silly-role-id",
+      subject: { root: "some-different-root", domain: "non-group", service, network },
+    };
+
+    const queryAggregatesFnFake = stub()
+      .onFirstCall()
+      .returns([account])
+      .returns([principalGroupAggregate]);
+
+    const aggregateFake = stub()
+      .onFirstCall()
+      .returns({
+        ...sessionPrincipalAggregate,
+        state: {
+          roles: [sameIdRole],
+        },
+      })
+      .onSecondCall()
+      .returns(principalAggregate);
+
+    const commandFnFake = fake.returns({
+      body: { _tokens, receipt: { challenge } },
+      statusCode,
+    });
+
+    await main({
+      payload,
+      context,
+      commandFn: commandFnFake,
+      aggregateFn: aggregateFake,
+      queryAggregatesFn: queryAggregatesFnFake,
+    });
+
+    expect(commandFnFake.lastCall.args[0].options.events[0]).to.deep.equal({
+      action: "add-roles",
+      domain: "principal",
+      service,
+      root: principalRoot,
+      payload: { roles: [sameIdRole] },
+    });
+  });
+  it("should not add roles if the session principal only has new group roles", async () => {
+    replace(deps, "secret", fake.returns(hmacSecret));
+    replace(deps, "hmacCreate", fake.returns(hmacEmail));
+    replace(deps, "compare", fake.returns(true));
+
+    const queryAggregatesFnFake = stub()
+      .onFirstCall()
+      .returns([account])
+      .returns([principalGroupAggregate]);
+
+    const aggregateFake = stub()
+      .onFirstCall()
+      .returns({
+        ...sessionPrincipalAggregate,
+        state: {
+          roles: [
+            { id: "some-new-group-role-id", subject: { root: principalGroupRoot, domain: "group", service, network } },
+          ],
+        },
+      })
+      .onSecondCall()
+      .returns(principalAggregate);
+
+    const commandFnFake = fake.returns({
+      body: { _tokens, receipt: { challenge } },
+      statusCode,
+    });
+
+    await main({
+      payload,
+      context,
+      commandFn: commandFnFake,
+      aggregateFn: aggregateFake,
+      queryAggregatesFn: queryAggregatesFnFake,
+    });
+
+    expect(
+      commandFnFake.lastCall.args[0].options.events.map((e) => e.action)
+    ).to.deep.equal(["remove-principals"]);
+  });
   it("should return successfully if account not found with no principal in the context", async () => {
     const queryAggregatesFnFake = fake.returns([]);
 
