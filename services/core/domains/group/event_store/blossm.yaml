@@ -1,7 +1,7 @@
 domain: group
 service: core
 
-public: true
+isPublic: true
 
 actions:
   - add-principals
