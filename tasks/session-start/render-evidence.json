@@ -1,0 +1,120 @@
+{
+  "kind": "local render, no cloud command executed",
+  "note": "Rendered by the Toolbox checkout below with only a recording gcloud double on PATH. It shows what a deployment would submit. It is not evidence of any cloud state.",
+  "generated": "2026-11-20T19:00:23.664Z",
+  "node": "v24.22.1",
+  "toolbox": {
+    "branch": "HEAD",
+    "commit": "18c75e34de94ed24126f1dadd97212843bc8102c",
+    "uncommittedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "uncommittedFiles": []
+  },
+  "configSha256": "5f4e46abe7890f6599767cd9dde03d71c7783ada05a0bcb6c15f3db4fcf0d41a",
+  "procedures": [
+    {
+      "source": "facts/public_key/blossm.yaml",
+      "sourceSha256": "51f932cf51d9c77578a4527e9b8242ab6829743d58bcb7e3f81da048a0907098",
+      "procedure": "fact",
+      "name": "public-key",
+      "cloudRunService": "us-east1-fact-public-key-1401377252",
+      "runtimeServiceAccount": "blossm-public-key@blossm-network-development.iam.gserviceaccount.com",
+      "public": false,
+      "image": "us-east1-docker.pkg.dev/blossm-network-development/blossm/fact.public-key",
+      "buildServiceAccount": "projects/blossm-network-development/serviceAccounts/blossm-build@blossm-network-development.iam.gserviceaccount.com",
+      "iamMembersGranted": [],
+      "gcloudDoubleCalls": [
+        "beta builds submit . --config=build.yaml --project=blossm-network-development",
+        "beta builds submit . --config=build.yaml --project=blossm-network-development"
+      ],
+      "dryRunHasDeployStep": false
+    },
+    {
+      "source": "fact_gateway/blossm.yaml",
+      "sourceSha256": "280f22fa7b70ef8947c30efb809a8c3f6fa28c376bd4b23bb1283884156f2354",
+      "procedure": "fact-gateway",
+      "gatewayFacts": [
+        {
+          "name": "public-key",
+          "protection": "none"
+        }
+      ],
+      "cloudRunService": "us-east1-fact-gateway-376707577",
+      "runtimeServiceAccount": "blossm-public-key-gateway@blossm-network-development.iam.gserviceaccount.com",
+      "public": true,
+      "image": "us-east1-docker.pkg.dev/blossm-network-development/blossm/fact-gateway",
+      "domainMapping": "f.development.blossm.network",
+      "buildServiceAccount": "projects/blossm-network-development/serviceAccounts/blossm-build@blossm-network-development.iam.gserviceaccount.com",
+      "iamMembersGranted": [],
+      "gcloudDoubleCalls": [
+        "beta builds submit . --config=build.yaml --project=blossm-network-development",
+        "beta builds submit . --config=build.yaml --project=blossm-network-development"
+      ],
+      "dryRunHasDeployStep": false
+    },
+    {
+      "source": "services/core/domains/session/commands/start/blossm.yaml",
+      "sourceSha256": "4a8f539f4f190d10b33e283fbd86b08169a06c5c99eb7514b92ea629b1b004bb",
+      "procedure": "command",
+      "name": "start",
+      "domain": "session",
+      "service": "core",
+      "cloudRunService": "us-east1-command-core-session-star-3019999053",
+      "runtimeServiceAccount": "blossm-session-start@blossm-network-development.iam.gserviceaccount.com",
+      "public": false,
+      "image": "us-east1-docker.pkg.dev/blossm-network-development/blossm/command.core.session.start",
+      "buildServiceAccount": "projects/blossm-network-development/serviceAccounts/blossm-build@blossm-network-development.iam.gserviceaccount.com",
+      "iamMembersGranted": [],
+      "gcloudDoubleCalls": [
+        "beta builds submit . --config=build.yaml --project=blossm-network-development",
+        "beta builds submit . --config=build.yaml --project=blossm-network-development"
+      ],
+      "dryRunHasDeployStep": false
+    },
+    {
+      "source": "services/core/domains/session/command_gateway/blossm.yaml",
+      "sourceSha256": "1118e383869da934993c95c650212e3b8445f9e12ad0c79a8e626d92d39b29b2",
+      "procedure": "command-gateway",
+      "domain": "session",
+      "service": "core",
+      "gatewayCommands": [
+        {
+          "name": "start",
+          "protection": "context"
+        }
+      ],
+      "cloudRunService": "us-east1-command-gateway-core-sess-1816685483",
+      "runtimeServiceAccount": "blossm-session-gateway@blossm-network-development.iam.gserviceaccount.com",
+      "public": true,
+      "image": "us-east1-docker.pkg.dev/blossm-network-development/blossm/command-gateway.core.session",
+      "domainMapping": "c.session.core.development.blossm.network",
+      "buildServiceAccount": "projects/blossm-network-development/serviceAccounts/blossm-build@blossm-network-development.iam.gserviceaccount.com",
+      "iamMembersGranted": [],
+      "gcloudDoubleCalls": [
+        "beta builds submit . --config=build.yaml --project=blossm-network-development",
+        "beta builds submit . --config=build.yaml --project=blossm-network-development"
+      ],
+      "dryRunHasDeployStep": false
+    },
+    {
+      "source": "services/core/domains/session/event_store/blossm.yaml",
+      "sourceSha256": "5cd119f29ebe85153dd98f99e88ba9620029a75c6552ad2c99064ac8d4b3d20e",
+      "procedure": "event-store",
+      "domain": "session",
+      "service": "core",
+      "cloudRunService": "us-east1-event-store-core-session-623237703",
+      "runtimeServiceAccount": "blossm-session@blossm-network-development.iam.gserviceaccount.com",
+      "public": false,
+      "image": "us-east1-docker.pkg.dev/blossm-network-development/blossm/event-store.core.session",
+      "buildServiceAccount": "projects/blossm-network-development/serviceAccounts/blossm-build@blossm-network-development.iam.gserviceaccount.com",
+      "iamMembersGranted": [
+        "serviceAccount:blossm-session@blossm-network-development.iam.gserviceaccount.com",
+        "serviceAccount:executer@blossm-network-development.iam.gserviceaccount.com"
+      ],
+      "gcloudDoubleCalls": [
+        "beta builds submit . --config=build.yaml --project=blossm-network-development",
+        "beta builds submit . --config=build.yaml --project=blossm-network-development"
+      ],
+      "dryRunHasDeployStep": false
+    }
+  ]
+}

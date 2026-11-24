@@ -1,8 +1,10 @@
 # Development setup: core/session PostgreSQL event store
 
-Status: **not deploy ready.** The database side is in place and confirmed. The
-identities, secret, keys and bindings below have not been created, and no build
-has been submitted. This guide lists what the first Blossm service needs in
+Status on 2026-11-23: **deployed.** The session event store is live, stores
+events from the session start path and creates blocks, see
+[SESSION_START_DEPLOYMENT.md](SESSION_START_DEPLOYMENT.md#deployment-results).
+Status lines in the tables below describe the state before the first deploy.
+This guide lists what the first Blossm service needs in
 project `blossm-network-development`, and the exact commands for the operator to
 run.
 
@@ -493,9 +495,12 @@ bindings. Only this evidence makes the service ready.
 - **Views.** No PostgreSQL view-store adapter exists. `config.yaml` has no view
   store, so view stores, projections and view gateways fail at generation.
 - **Other services.** The other event stores, and all facts, commands and
-  gateways. Each needs its own runtime identity and bindings, and
-  `runtimeServiceAccounts` is one value per environment in the current contract.
-  Callers of the session store will also need `run.invoker` on it.
+  gateways. Each needs its own runtime identity and bindings. The session start
+  path is deployed, see
+  [SESSION_START_DEPLOYMENT.md](SESSION_START_DEPLOYMENT.md). From
+  `@blossm/cli` `0.0.1964` a procedure names its runtime identity in its
+  `blossm.yaml` and its deployment grants its own access, including
+  `run.invoker` on the stores it calls.
 - **Pub/Sub push delivery.** Only projections subscribe. The
   `cloud-run-pubsub-invoker` identity and the Pub/Sub agent's token grant belong
   with the first projection.
@@ -503,7 +508,8 @@ bindings. Only this evidence makes the service ready.
   are read by gateways and by services using encrypted secrets, not by this one.
   `secretsBuckets` and `rolesBuckets` are empty on purpose.
 - **JWT keys and DNS.** The global `jwt` ring, domain mapping and DNS records
-  belong with the gateways.
+  belong with the gateways, see
+  [SESSION_START_DEPLOYMENT.md](SESSION_START_DEPLOYMENT.md).
 - **Staging and production.** Not configured. Deploying to them fails.
 - **Redis and MongoDB.** Not used. The previous addresses are removed.
 

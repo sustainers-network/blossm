@@ -1,16 +1,17 @@
 domain: session
 service: core
 
+# Only start is exposed. The save, terminate and change-scene commands keep
+# their source under ../commands and are added back here when they are deployed.
 commands:
   - name: start
     # The same as "none", but if there **is** a token, parse out its context.
     protection: context
-  - name: save
-    privileges: none
-  - name: terminate
-    privileges: none
-  - name: change-scene
-    privileges: none
+
+# Runtime identity of this service only, see docs/SESSION_START_DEPLOYMENT.md.
+# Invokes the start command. No key or database access.
+runtimeServiceAccounts:
+  development: blossm-session-gateway@blossm-network-development.iam.gserviceaccount.com
 
 #don't change
 procedure: command-gateway
