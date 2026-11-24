@@ -33,7 +33,6 @@ export default async ({
   payload,
   root,
   aggregateFn,
-  readFactFn,
 }) => {
 
   // Get the group's aggregate.
@@ -78,24 +77,20 @@ export default async ({
   const rolesByPrincipal = {};
   await Promise.all(
     existingPrincipals.map(async (principal) => {
-      const { body: roles } = await readFactFn({
-        name: "roles",
+      const principalAggregate = await aggregateFn(principal.root, {
         domain: "principal",
-        service: "core",
-        context: {
-          principal,
-        },
-        query: {
-          includes: [
-            {
-              root,
-              domain: process.env.DOMAIN,
-              service: process.env.SERVICE,
-            },
-          ],
-        },
+        notFoundThrows: false,
       });
-      rolesByPrincipal[principal.root] = roles;
+      rolesByPrincipal[principal.root] = (
+        (principalAggregate && principalAggregate.state.roles) ||
+        []
+      ).filter(
+        (role) =>
+          role.subject.root == root &&
+          role.subject.domain == "group" &&
+          role.subject.service == process.env.SERVICE &&
+          role.subject.network == process.env.NETWORK
+      );
     })
   );
 

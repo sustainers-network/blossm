@@ -1,6 +1,6 @@
 import * as chai from "chai";
 import sinonChai from "sinon-chai";
-import { replace, restore, fake, stub } from "sinon";
+import { replace, restore, fake } from "sinon";
 
 import main from "../../main.js";
 import deps from "../../deps.js";
@@ -30,10 +30,26 @@ const adminRole = {
 };
 
 // The real aggregateFn is async and reads the store named by its options.
-const aggregateFnFake = ({ group, roles = [adminRole] }) =>
-  fake(async (_, { domain } = {}) =>
-    domain == "principal" ? { state: { roles } } : { state: group }
+// `roles` are the caller's. `rolesByRoot` holds other principals' roles.
+const aggregateFnFake = ({ group, roles = [adminRole], rolesByRoot = {} }) =>
+  fake(async (aggregateRoot, { domain } = {}) =>
+    domain == "principal"
+      ? aggregateRoot == caller.root
+        ? { state: { roles } }
+        : rolesByRoot[aggregateRoot] && {
+            state: { roles: rolesByRoot[aggregateRoot] },
+          }
+      : { state: group }
   );
+
+const memberRole = { ...adminRole, id: "GroupMember" };
+// Roles that must stay with a principal removed from this group.
+const otherRoles = [
+  { ...adminRole, subject: { ...adminRole.subject, root: "other-root" } },
+  { ...adminRole, subject: { ...adminRole.subject, domain: "scene" } },
+  { ...adminRole, subject: { ...adminRole.subject, service: "other-service" } },
+  { ...adminRole, subject: { ...adminRole.subject, network: "other-network" } },
+];
 
 describe("Command handler unit tests", () => {
   afterEach(() => {
@@ -68,6 +84,9 @@ describe("Command handler unit tests", () => {
     };
 
     const aggregateFake = aggregateFnFake({
+      rolesByRoot: {
+        [principal1Root]: [adminRole, ...otherRoles, memberRole],
+      },
       group: {
         networks: [network],
         principals: [
@@ -91,63 +110,15 @@ describe("Command handler unit tests", () => {
       network,
       principal: caller,
     };
-    const roles1 = "some-roles1";
-    const roles2 = "some-roles2";
-    const readFactFnFake = stub()
-      .onFirstCall()
-      .returns({ body: roles1 })
-      .onSecondCall()
-      .returns({ body: roles2 });
     const result = await main({
       payload,
       root,
       aggregateFn: aggregateFake,
-      readFactFn: readFactFnFake,
       context,
     });
-    expect(readFactFnFake.getCall(0)).to.have.been.calledWith({
-      name: "roles",
+    expect(aggregateFake).to.have.been.calledWith(principal1Root, {
       domain: "principal",
-      service: "core",
-      context: {
-        principal: {
-          root: principal1Root,
-          service: principal1Service,
-          network: principal1Network,
-          role: principal1Role,
-        },
-      },
-      query: {
-        includes: [
-          {
-            root,
-            domain,
-            service,
-          },
-        ],
-      },
-    });
-    expect(readFactFnFake.getCall(1)).to.have.been.calledWith({
-      name: "roles",
-      domain: "principal",
-      service: "core",
-      context: {
-        principal: {
-          root: principal2Root,
-          service: principal2Service,
-          network: principal2Network,
-          role: principal2Role,
-        },
-      },
-      query: {
-        includes: [
-          {
-            root,
-            domain,
-            service,
-          },
-        ],
-      },
+      notFoundThrows: false,
     });
     expect(aggregateFake).to.have.been.calledWith(caller.root, {
       domain: "principal",
@@ -163,7 +134,7 @@ describe("Command handler unit tests", () => {
           action: "remove-roles",
           root: principal1Root,
           payload: {
-            roles: roles1,
+            roles: [adminRole, memberRole],
           },
         },
         {
@@ -173,7 +144,7 @@ describe("Command handler unit tests", () => {
           action: "remove-roles",
           root: principal2Root,
           payload: {
-            roles: roles2,
+            roles: [],
           },
         },
         // {
@@ -246,6 +217,7 @@ describe("Command handler unit tests", () => {
     };
 
     const aggregateFake = aggregateFnFake({
+      rolesByRoot: { [principal1Root]: [memberRole] },
       group: {
         networks: [network],
         principals: [
@@ -263,36 +235,11 @@ describe("Command handler unit tests", () => {
       network,
       principal: caller,
     };
-    const roles = "some-roles";
-    const readFactFnFake = fake.returns({ body: roles });
     const result = await main({
       payload,
       root,
       aggregateFn: aggregateFake,
-      readFactFn: readFactFnFake,
       context,
-    });
-    expect(readFactFnFake.getCall(0)).to.have.been.calledWith({
-      name: "roles",
-      domain: "principal",
-      service: "core",
-      context: {
-        principal: {
-          root: principal1Root,
-          service: principal1Service,
-          network: principal1Network,
-          role: principal1Role,
-        },
-      },
-      query: {
-        includes: [
-          {
-            root,
-            domain,
-            service,
-          },
-        ],
-      },
     });
     expect(aggregateFake).to.have.been.calledWith(root);
     expect(result).to.deep.equal({
@@ -304,7 +251,7 @@ describe("Command handler unit tests", () => {
           action: "remove-roles",
           root: principal1Root,
           payload: {
-            roles,
+            roles: [memberRole],
           },
         },
         // {
@@ -420,8 +367,6 @@ describe("Command handler unit tests", () => {
         service: "target-service",
         network: "target-network",
       };
-      const readFactFnFake = fake();
-
       try {
         await main({
           root,
@@ -431,7 +376,6 @@ describe("Command handler unit tests", () => {
             group: { networks: [network], principals: [...principals, target] },
             roles,
           }),
-          readFactFn: readFactFnFake,
         });
         //shouldn't get called
         expect(2).to.equal(3);
@@ -440,7 +384,6 @@ describe("Command handler unit tests", () => {
           "This group isn't accessible."
         );
         expect(e).to.equal(error);
-        expect(readFactFnFake).to.not.have.been.called;
       }
     });
   }
