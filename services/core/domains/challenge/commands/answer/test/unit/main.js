@@ -191,14 +191,97 @@ describe("Command handler unit tests", () => {
     const compareFake = fake.returns(false);
     replace(deps, "compare", compareFake);
 
+    const logEventsFnFake = fake.resolves();
+    const attemptId = "some-attempt-id";
+
+    try {
+      await main({
+        payload,
+        context,
+        aggregateFn: aggregateFake,
+        logEventsFn: logEventsFnFake,
+        generateRootFn: fake.returns(attemptId),
+      });
+      //shouldn't get called
+      expect(2).to.equal(3);
+    } catch (e) {
+      expect(logEventsFnFake).to.have.been.calledOnceWith([
+        {
+          root: contextChallenge,
+          action: "fail",
+          correctNumber: 1,
+          payload: { attemptId },
+        },
+      ]);
+      expect(messageFake).to.have.been.calledWith("This code is wrong.", {
+        info: { reason: "wrong" },
+      });
+      expect(e).to.equal(error);
+    }
+  });
+  it("should not say the code is wrong if the failed attempt isn't recorded", async () => {
+    const aggregateFake = fake.returns({
+      lastEventNumber: 0,
+      state: {
+        ...challenge,
+        expires: deps.moment().add(1, "m").toDate().toISOString(),
+      },
+    });
+
+    const messageFake = fake.returns("some-error");
+    replace(deps, "invalidArgumentError", {
+      message: messageFake,
+    });
+    replace(deps, "compare", fake.returns(false));
+
+    const failure = new Error("Event number incorrect.");
+
+    try {
+      await main({
+        payload,
+        context,
+        aggregateFn: aggregateFake,
+        logEventsFn: fake.rejects(failure),
+        generateRootFn: fake.returns("some-attempt-id"),
+      });
+      //shouldn't get called
+      expect(2).to.equal(3);
+    } catch (e) {
+      expect(e).to.equal(failure);
+      expect(messageFake).to.not.have.been.called;
+    }
+  });
+  it("should throw correctly if a challenge has too many failed attempts", async () => {
+    const aggregateFake = fake.returns({
+      lastEventNumber: 5,
+      state: {
+        ...challenge,
+        attempts: 5,
+        expires: deps.moment().add(1, "m").toDate().toISOString(),
+      },
+    });
+
+    const error = "some-error";
+    const messageFake = fake.returns(error);
+    replace(deps, "invalidArgumentError", {
+      message: messageFake,
+    });
+
+    const compareFake = fake.returns(true);
+    replace(deps, "compare", compareFake);
+
     try {
       await main({ payload, context, aggregateFn: aggregateFake });
       //shouldn't get called
       expect(2).to.equal(3);
     } catch (e) {
-      expect(messageFake).to.have.been.calledWith("This code is wrong.", {
-        info: { reason: "wrong" },
-      });
+      expect(messageFake).to.have.been.calledWith(
+        "This code has been tried too many times.",
+        {
+          info: { reason: "attempts" },
+        }
+      );
+      expect(compareFake).to.not.have.been.called;
       expect(e).to.equal(error);
     }
   });
@@ -232,6 +315,7 @@ describe("Command handler unit tests", () => {
       expect(messageFake).to.have.been.calledWith("This code expired.", {
         info: { reason: "expired" },
       });
+      expect(compareFake).to.not.have.been.called;
       expect(e).to.equal(error);
     }
   });

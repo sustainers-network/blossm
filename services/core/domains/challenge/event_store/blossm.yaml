@@ -6,6 +6,7 @@ isPublic: false
 actions:
   - issue
   - answer
+  - fail
 
 schema:
   code: String
@@ -13,6 +14,8 @@ schema:
   issued: Date
   answered: String
   answerId: String
+  attempts: Number
+  attemptId: String
   expires: Date
   events:
     - Object
@@ -51,6 +54,9 @@ testing:
       payload:
         answered: "2020-01-03T00:02:13.000Z"
         answerId: some-answer-id
+    - action: fail
+      payload:
+        attemptId: some-attempt-id
 
   handlers:
     - action: issue
@@ -75,6 +81,20 @@ testing:
         - payload:
             answered: "2020-01-03T00:02:13.000Z"
             answerId: some-answer-id
+    - action: fail
+      examples:
+        - payload:
+            attemptId: some-attempt-id
+          result:
+            attempts: 1
+        - state:
+            code: some-code
+            attempts: 1
+          payload:
+            attemptId: some-other-attempt-id
+          result:
+            code: some-code
+            attempts: 2
 
 #don't change
 procedure: event-store
