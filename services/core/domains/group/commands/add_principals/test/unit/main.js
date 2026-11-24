@@ -190,4 +190,21 @@ describe("Command handler unit tests", () => {
       })
     ).to.equal(400);
   });
+  it("should refuse a principal with no role, an empty part or a colon", async () => {
+    for (const principal of [
+      { ...outsider, roles: [] },
+      { ...outsider, root: "", roles: ["GroupMember"] },
+      { ...outsider, root: "a:b", roles: ["GroupMember"] },
+      { ...outsider, service: "a:b", roles: ["GroupMember"] },
+    ])
+      for (const groupRoot of [root, undefined])
+        expect(
+          await statusCode({
+            payload: { principals: [principal] },
+            root: groupRoot,
+            context,
+            aggregateFn: stores(),
+          })
+        ).to.equal(400);
+  });
 });

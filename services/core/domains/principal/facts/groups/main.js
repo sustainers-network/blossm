@@ -16,6 +16,5 @@ export default async ({ context, queryAggregatesFn }) => {
   ],
   });
 
-  console.log({ groups });
   return { response: groups.map((group) => ({ root: group.root, service: group.service, network: group.network, state: group.state })) || [] };
 };

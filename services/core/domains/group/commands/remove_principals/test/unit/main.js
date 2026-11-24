@@ -57,7 +57,7 @@ const statusCode = async (...args) => {
     return e.statusCode;
   }
 };
-const removed = (principal, ids) => [
+const removed = (principal, ids = ["GroupAdmin", "GroupMember"]) => [
   {
     domain: "principal",
     service,
@@ -79,19 +79,19 @@ describe("Command handler unit tests", () => {
   afterEach(() => {
     restore();
   });
-  it("should let an admin remove a member, with only the member's roles for this group", async () => {
+  it("should let an admin remove a member, with every role for this group and no other", async () => {
     expect((await run(admin, [member])).events).to.deep.equal(
-      removed(member, ["GroupMember"])
+      removed(member)
     );
   });
   it("should let an admin remove another admin", async () => {
     expect((await run(admin, [otherAdmin])).events).to.deep.equal(
-      removed(otherAdmin, ["GroupAdmin", "GroupMember"])
+      removed(otherAdmin)
     );
   });
   it("should let a member leave", async () => {
     expect((await run(member, [member])).events).to.deep.equal(
-      removed(member, ["GroupMember"])
+      removed(member)
     );
   });
   it("should return nothing if the principal isn't in the group", async () => {
