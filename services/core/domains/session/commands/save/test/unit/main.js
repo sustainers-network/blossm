@@ -152,9 +152,7 @@ describe("Command handler unit tests", () => {
       .onCall(0)
       .returns([account])
       .onCall(1)
-      .returns([sessionPrincipalGroupAggregate])
-      .onCall(2)
-      .returns([principalGroupAggregate]);
+      .returns([sessionPrincipalGroupAggregate]);
 
     const aggregateFake = stub()
       .onFirstCall()
@@ -162,12 +160,10 @@ describe("Command handler unit tests", () => {
       .onSecondCall()
       .returns(principalAggregate);
 
-    const commandFnFake = stub()
-      .onSecondCall()
-      .returns({
-        body: { _tokens, receipt: { challenge } },
-        statusCode,
-      });
+    const commandFnFake = fake.returns({
+      body: { _tokens, receipt: { challenge } },
+      statusCode,
+    });
 
     replace(deps, "compare", fake.returns(true));
 
@@ -215,22 +211,7 @@ describe("Command handler unit tests", () => {
         value: contextPrincipalNetwork,
       }],
     });
-    expect(queryAggregatesFnFake.getCall(2)).to.have.been.calledWith({
-      domain: "group",
-      queryPairs: [{
-        key: "principals.root",
-        value: principalRoot,
-      },
-      {
-        key: "principals.service",
-        value: principalService,
-      },
-      {
-        key: "principals.network",
-        value: principalNetwork,
-      }],
-    });
-    expect(queryAggregatesFnFake).to.have.callCount(3);
+    expect(queryAggregatesFnFake).to.have.callCount(2);
     expect(aggregateFake.getCall(0)).to.have.been.calledWith(
       contextPrincipalRoot,
       {
@@ -243,25 +224,9 @@ describe("Command handler unit tests", () => {
       domain: "principal",
     });
     expect(aggregateFake).to.have.been.calledTwice;
-    expect(commandFnFake).to.have.been.calledTwice;
+    // Nothing is done to the groups before the challenge is answered.
+    expect(commandFnFake).to.have.been.calledOnce;
     expect(commandFnFake.getCall(0)).to.have.been.calledWith({
-      name: "add-principals",
-      domain: "group",
-      async: true,
-      payload: {
-        principals: [
-          {
-            network: principalNetwork,
-            roles: [roleId],
-            root: principalRoot,
-            service: principalService,
-          },
-        ],
-      },
-      root: sessionPrincipalGroupRoot,
-      service,
-    });
-    expect(commandFnFake.getCall(1)).to.have.been.calledWith({
       name: "issue",
       domain: "challenge",
       payload: { email, password },
@@ -300,6 +265,51 @@ describe("Command handler unit tests", () => {
                 },
               ],
             },
+          },
+          {
+            action: "add-roles",
+            domain: "principal",
+            service,
+            root: principalRoot,
+            payload: { roles: [{
+                  id: roleId,
+                  subject: {
+                    root: sessionPrincipalGroupRoot,
+                    domain: "group",
+                    service,
+                    network,
+                  },
+                }] },
+          },
+          {
+            action: "add-principals",
+            domain: "group",
+            service,
+            root: sessionPrincipalGroupRoot,
+            payload: {
+              principals: [
+                {
+                  root: principalRoot,
+                  service: principalService,
+                  network: principalNetwork,
+                },
+              ],
+            },
+          },
+          {
+            action: "remove-roles",
+            domain: "principal",
+            service,
+            root: contextPrincipalRoot,
+            payload: { roles: [{
+                  id: roleId,
+                  subject: {
+                    root: sessionPrincipalGroupRoot,
+                    domain: "group",
+                    service,
+                    network,
+                  },
+                }] },
           },
           {
             action: "remove-principals",
@@ -414,8 +424,6 @@ describe("Command handler unit tests", () => {
       .onFirstCall()
       .returns([account])
       .onSecondCall()
-      .returns([principalGroupAggregate])
-      .onThirdCall()
       .returns([principalGroupAggregate]);
 
     const aggregateFake = stub()
@@ -475,22 +483,7 @@ describe("Command handler unit tests", () => {
         value: principalNetwork,
       }],
     });
-    expect(queryAggregatesFnFake.getCall(2)).to.have.been.calledWith({
-      domain: "group",
-      queryPairs: [{
-        key: "principals.root",
-        value: principalRoot,
-      },
-      {
-        key: "principals.service",
-        value: principalService,
-      },
-      {
-        key: "principals.network",
-        value: principalNetwork,
-      }],
-    });
-    expect(queryAggregatesFnFake).to.have.callCount(3);
+    expect(queryAggregatesFnFake).to.have.callCount(2);
     expect(aggregateFake.getCall(0)).to.have.been.calledWith(contextPrincipalRoot, {
       domain: "principal",
       service: contextPrincipalService,
@@ -514,6 +507,35 @@ describe("Command handler unit tests", () => {
           },
         },
         events: [
+          {
+            action: "add-roles",
+            domain: "principal",
+            service,
+            root: principalRoot,
+            payload: { roles: [{ id: "some-role-id", subject: { root: principalGroupRoot, domain: "group", service, network } }] },
+          },
+          {
+            action: "add-principals",
+            domain: "group",
+            service,
+            root: principalGroupRoot,
+            payload: {
+              principals: [
+                {
+                  root: principalRoot,
+                  service: principalService,
+                  network: principalNetwork,
+                },
+              ],
+            },
+          },
+          {
+            action: "remove-roles",
+            domain: "principal",
+            service,
+            root: principalRoot,
+            payload: { roles: [{ id: "some-role-id", subject: { root: principalGroupRoot, domain: "group", service, network } }] },
+          },
           {
             action: "remove-principals",
             domain: "group",
@@ -580,7 +602,7 @@ describe("Command handler unit tests", () => {
       payload: { roles: [sameIdRole] },
     });
   });
-  it("should not add roles if the session principal only has new group roles", async () => {
+  it("should carry a group role over to the account's principal and nothing else", async () => {
     replace(deps, "secret", fake.returns(hmacSecret));
     replace(deps, "hmacCreate", fake.returns(hmacEmail));
     replace(deps, "compare", fake.returns(true));
@@ -616,9 +638,16 @@ describe("Command handler unit tests", () => {
       queryAggregatesFn: queryAggregatesFnFake,
     });
 
-    expect(
-      commandFnFake.lastCall.args[0].options.events.map((e) => e.action)
-    ).to.deep.equal(["remove-principals"]);
+    const { events } = commandFnFake.lastCall.args[0].options;
+    expect(events.map((e) => `${e.action}:${e.root}`)).to.deep.equal([
+      `add-roles:${principalRoot}`,
+      `add-principals:${principalGroupRoot}`,
+      `remove-roles:${contextPrincipalRoot}`,
+      `remove-principals:${principalGroupRoot}`,
+    ]);
+    expect(events[0].payload.roles.map((role) => role.id)).to.deep.equal([
+      "some-new-group-role-id",
+    ]);
   });
   it("should return successfully if account not found with no principal in the context", async () => {
     const queryAggregatesFnFake = fake.returns([]);
