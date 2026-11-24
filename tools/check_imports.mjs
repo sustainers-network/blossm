@@ -23,14 +23,7 @@ const UNSAFE = {};
 // Known failures on master, keyed by exact finding. Each is being fixed in its
 // own pull request. Delete an entry when its fix merges; the gate warns when
 // an entry no longer matches anything.
-const KNOWN = {
-  "missing-export services/system/domains/updates/facts/channel/deps.js":
-    "`@blossm/request` has a default export only, so `{ get }` does not exist",
-  "missing-export services/system/domains/updates/facts/channel/main.js":
-    "imports the `./deps.js` above",
-  "missing-export services/comms/domains/sms/commands/send/normalize.js":
-    "`@blossm/phone-number` has a default export only, so `{ format }` does not exist",
-};
+const KNOWN = {};
 
 export const check = async (root) => {
   const findings = [];
