@@ -545,7 +545,7 @@ describe("Command handler unit tests", () => {
       .onSecondCall()
       .returns(principalRoot);
 
-    const hashFake = fake.returns(hashedPassword);
+    const hashFake = fake.resolves(hashedPassword);
     replace(deps, "hash", hashFake);
 
     const secretFake = fake.returns(hmacSecret);
@@ -686,7 +686,7 @@ describe("Command handler unit tests", () => {
       .onFirstCall()
       .returns(sessionPrincipalAggregate);
 
-    const hashFake = fake.returns(hashedPassword);
+    const hashFake = fake.resolves(hashedPassword);
     replace(deps, "hash", hashFake);
 
     const secretFake = fake.returns(hmacSecret);
@@ -824,6 +824,36 @@ describe("Command handler unit tests", () => {
         ],
       },
     });
+  });
+  it("should not issue a challenge if password hashing fails", async () => {
+    const hashError = new Error("Password hashing failed.");
+    const hashResult = Promise.reject(hashError);
+    // Observe the rejection while checking whether main propagates it.
+    hashResult.catch(() => {});
+    replace(deps, "hash", fake.returns(hashResult));
+    replace(deps, "secret", fake.returns(hmacSecret));
+    replace(deps, "hmacCreate", fake.returns(hmacEmail));
+    replace(deps, "encrypt", fake.returns(emailEncrypted));
+    const commandFn = fake.returns({
+      body: { _tokens, receipt: { challenge } },
+      statusCode,
+    });
+
+    let caught;
+    try {
+      await main({
+        payload,
+        context: {},
+        commandFn,
+        queryAggregatesFn: fake.returns([]),
+        generateRootFn: fake.returns(accountRoot),
+      });
+    } catch (error) {
+      caught = error;
+    }
+
+    expect(caught).to.equal(hashError);
+    expect(commandFn).not.to.have.been.called;
   });
   it("should return nothing if context principal is the account's principal", async () => {
     const queryAggregatesFnFake = fake.returns([
