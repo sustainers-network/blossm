@@ -3,6 +3,7 @@ SceneAdmin:
   permissions:
     - core:scene:delete
     - core:scene:read
+    - core:principal:update
 
 SceneViewer:
   title: Scene Viewer

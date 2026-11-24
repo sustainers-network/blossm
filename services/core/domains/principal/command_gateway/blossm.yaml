@@ -3,9 +3,13 @@ service: core
 
 commands:
   - name: add-roles
-    privileges: none
+    context: scene
+    privileges:
+      - update
   - name: remove-roles
-    privileges: none
+    context: scene
+    privileges:
+      - update
 
 #don't change
 procedure: command-gateway
