@@ -9,11 +9,15 @@ payload:
   code: string
 
 dependencies:
+  # At least the runtime that consumes explicit thenFn return values.
+  # A caret on a 0.0.x version would allow only that exact release.
+  "@blossm/command": ">=0.0.335"
   "@blossm/errors": "*"
   "@blossm/datetime": "*"
   "@blossm/crypt": "*"
 
 devDependencies:
+  "@blossm/command-post": ">=0.0.309"
   "mocha": "^11.6.0"
   "chai": "^5.2.0"
   "sinon": "^21.0.0"
