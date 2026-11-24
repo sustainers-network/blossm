@@ -14,6 +14,10 @@ payload:
       network: domain
 
 dependencies:
+  # At least the runtime that writes a numbered event before queuing the
+  # command's other events. With an older one, a refused removal would still
+  # remove the member's roles.
+  "@blossm/command": ">=0.0.338"
   "@blossm/errors": "*"
 
 devDependencies:

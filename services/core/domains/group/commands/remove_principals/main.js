@@ -81,10 +81,14 @@ export default async ({ context, payload, root, aggregateFn }) => {
         },
       })),
 
-      // Remove the principals from this group.
+      // Remove the principals from this group. The event has to land on the
+      // group's next number, so of two removals read from the same state only
+      // one is written, and the other writes nothing, roles included. Two
+      // admins can't remove each other at once.
       {
         action: "remove-principals",
         root,
+        correctNumber: groupAggregate.lastEventNumber + 1,
         payload: {
           principals: existingPrincipals.map((principal) => ({
             root: principal.root,
