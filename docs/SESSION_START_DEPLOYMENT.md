@@ -34,13 +34,19 @@ are not there:
   identity. `change-scene` signs tokens and needs the access key's signer role.
 - `roles/run.invoker` for `blossm-session-gateway` on each of those three
   services, as it has on `start`.
-- For `save`, a strict route: the `session.terminated`, `scene.deleted`,
-  `principal.roles` and `role.permissions` facts the gateway asks on every
-  request, and invoker on each for the gateway.
+- #56 merged and in the deployed `change-scene`. Without it a session can
+  enter a scene whose subject is named `principal` and come out with another
+  principal in its token.
+- For `save`, a strict route: the `session.terminated` fact, and the
+  `scene.deleted` fact for a token that carries a scene, with invoker on each
+  for the gateway. With `privileges: none` no role or permission is looked up.
 - What `save` calls: `challenge.issue`, `challenge.answer` and its gateway,
   `session.upgrade`, the email command, and the account, principal, group and
-  challenge event stores.
-- What `change-scene` reads: the scene and group event stores.
+  challenge event stores. `save` and `challenge.issue` read the
+  `email-hmac-key` secret and use Cloud KMS for the email and for signing the
+  challenge.
+- What `terminate` and `change-scene` use: the session event store. For
+  `change-scene` also the scene and group event stores.
 
 `tasks/session-start/render-evidence.json` records the gateway as deployed,
 with one route. It does not describe this source.
