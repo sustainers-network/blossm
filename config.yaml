@@ -44,8 +44,9 @@ vendors:
         development: 1
       minInstances:
         development: 0
-      # No secrets or roles bucket exists, and the PostgreSQL event store reads
-      # neither. Name them here when a consumer (gateways, encrypted secrets) is deployed.
+      # No secrets or roles bucket exists yet. The deployed session start path
+      # reads neither. Commands that read a secret and gateway routes that
+      # require a privilege fail until these are named, see docs/NEXT_SERVICES.md.
       secretsBuckets: {}
       rolesBuckets: {}
       defaults:

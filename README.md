@@ -28,6 +28,9 @@ else is deployed, and `config.yaml` holds that one environment.
   From `0.0.1964` a deployment creates each service's runtime identity and
   grants its access. Install with Node 24.22.1, Yarn Classic 1.22.22 and
   `yarn install --frozen-lockfile`, see the guides.
+- **Before deploying anything else,** read
+  [what the next services need](docs/NEXT_SERVICES.md): a runtime identity per
+  procedure, the secrets and roles buckets, and declared dependencies.
 - **Views are not ready.** There is no PostgreSQL view-store adapter, so no view
   store, projection or view gateway can be deployed. The previous MongoDB Atlas
   and Redis addresses are removed, not replaced.
