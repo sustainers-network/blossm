@@ -17,7 +17,7 @@ schema:
   answerId: String
   attempts: Number
   attemptId: String
-  # Only on an email's request count, see handlers.js.
+  # Only on a request count, see handlers.js.
   requested: Date
   requestId: String
   requests:
