@@ -26,7 +26,7 @@ describe("Command handler unit tests", () => {
     restore();
   });
   it("should return successfully", async () => {
-    const aggregateFake = fake.returns({ state: {} });
+    const aggregateFake = fake.returns({ state: {}, lastEventNumber: 3 });
     const result = await main({
       context,
       aggregateFn: aggregateFake,
@@ -37,6 +37,7 @@ describe("Command handler unit tests", () => {
         {
           root,
           action: "terminate",
+          correctNumber: 4,
           payload: {
             terminated: deps.stringDate(),
           },

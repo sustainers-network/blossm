@@ -22,8 +22,11 @@ submits a Cloud Build. Agents prepare commands and read the returned output.
 | `start` command | `services/core/domains/session/commands/start` | Internal | `blossm-session-start` |
 | Session command gateway | `services/core/domains/session/command_gateway` | Public, `https://c.session.core.development.blossm.network/start` | `blossm-session-gateway` |
 
-The session command gateway lists only `start`, with `protection: context`
-unchanged. The other session commands keep their source and are not exposed.
+The session command gateway as deployed here listed only `start`, with
+`protection: context` unchanged. Its source now routes `save`, `terminate` and
+`change-scene` again. Before the gateway is redeployed, each of those commands
+has to be deployed and `blossm-session-gateway` needs `roles/run.invoker` on
+its service, as it has on `start`.
 `config.yaml` keeps `blossm-session` as the environment default, and it stays
 the event store's identity.
 

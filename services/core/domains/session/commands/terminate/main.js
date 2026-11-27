@@ -16,6 +16,9 @@ export default async ({ context, aggregateFn }) => {
       {
         root: context.session.root,
         action: "terminate",
+        // Numbered, so it is written before the command answers. A queued
+        // event would leave the session usable for a moment after logout.
+        correctNumber: sessionAggregate.lastEventNumber + 1,
         payload: { terminated: deps.stringDate() },
       },
     ],
