@@ -615,4 +615,51 @@ describe("Command handler unit tests", () => {
       expect(e.message).to.equal(errorMessage);
     }
   });
+  it("should refuse a scene whose subject domain would replace part of the session", async () => {
+    const createJwtFake = fake.returns(token);
+    replace(deps, "createJwt", createJwtFake);
+
+    for (const domain of [
+      "principal",
+      "account",
+      "session",
+      "device",
+      "scene",
+      "domain",
+      "network",
+      "__proto__",
+      "a.b",
+      "held",
+      undefined,
+    ]) {
+      const aggregateFake = stub()
+        .onFirstCall()
+        .returns({ state: {} })
+        .onSecondCall()
+        .returns({
+          state: {
+            subject: { domain, root: sceneAggregateRoot },
+            group: { root: groupRoot, service, network },
+          },
+        });
+      let error;
+      try {
+        await main({
+          payload,
+          context: {
+            session: { root: sessionRoot },
+            principal: { root: contextPrincipalRoot },
+            held: { root: "some-held-root" },
+          },
+          claims,
+          aggregateFn: aggregateFake,
+          queryAggregatesFn: fake.returns([{ root: groupRoot, service, network }]),
+        });
+      } catch (e) {
+        error = e;
+      }
+      expect(error && error.statusCode, String(domain)).to.equal(403);
+    }
+    expect(createJwtFake).to.not.have.been.called;
+  });
 });
