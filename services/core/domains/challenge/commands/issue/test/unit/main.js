@@ -709,6 +709,8 @@ describe("Command handler unit tests", () => {
       aggregate,
       logEventsFn = fake(),
       accounts = [],
+      ip,
+      aggregates,
     } = {}) => {
       const compare = fake.returns(false);
       replace(deps, "compare", compare);
@@ -717,7 +719,10 @@ describe("Command handler unit tests", () => {
       replace(deps, "createJwt", fake.returns(token));
       replace(deps, "randomIntOfLength", fake.returns(code));
       replace(deps, "hash", fake.returns(hashedCode));
-      const aggregateFn = fake.returns(aggregate);
+      // `aggregates` answers by root, for requests that count on two.
+      const aggregateFn = aggregates
+        ? fake((requested) => aggregates[requested])
+        : fake.returns(aggregate);
       const commandFn = fake();
       let error;
       try {
@@ -725,6 +730,7 @@ describe("Command handler unit tests", () => {
           payload,
           context,
           claims,
+          ...(ip && { ip }),
           options: { upgrade },
           commandFn,
           aggregateFn,
@@ -800,6 +806,49 @@ describe("Command handler unit tests", () => {
       });
       expect(error).to.equal(conflict);
       expect(commandFn).to.not.have.been.called;
+    });
+    describe("with the caller's address", () => {
+      const ip = "203.0.113.5";
+      const callerRoot = `${requestRoot}-from-${Buffer.from(ip).toString("hex")}`;
+      const five = { requests: [14, 5, 4, 3, 2].map(minutesAgo) };
+      it("counts on the caller and then on the email", async () => {
+        const { error, logEventsFn, commandFn } = await run({ ip });
+        expect(error).to.be.undefined;
+        expect(logEventsFn.firstCall.args[0][0].root).to.equal(callerRoot);
+        expect(logEventsFn.secondCall.args[0][0].root).to.equal(requestRoot);
+        expect(logEventsFn).to.have.been.calledTwice;
+        expect(logEventsFn).to.have.been.calledBefore(commandFn);
+      });
+      it("refuses a caller's sixth request for an email without touching the email's count", async () => {
+        const { error, logEventsFn, commandFn } = await run({
+          ip,
+          aggregates: { [callerRoot]: { state: five, lastEventNumber: 4 } },
+        });
+        expect(error.statusCode).to.equal(409);
+        expect(error.info()).to.deep.equal({ reason: "requests" });
+        expect(logEventsFn).to.not.have.been.called;
+        expect(commandFn).to.not.have.been.called;
+      });
+      it("lets the owner in after another caller has used five requests", async () => {
+        // The email has five recent requests, none from this address.
+        const { error, commandFn } = await run({
+          ip,
+          aggregates: { [requestRoot]: { state: five, lastEventNumber: 4 } },
+        });
+        expect(error).to.be.undefined;
+        expect(commandFn).to.have.been.calledOnce;
+      });
+      it("refuses an email its twenty first request, whoever asks", async () => {
+        const twenty = {
+          requests: Array.from({ length: 20 }, (_, i) => minutesAgo(i / 2)),
+        };
+        const { error, commandFn } = await run({
+          ip,
+          aggregates: { [requestRoot]: { state: twenty, lastEventNumber: 19 } },
+        });
+        expect(error.statusCode).to.equal(409);
+        expect(commandFn).to.not.have.been.called;
+      });
     });
     it("checks the account's password even when the upgrade is passed in", async () => {
       const { error, logEventsFn, commandFn, compare } = await run({

@@ -8,29 +8,32 @@ import deps from "./deps.js";
 const ONE_HOUR = MILLISECONDS_IN_HOUR;
 const THREE_MINUTES = 3 * SECONDS_IN_MINUTE;
 const CODE_LENGTH = 6;
-// Challenges one email can request within the window.
+// Challenges one caller can request for one email within the window.
 const MAX_REQUESTS = 5;
+// Challenges one email can be sent within the window, whoever asks. No more
+// than the request times the store keeps, see the event store's handlers.
+const MAX_EMAIL_REQUESTS = 20;
 const REQUEST_WINDOW = 15 * SECONDS_IN_MINUTE * 1000;
 
-// Counts this request against the email, and refuses it if the email has had
-// its share. The count is an aggregate of its own in the challenge store, keyed
-// by the email's hmac. Its event is numbered and written before anything else
-// happens, so requests sent at once compete for one slot and the rest fail
-// without a code being sent or a password being checked.
+// Counts this request against a root, and refuses it if the root has had its
+// share. The count is an aggregate of its own in the challenge store. Its
+// event is numbered and written before anything else happens, so requests
+// sent at once compete for one slot and the rest fail without a code being
+// sent or a password being checked.
 const countRequest = async ({
-  hmacEmail,
+  root,
+  max,
   aggregateFn,
   logEventsFn,
   generateRootFn,
 }) => {
-  const root = `email-${Buffer.from(String(hmacEmail)).toString("hex")}`;
   const aggregate = await aggregateFn(root, { notFoundThrows: false });
 
   const recent = ((aggregate && aggregate.state.requests) || []).filter(
     (requested) => Date.now() - new Date(requested).getTime() < REQUEST_WINDOW
   );
 
-  if (recent.length >= MAX_REQUESTS)
+  if (recent.length >= max)
     throw deps.invalidArgumentError.message(
       "Too many codes have been requested. Try again in a few minutes.",
       {
@@ -48,6 +51,26 @@ const countRequest = async ({
       payload: { requested: deps.stringDate(), requestId: generateRootFn() },
     },
   ]);
+};
+
+// The tight limit is on a caller's address together with the email, so one
+// caller can't use up an email's allowance and lock its owner out. The email
+// alone has a looser limit that bounds codes sent and passwords tried from
+// many addresses at once. A request with no address, which only a caller
+// inside the network can make, is held to the tight limit on the email.
+const countRequests = async ({ hmacEmail, ip, ...fns }) => {
+  const email = `email-${Buffer.from(String(hmacEmail)).toString("hex")}`;
+  if (ip)
+    await countRequest({
+      root: `${email}-from-${Buffer.from(String(ip)).toString("hex")}`,
+      max: MAX_REQUESTS,
+      ...fns,
+    });
+  await countRequest({
+    root: email,
+    max: ip ? MAX_EMAIL_REQUESTS : MAX_REQUESTS,
+    ...fns,
+  });
 };
 
 const determineUpgrade = (account, payload, context) => {
@@ -84,6 +107,8 @@ export default async ({
   payload,
   context,
   claims,
+  // The caller's address, when the request came through a gateway.
+  ip,
   // `events` are any events to submit once the challenge is answered.
   // `upgrade` is an object of properties to add to the context of the
   // access token returned by answering this issued challenge.
@@ -100,7 +125,13 @@ export default async ({
     message: payload.email,
   });
 
-  await countRequest({ hmacEmail, aggregateFn, logEventsFn, generateRootFn });
+  await countRequests({
+    hmacEmail,
+    ip,
+    aggregateFn,
+    logEventsFn,
+    generateRootFn,
+  });
 
   // Check to see if there is an account with the provided email.
   const [account] = await queryAggregatesFn({
