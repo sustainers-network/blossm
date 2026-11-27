@@ -4,6 +4,10 @@ service: system
 commands:
   - name: register
     privileges: none
+  - name: verify
+    context: node
+    privileges:
+      - update
 
 #don't change
 procedure: command-gateway

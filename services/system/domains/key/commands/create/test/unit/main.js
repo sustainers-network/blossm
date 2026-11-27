@@ -84,7 +84,7 @@ describe("Command handler unit tests", () => {
 
     const nodeStateNetwork = "some-node-network";
     const aggregateFnFake = fake.returns({
-      state: { network: nodeStateNetwork },
+      state: { network: nodeStateNetwork, verified: "2020-01-01T00:00:00.000Z" },
     });
     const result = await main({
       payload,
@@ -197,5 +197,20 @@ describe("Command handler unit tests", () => {
     } catch (e) {
       expect(e.message).to.equal(errorMessage);
     }
+  });
+  it("should refuse a node whose network hasn't been verified", async () => {
+    replace(deps, "hash", fake.returns("some-hash"));
+    replace(deps, "randomStringOfLength", fake.returns("some-secret"));
+    let error;
+    try {
+      await main({
+        payload: { name: "some-name", roles: ["NodeNetwork"] },
+        context: { domain: "node", node: { root: "some-node-root" } },
+        aggregateFn: fake.returns({ state: { network: "some.network" } }),
+      });
+    } catch (e) {
+      error = e;
+    }
+    expect(error && error.statusCode).to.equal(403);
   });
 });

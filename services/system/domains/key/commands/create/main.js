@@ -17,6 +17,13 @@ export default async ({ payload, context, aggregateFn }) => {
     }),
   ]);
 
+  // A key carries the node's network into every token it earns, so the node
+  // has to have proven that network first. See the node verify command.
+  if (!nodeAggregate.state.verified)
+    throw deps.forbiddenError.message(
+      "This node's network hasn't been verified."
+    );
+
   const keyRoot = deps.uuid();
   const principalRoot = deps.uuid();
 
