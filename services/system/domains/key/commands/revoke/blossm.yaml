@@ -3,6 +3,7 @@ domain: key
 service: system
 
 # The root is the key being revoked.
+root: true
 contexts:
   - node
 

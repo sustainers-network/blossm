@@ -18,8 +18,33 @@ export default async ({ root, context, aggregateFn }) => {
   )
     throw deps.forbiddenError.message("A key can only be revoked by its node.");
 
-  // If the key has already been revoked, return.
-  if (keyAggregate.state.revoked) return;
+  // Take away the only role a key can hold, so a connection token it already
+  // opened stops passing the gateways' permission checks.
+  const removeRole = {
+    domain: "principal",
+    service: "core",
+    action: "remove-roles",
+    root: keyAggregate.state.principal.root,
+    payload: {
+      roles: [
+        {
+          id: "NodeNetwork",
+          subject: {
+            root: node.root,
+            domain: "node",
+            service: node.service,
+            network: node.network,
+          },
+        },
+      ],
+    },
+  };
+
+  // Already revoked. The role removal is sent again all the same: it is
+  // queued after the revocation is written, so an earlier attempt can have
+  // revoked the key and failed before the removal was queued. Removing a role
+  // that is already gone changes nothing.
+  if (keyAggregate.state.revoked) return { events: [removeRole] };
 
   return {
     events: [
@@ -30,27 +55,7 @@ export default async ({ root, context, aggregateFn }) => {
         correctNumber: keyAggregate.lastEventNumber + 1,
         payload: { revoked: deps.stringDate() },
       },
-      // Take away the only role a key can hold, so a connection token it
-      // already opened stops passing the gateways' permission checks.
-      {
-        domain: "principal",
-        service: "core",
-        action: "remove-roles",
-        root: keyAggregate.state.principal.root,
-        payload: {
-          roles: [
-            {
-              id: "NodeNetwork",
-              subject: {
-                root: node.root,
-                domain: "node",
-                service: node.service,
-                network: node.network,
-              },
-            },
-          ],
-        },
-      },
+      removeRole,
     ],
   };
 };

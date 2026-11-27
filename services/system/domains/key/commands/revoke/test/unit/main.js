@@ -59,9 +59,14 @@ describe("Command handler unit tests", () => {
       ],
     });
   });
-  it("should return nothing if the key is already revoked", async () => {
+  it("should only resend the role removal if the key is already revoked", async () => {
+    // An earlier attempt can have revoked the key and failed before the
+    // removal was queued.
     const aggregateFn = fake.resolves(key({ revoked: "2020-01-01T00:00:00.000Z" }));
-    expect(await main({ root, context, aggregateFn })).to.be.undefined;
+    const { events } = await main({ root, context, aggregateFn });
+    expect(events.map((event) => event.action)).to.deep.equal(["remove-roles"]);
+    expect(events[0].payload.roles[0].id).to.equal("NodeNetwork");
+    expect(events[0].correctNumber).to.be.undefined;
   });
   it("should refuse a key of another node, or one with no owner", async () => {
     for (const state of [
