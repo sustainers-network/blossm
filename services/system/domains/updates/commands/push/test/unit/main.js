@@ -22,17 +22,28 @@ const id = "some-id";
 const trace = "some-trace";
 const connection = "some-connection";
 const key = "some-key";
+const network = "some.node-network";
 const context = {
+  network,
   node,
   connection,
   key,
 };
+const name = "some-name";
 const payload = {
   view,
-  channel,
+  name,
   type,
   id,
   trace,
+};
+const ownNetwork = "some.own-network";
+process.env.NETWORK = ownNetwork;
+// Stands in for the published package, which builds the same string.
+const channelNameFake = () => {
+  const channelName = fake.returns(channel);
+  replace(deps, "channelName", channelName);
+  return channelName;
 };
 
 const secret = "some-secret";
@@ -62,8 +73,11 @@ describe("Command handler unit tests", () => {
       publish: publishFake,
     });
 
+    const channelName = channelNameFake();
     expect(process.env.GRIP_URL).to.not.exist;
     const result = await main({ payload, context });
+    // The channel is in the caller's network, whatever the payload says.
+    expect(channelName).to.have.been.calledWith({ name, network });
     expect(secretFake).to.have.been.calledWith("fanout-realm-key");
     expect(process.env.GRIP_URL).to.equal(
       `https://api.fanout.io/realm/${fanoutRealmId}?iss=${fanoutRealmId}&key=base64:${secret}`
@@ -104,10 +118,11 @@ describe("Command handler unit tests", () => {
       publish: publishFake,
     });
 
+    const channelName = channelNameFake();
     expect(process.env.GRIP_URL).to.not.exist;
     const result = await main({
       payload: {
-        channel,
+        name,
         type,
         id,
         trace,
@@ -130,6 +145,8 @@ describe("Command handler unit tests", () => {
       })}\n\n`
     );
     expect(publishFake).to.have.been.calledWith(channel, stream.prototype);
+    // An internal request belongs to this network.
+    expect(channelName).to.have.been.calledWith({ name, network: ownNetwork });
     expect(result).to.deep.equal();
     await main({ payload, context });
     expect(secretFake).to.have.been.calledOnce;
@@ -151,6 +168,7 @@ describe("Command handler unit tests", () => {
       publish: publishFake,
     });
 
+    channelNameFake();
     process.env.NODE_ENV = "local";
     const result = await main({ payload, context });
     expect(process.env.GRIP_URL).to.equal(
@@ -172,5 +190,83 @@ describe("Command handler unit tests", () => {
     );
     expect(publishFake).to.have.been.calledWith(channel, stream.prototype);
     expect(result).to.deep.equal();
+  });
+  it("should build the channel from every part and the caller's network", async () => {
+    replace(deps, "secret", fake.returns(secret));
+    replace(deps, "grip", { HttpStreamFormat: fake() });
+    replace(deps, "faasGrip", { publish: fake() });
+    const channelName = channelNameFake();
+    const viewContext = {
+      root: "some-context-root",
+      domain: "some-domain",
+      service: "some-service",
+      network: "some.context-network",
+    };
+    const principal = {
+      root: "some-principal-root",
+      service: "some-service",
+      network: "some.principal-network",
+    };
+    await main({
+      payload: { ...payload, context: viewContext, principal, key: "some-key", network: "some.other-network", channel: "some-other-channel" },
+      context,
+    });
+    expect(channelName).to.have.been.calledOnceWithExactly({
+      name,
+      network,
+      context: viewContext,
+      key: "some-key",
+      principal,
+    });
+  });
+  it("should refuse a caller without a network, and parts that aren't plain", async () => {
+    const publish = fake();
+    replace(deps, "secret", fake.returns(secret));
+    replace(deps, "grip", { HttpStreamFormat: fake() });
+    replace(deps, "faasGrip", { publish });
+    channelNameFake();
+    const statusCode = async (args) => {
+      try {
+        await main(args);
+      } catch (e) {
+        return e.statusCode;
+      }
+    };
+    for (const ctx of [{ node }, { network: "a,b" }, { network: ["a.b"] }])
+      expect(await statusCode({ payload, context: ctx })).to.equal(403);
+    for (const bad of [
+      { name: "a,b" },
+      { name: "a.b" },
+      { name: undefined },
+      { key: "a, b" },
+      { key: 3 },
+      { context: { root: "a,b", domain: "d", service: "s", network: "n.n" } },
+      { context: { root: "r", domain: "d", service: "s" } },
+      { context: { root: "r", domain: "d.e", service: "s", network: "n.n" } },
+      { principal: { root: "r", service: "s", network: "n n" } },
+      { principal: { service: "s", network: "n.n" } },
+    ])
+      expect(
+        await statusCode({ payload: { ...payload, ...bad }, context }),
+        JSON.stringify(bad)
+      ).to.equal(400);
+    expect(publish).to.not.have.been.called;
+  });
+  it("should answer 400 when the name's owner refuses the parts", async () => {
+    replace(
+      deps,
+      "channelName",
+      fake.throws(new TypeError("A channel can't be named with this network."))
+    );
+    const publishFake = fake();
+    replace(deps, "faasGrip", { publish: publishFake });
+    try {
+      // Passes the checks here, but two dots in a row is no network.
+      await main({ payload, context: { ...context, network: "some..network" } });
+      expect.fail("should have thrown");
+    } catch (e) {
+      expect(e.statusCode).to.equal(400);
+    }
+    expect(publishFake).to.not.have.been.called;
   });
 });

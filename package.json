@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@blossm/array-difference": "^0.0.11",
+    "@blossm/channel-name": "^0.0.10",
     "@blossm/command-post": ">=0.0.312",
     "@blossm/crypt": "^0.0.10",
     "@blossm/duration-consts": "^0.0.7",

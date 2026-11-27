@@ -28,6 +28,11 @@
   resolved "https://registry.npmjs.org/@blossm/basic-token/-/basic-token-0.0.12.tgz#75eec5fe3520ca79bcfcc7fb29af0f478548076b"
   integrity sha512-/amz9588exOn06b7wwElRiGLZk9O6MOhYYeFHvlSmG7pG4rDyZ/unxX2vkQgDiJVr2Uf92eN+uP/2qwYIpUccA==
 
+"@blossm/channel-name@^0.0.10":
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/@blossm/channel-name/-/channel-name-0.0.10.tgz#204fecf3f955a86d1309728869b3aa3126eaf93b"
+  integrity sha512-VnelAvXwVVc4Pqh9jOhM5yKEwGdcHlbEn+g/Lyc9tF0jgkfBf9QLIZ9R8DY4Ah6ndiZQyauOYTJPeNQRLw2Uxw==
+
 "@blossm/cli-root-dir@^0.0.17":
   version "0.0.17"
   resolved "https://registry.npmjs.org/@blossm/cli-root-dir/-/cli-root-dir-0.0.17.tgz#51eade9a9d95e004e3d40cb96dad1af5b7e6ac75"

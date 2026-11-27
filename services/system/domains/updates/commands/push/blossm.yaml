@@ -6,7 +6,18 @@ payload:
   view:
     type: object
     optional: true
-  channel: string
+  # The parts of the channel. The command builds the channel from them and from
+  # the caller's network, so a caller can't name a channel outright.
+  name: string
+  context:
+    type: object
+    optional: true
+  principal:
+    type: object
+    optional: true
+  key:
+    type: string
+    optional: true
   id: string
   trace:
     type:
@@ -23,6 +34,8 @@ dependencies:
   "grip": "*"
   "faas-grip": "*"
   "@blossm/gcp-secret": "*"
+  "@blossm/channel-name": "*"
+  "@blossm/errors": "*"
 
 devDependencies:
   "mocha": "^7.1.1"
@@ -59,19 +72,31 @@ testing:
             some: header
           body:
             some: property
-        channel: some-channel
+        name: some-name
+        context:
+          root: some-context-root
+          domain: some-context-domain
+          service: some-context-service
+          network: some.context-network
+        principal:
+          root: some-principal-root
+          service: some-principal-service
+          network: some.principal-network
+        key: some-key
         id: some-id
         trace:
           - some-trace
         type: update
-      - channel: some-channel
+      - name: some-name
         id: some-id
         trace:
           - some-trace
         type: update
     bad:
       - view: 3
-      - channel: 3
+      - name: 3
+      - name: some-name
+        key: 3
       - type: bogus
       - id: 4
       - trace:
@@ -82,6 +107,13 @@ testing:
         view:
           headers: some-headers
           body: some-body
+        name: some-name
+        context:
+          root: some-context-root
+          domain: some-context-domain
+          service: some-context-service
+          network: some.context-network
+          some: bogus
         channel: some-channel
         type: some-type
         id: some-id
@@ -90,7 +122,12 @@ testing:
         view:
           headers: some-headers
           body: some-body
-        channel: some-channel
+        name: some-name
+        context:
+          root: some-context-root
+          domain: some-context-domain
+          service: some-context-service
+          network: some.context-network
         type: some-type
         id: some-id
         trace: some-trace
@@ -102,12 +139,13 @@ testing:
             a: 1
           body:
             b: 2
-        channel: some-channel
+        name: some-name
         type: update
         id: some-id
         trace:
           - some-trace
       context:
+        network: some.node-network
         node:
           root: some-node-root
           service: some-node-service
@@ -121,6 +159,26 @@ testing:
           service: some-key-service
           network: some-key-network
       code: 204
+    # A caller the gateway knows no network for.
+    - payload:
+        name: some-name
+        type: update
+        id: some-id
+      context:
+        node:
+          root: some-node-root
+          service: some-node-service
+          network: some-node-network
+      code: 403
+    # A part that would name a second channel.
+    - payload:
+        name: some-name
+        key: "a,b"
+        type: update
+        id: some-id
+      context:
+        network: some.node-network
+      code: 400
 
 #don't change
 procedure: command
