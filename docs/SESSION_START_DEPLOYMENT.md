@@ -22,8 +22,34 @@ submits a Cloud Build. Agents prepare commands and read the returned output.
 | `start` command | `services/core/domains/session/commands/start` | Internal | `blossm-session-start` |
 | Session command gateway | `services/core/domains/session/command_gateway` | Public, `https://c.session.core.development.blossm.network/start` | `blossm-session-gateway` |
 
-The session command gateway lists only `start`, with `protection: context`
-unchanged. The other session commands keep their source and are not exposed.
+The session command gateway as deployed here listed only `start`, with
+`protection: context` unchanged. Its source now routes `save`, `terminate` and
+`change-scene` again. **Do not redeploy the gateway from this source until
+all of the following exist**, or its build fails or it routes to services that
+are not there:
+
+- The `save`, `terminate` and `change-scene` commands, each with a runtime
+  identity of its own (`runtimeServiceAccounts` in its `blossm.yaml`). Without
+  one a command deploys as the environment default, the event store's
+  identity. `change-scene` signs tokens and needs the access key's signer role.
+- `roles/run.invoker` for `blossm-session-gateway` on each of those three
+  services, as it has on `start`.
+- #56 merged and in the deployed `change-scene`. Without it a session can
+  enter a scene whose subject is named `principal` and come out with another
+  principal in its token.
+- For `save`, a strict route: the `session.terminated` fact, and the
+  `scene.deleted` fact for a token that carries a scene, with invoker on each
+  for the gateway. With `privileges: none` no role or permission is looked up.
+- What `save` calls: `challenge.issue`, `challenge.answer` and its gateway,
+  `session.upgrade`, the email command, and the account, principal, group and
+  challenge event stores. `save` and `challenge.issue` read the
+  `email-hmac-key` secret and use Cloud KMS for the email and for signing the
+  challenge.
+- What `terminate` and `change-scene` use: the session event store. For
+  `change-scene` also the scene and group event stores.
+
+`tasks/session-start/render-evidence.json` records the gateway as deployed,
+with one route. It does not describe this source.
 `config.yaml` keeps `blossm-session` as the environment default, and it stays
 the event store's identity.
 
