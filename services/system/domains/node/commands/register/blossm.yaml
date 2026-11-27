@@ -7,6 +7,7 @@ payload:
 
 dependencies:
   "@blossm/command-rpc": "*"
+  "@blossm/errors": "*"
   "@blossm/uuid": "*"
   "@blossm/gcp-token": "*"
 
