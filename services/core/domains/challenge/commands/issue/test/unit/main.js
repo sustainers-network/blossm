@@ -876,10 +876,40 @@ describe("Command handler unit tests", () => {
         ])
           expect(await rootFor(address), address).to.equal(network);
         expect(await rootFor("2001:db8:0:2::1")).to.not.equal(network);
+        // Addresses under ::/64 are not one network.
+        expect(await rootFor("::ffff:102:304")).to.not.equal(
+          await rootFor("::1")
+        );
         // An IPv4 address is one caller on its own.
         expect(await rootFor("203.0.113.6")).to.not.equal(
           await rootFor("203.0.113.5")
         );
+      });
+      it("holds a caller whose address isn't one address to the email's tight limit", async () => {
+        const five = {
+          requests: Array.from({ length: 5 }, (_, i) => minutesAgo(i)),
+        };
+        // What a gateway passing on the raw forwarding header would send.
+        for (const address of [
+          "made-up, 203.0.113.5",
+          "198.51.100.1, 203.0.113.5",
+          "made-up",
+          "203.0.113.5:443",
+        ]) {
+          const first = await run({ ip: address });
+          expect(
+            first.logEventsFn.firstCall.args[0].map((event) => event.root),
+            address
+          ).to.deep.equal([requestRoot]);
+          restore();
+          const sixth = await run({
+            ip: address,
+            aggregates: { [requestRoot]: { state: five, lastEventNumber: 4 } },
+          });
+          expect(sixth.error.statusCode, address).to.equal(409);
+          expect(sixth.logEventsFn).to.not.have.been.called;
+          restore();
+        }
       });
       it("refuses an email its twenty first request, whoever asks", async () => {
         const twenty = {

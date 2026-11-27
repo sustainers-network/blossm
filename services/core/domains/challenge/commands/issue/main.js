@@ -3,7 +3,7 @@ import {
   SECONDS_IN_MINUTE,
 } from "@blossm/duration-consts";
 
-import { isIPv6 } from "node:net";
+import { isIP, isIPv6 } from "node:net";
 
 import deps from "./deps.js";
 
@@ -20,8 +20,13 @@ const REQUEST_WINDOW = 15 * SECONDS_IN_MINUTE * 1000;
 // The part of an address that says who is calling. A host on IPv6 is usually
 // handed a whole /64, so it has no end of addresses: its first four groups are
 // what stay the same.
+//
+// Anything that isn't one address is no caller at all. A gateway that passes
+// on a forwarding header as it came would otherwise let a caller be someone
+// new on every request, just by writing something new in front.
 const caller = (ip) => {
   const address = String(ip).toLowerCase();
+  if (!isIP(address)) return undefined;
   if (!isIPv6(address) || address.includes(".")) return address;
   const [head, tail] = address.split("::");
   const before = head ? head.split(":") : [];
@@ -30,10 +35,13 @@ const caller = (ip) => {
     tail === undefined
       ? before
       : [...before, ...Array(8 - before.length - after.length).fill("0"), ...after];
-  return groups
+  const network = groups
     .slice(0, 4)
     .map((group) => group.replace(/^0+(?=.)/, ""))
     .join(":");
+  // Addresses under ::/64, such as an IPv4 one written in IPv6, are not one
+  // network.
+  return network == "0:0:0:0" ? address : network;
 };
 
 // Counts this request, and refuses it if a limit is reached.
@@ -41,8 +49,8 @@ const caller = (ip) => {
 // The tight limit is on the caller together with the email, so one caller
 // can't use up an email's allowance and lock its owner out. The email alone
 // has a looser limit that bounds codes sent and passwords tried from many
-// callers at once. A request with no address, which only a caller inside the
-// network can make, is held to the tight limit on the email.
+// callers at once. A request with no usable address is held to the tight
+// limit on the email.
 //
 // Each count is an aggregate of its own in the challenge store. Every limit is
 // checked before anything is written, and the counts are then written
@@ -58,11 +66,10 @@ const countRequest = async ({
 }) => {
   const hex = (value) => Buffer.from(String(value)).toString("hex");
   const email = `email-${hex(hmacEmail)}`;
+  const from = caller(ip);
   const counts = [
-    ...(ip
-      ? [{ root: `${email}-from-${hex(caller(ip))}`, max: MAX_REQUESTS }]
-      : []),
-    { root: email, max: ip ? MAX_EMAIL_REQUESTS : MAX_REQUESTS },
+    ...(from ? [{ root: `${email}-from-${hex(from)}`, max: MAX_REQUESTS }] : []),
+    { root: email, max: from ? MAX_EMAIL_REQUESTS : MAX_REQUESTS },
   ];
 
   const aggregates = await Promise.all(
