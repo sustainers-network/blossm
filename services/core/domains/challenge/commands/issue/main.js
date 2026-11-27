@@ -3,6 +3,8 @@ import {
   SECONDS_IN_MINUTE,
 } from "@blossm/duration-consts";
 
+import { isIPv6 } from "node:net";
+
 import deps from "./deps.js";
 
 const ONE_HOUR = MILLISECONDS_IN_HOUR;
@@ -15,62 +17,85 @@ const MAX_REQUESTS = 5;
 const MAX_EMAIL_REQUESTS = 20;
 const REQUEST_WINDOW = 15 * SECONDS_IN_MINUTE * 1000;
 
-// Counts this request against a root, and refuses it if the root has had its
-// share. The count is an aggregate of its own in the challenge store. Its
-// event is numbered and written before anything else happens, so requests
-// sent at once compete for one slot and the rest fail without a code being
-// sent or a password being checked.
+// The part of an address that says who is calling. A host on IPv6 is usually
+// handed a whole /64, so it has no end of addresses: its first four groups are
+// what stay the same.
+const caller = (ip) => {
+  const address = String(ip).toLowerCase();
+  if (!isIPv6(address) || address.includes(".")) return address;
+  const [head, tail] = address.split("::");
+  const before = head ? head.split(":") : [];
+  const after = tail ? tail.split(":") : [];
+  const groups =
+    tail === undefined
+      ? before
+      : [...before, ...Array(8 - before.length - after.length).fill("0"), ...after];
+  return groups
+    .slice(0, 4)
+    .map((group) => group.replace(/^0+(?=.)/, ""))
+    .join(":");
+};
+
+// Counts this request, and refuses it if a limit is reached.
+//
+// The tight limit is on the caller together with the email, so one caller
+// can't use up an email's allowance and lock its owner out. The email alone
+// has a looser limit that bounds codes sent and passwords tried from many
+// callers at once. A request with no address, which only a caller inside the
+// network can make, is held to the tight limit on the email.
+//
+// Each count is an aggregate of its own in the challenge store. Every limit is
+// checked before anything is written, and the counts are then written
+// together, numbered, before anything else happens. So a refused request
+// counts nowhere, and requests sent at once compete for one slot: the rest
+// fail without a code being sent or a password being checked.
 const countRequest = async ({
-  root,
-  max,
+  hmacEmail,
+  ip,
   aggregateFn,
   logEventsFn,
   generateRootFn,
 }) => {
-  const aggregate = await aggregateFn(root, { notFoundThrows: false });
+  const hex = (value) => Buffer.from(String(value)).toString("hex");
+  const email = `email-${hex(hmacEmail)}`;
+  const counts = [
+    ...(ip
+      ? [{ root: `${email}-from-${hex(caller(ip))}`, max: MAX_REQUESTS }]
+      : []),
+    { root: email, max: ip ? MAX_EMAIL_REQUESTS : MAX_REQUESTS },
+  ];
 
-  const recent = ((aggregate && aggregate.state.requests) || []).filter(
-    (requested) => Date.now() - new Date(requested).getTime() < REQUEST_WINDOW
+  const aggregates = await Promise.all(
+    counts.map(({ root }) => aggregateFn(root, { notFoundThrows: false }))
   );
 
-  if (recent.length >= max)
-    throw deps.invalidArgumentError.message(
-      "Too many codes have been requested. Try again in a few minutes.",
-      {
-        info: { reason: "requests" },
-      }
+  for (const [index, { max }] of counts.entries()) {
+    const aggregate = aggregates[index];
+    const recent = ((aggregate && aggregate.state.requests) || []).filter(
+      (requested) =>
+        Date.now() - new Date(requested).getTime() < REQUEST_WINDOW
     );
+    if (recent.length >= max)
+      throw deps.invalidArgumentError.message(
+        "Too many codes have been requested. Try again in a few minutes.",
+        {
+          info: { reason: "requests" },
+        }
+      );
+  }
 
-  await logEventsFn([
-    {
+  await logEventsFn(
+    counts.map(({ root }, index) => ({
       root,
       action: "request",
-      correctNumber: aggregate ? aggregate.lastEventNumber + 1 : 0,
+      correctNumber: aggregates[index]
+        ? aggregates[index].lastEventNumber + 1
+        : 0,
       // The id keeps a repeated idempotency key from making two requests look
       // like one event, which the store would drop without counting.
       payload: { requested: deps.stringDate(), requestId: generateRootFn() },
-    },
-  ]);
-};
-
-// The tight limit is on a caller's address together with the email, so one
-// caller can't use up an email's allowance and lock its owner out. The email
-// alone has a looser limit that bounds codes sent and passwords tried from
-// many addresses at once. A request with no address, which only a caller
-// inside the network can make, is held to the tight limit on the email.
-const countRequests = async ({ hmacEmail, ip, ...fns }) => {
-  const email = `email-${Buffer.from(String(hmacEmail)).toString("hex")}`;
-  if (ip)
-    await countRequest({
-      root: `${email}-from-${Buffer.from(String(ip)).toString("hex")}`,
-      max: MAX_REQUESTS,
-      ...fns,
-    });
-  await countRequest({
-    root: email,
-    max: ip ? MAX_EMAIL_REQUESTS : MAX_REQUESTS,
-    ...fns,
-  });
+    }))
+  );
 };
 
 const determineUpgrade = (account, payload, context) => {
@@ -125,7 +150,7 @@ export default async ({
     message: payload.email,
   });
 
-  await countRequests({
+  await countRequest({
     hmacEmail,
     ip,
     aggregateFn,

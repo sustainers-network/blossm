@@ -814,9 +814,11 @@ describe("Command handler unit tests", () => {
       it("counts on the caller and then on the email", async () => {
         const { error, logEventsFn, commandFn } = await run({ ip });
         expect(error).to.be.undefined;
-        expect(logEventsFn.firstCall.args[0][0].root).to.equal(callerRoot);
-        expect(logEventsFn.secondCall.args[0][0].root).to.equal(requestRoot);
-        expect(logEventsFn).to.have.been.calledTwice;
+        // One write for both counts, so neither is spent without the other.
+        expect(logEventsFn).to.have.been.calledOnce;
+        expect(
+          logEventsFn.firstCall.args[0].map((event) => event.root)
+        ).to.deep.equal([callerRoot, requestRoot]);
         expect(logEventsFn).to.have.been.calledBefore(commandFn);
       });
       it("refuses a caller's sixth request for an email without touching the email's count", async () => {
@@ -837,6 +839,47 @@ describe("Command handler unit tests", () => {
         });
         expect(error).to.be.undefined;
         expect(commandFn).to.have.been.calledOnce;
+      });
+      it("writes nothing for the caller when the email is refused", async () => {
+        const twenty = {
+          requests: Array.from({ length: 20 }, (_, i) => minutesAgo(i / 2)),
+        };
+        const { error, logEventsFn } = await run({
+          ip,
+          aggregates: { [requestRoot]: { state: twenty, lastEventNumber: 19 } },
+        });
+        expect(error.statusCode).to.equal(409);
+        expect(logEventsFn).to.not.have.been.called;
+      });
+      it("allows an email its twentieth request", async () => {
+        const nineteen = {
+          requests: Array.from({ length: 19 }, (_, i) => minutesAgo(i / 2)),
+        };
+        const { error, commandFn } = await run({
+          ip,
+          aggregates: { [requestRoot]: { state: nineteen, lastEventNumber: 18 } },
+        });
+        expect(error).to.be.undefined;
+        expect(commandFn).to.have.been.calledOnce;
+      });
+      it("counts every address of one IPv6 network as one caller", async () => {
+        const rootFor = async (address) => {
+          const { logEventsFn } = await run({ ip: address });
+          restore();
+          return logEventsFn.firstCall.args[0][0].root;
+        };
+        const network = await rootFor("2001:db8:0:1::1");
+        for (const address of [
+          "2001:0db8:0000:0001:ffff:ffff:ffff:ffff",
+          "2001:DB8:0:1:a::b",
+          "2001:db8::1:0:0:0:9",
+        ])
+          expect(await rootFor(address), address).to.equal(network);
+        expect(await rootFor("2001:db8:0:2::1")).to.not.equal(network);
+        // An IPv4 address is one caller on its own.
+        expect(await rootFor("203.0.113.6")).to.not.equal(
+          await rootFor("203.0.113.5")
+        );
       });
       it("refuses an email its twenty first request, whoever asks", async () => {
         const twenty = {
