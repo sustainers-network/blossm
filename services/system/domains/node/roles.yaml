@@ -4,6 +4,7 @@ NodeAdmin:
     - system:node:update
     - system:node:delete
     - system:key:create
+    - system:key:delete
     - system:key:read
 
 NodeNetwork:

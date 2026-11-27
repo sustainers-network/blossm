@@ -5,6 +5,7 @@ isPublic: false
 
 actions:
   - create
+  - revoke
 
 schema:
   name: String
@@ -23,6 +24,7 @@ schema:
     service: String
     network: String
   secret: String
+  revoked: Date
 
 testing:
   examples:
@@ -117,6 +119,17 @@ testing:
               service: some-other-principal-service
               network: some.other-principal-network
             secret: some-other-secret
+    - action: revoke
+      examples:
+        - state:
+            name: some-name
+            secret: some-secret
+          payload:
+            revoked: 2020-01-01T00:00:00.000Z
+          result:
+            name: some-name
+            secret: some-secret
+            revoked: 2020-01-01T00:00:00.000Z
 
 #don't change
 procedure: event-store

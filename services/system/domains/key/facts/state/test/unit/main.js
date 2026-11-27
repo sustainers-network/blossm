@@ -60,4 +60,18 @@ describe("Fact unit tests", () => {
       expect(err.message).to.equal(errorMessage);
     }
   });
+  it("should refuse a revoked key", async () => {
+    let error;
+    try {
+      await main({
+        root: "some-root",
+        aggregateFn: fake.returns({
+          state: { secret: "some-secret", revoked: "2020-01-01T00:00:00.000Z" },
+        }),
+      });
+    } catch (e) {
+      error = e;
+    }
+    expect(error.statusCode).to.equal(401);
+  });
 });

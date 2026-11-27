@@ -17,9 +17,11 @@ const principal = {
   root: principalRoot,
 };
 const scene = "some-scene";
+const key = { root: "some-key-root" };
 const context = {
   principal,
   scene,
+  key,
 };
 
 const domain = "some-domain";
@@ -108,5 +110,22 @@ describe("Command handler unit tests", () => {
     } catch (e) {
       expect(e.message).to.equal(errorMessage);
     }
+  });
+  it("should refuse anything but a key", async () => {
+    const createJwtFake = fake.returns(token);
+    replace(deps, "createJwt", createJwtFake);
+    for (const ctx of [
+      { principal, scene },
+      { principal, scene, key, connection: { root: "some-connection-root" } },
+    ]) {
+      let error;
+      try {
+        await main({ context: ctx });
+      } catch (e) {
+        error = e;
+      }
+      expect(error && error.statusCode).to.equal(403);
+    }
+    expect(createJwtFake).to.not.have.been.called;
   });
 });

@@ -2,6 +2,9 @@ name: state
 domain: key
 service: system
 
+dependencies:
+  "@blossm/errors": "*"
+
 testing:
   dependencies:
     - procedure: event-store
