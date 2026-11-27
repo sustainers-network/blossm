@@ -89,7 +89,20 @@ describe("Command handler unit tests", () => {
         error = e;
       }
       expect(error && error.statusCode, password).to.equal(400);
+      expect(error.info()).to.deep.equal({ reason: "password_length" });
     }
     expect(hashFake).to.not.have.been.called;
+  });
+  it("should accept a password of exactly 8 and of exactly 72 bytes", async () => {
+    const hashFake = fake.resolves("hashed-password");
+    replace(deps, "hash", hashFake);
+    // 36 two-byte characters are 72 bytes.
+    for (const password of ["12345678", "a".repeat(72), "é".repeat(36)])
+      await main({
+        payload: { password },
+        context,
+        aggregateFn: fake.resolves({ lastEventNumber: 0, state: {} }),
+      });
+    expect(hashFake).to.have.been.calledThrice;
   });
 });

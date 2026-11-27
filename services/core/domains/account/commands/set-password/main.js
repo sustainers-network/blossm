@@ -20,7 +20,7 @@ export default async ({
   const bytes = Buffer.byteLength(payload.password);
   if (bytes < 8 || bytes > 72)
     throw deps.badRequestError.message(
-      "A password must be between 8 and 72 characters.",
+      "A password must be between 8 and 72 bytes long.",
       { info: { reason: "password_length" } }
     );
 
