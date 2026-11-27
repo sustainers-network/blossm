@@ -236,6 +236,8 @@ describe("Command handler unit tests", () => {
             service,
             network,
           },
+          // The session's own principal gives way to the account's.
+          principal: account.state.principal,
         },
         events: [
           {
@@ -502,6 +504,8 @@ describe("Command handler unit tests", () => {
             service,
             network,
           },
+          // The session's own principal gives way to the account's.
+          principal: account.state.principal,
         },
         events: [
           {

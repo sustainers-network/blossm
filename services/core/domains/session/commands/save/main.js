@@ -341,8 +341,16 @@ export default async ({
           service: process.env.SERVICE,
           network: process.env.NETWORK,
         },
-        // If the context has a principal, it necessarily is the account's principal and doesn't need adding.
-        ...(!context.principal && {
+        // The session continues as the account's principal. A session that
+        // starts with a principal of its own and is saved to an existing
+        // account hands that principal's roles to the account's, so keeping
+        // the old one would leave the session holding nothing.
+        ...(!(
+          context.principal &&
+          context.principal.root == principal.root &&
+          context.principal.service == principal.service &&
+          context.principal.network == principal.network
+        ) && {
           principal,
         }),
       },
