@@ -252,4 +252,21 @@ describe("Command handler unit tests", () => {
       ).to.equal(400);
     expect(publish).to.not.have.been.called;
   });
+  it("should answer 400 when the name's owner refuses the parts", async () => {
+    replace(
+      deps,
+      "channelName",
+      fake.throws(new TypeError("A channel can't be named with this network."))
+    );
+    const publishFake = fake();
+    replace(deps, "faasGrip", { publish: publishFake });
+    try {
+      // Passes the checks here, but two dots in a row is no network.
+      await main({ payload, context: { ...context, network: "some..network" } });
+      expect.fail("should have thrown");
+    } catch (e) {
+      expect(e.statusCode).to.equal(400);
+    }
+    expect(publishFake).to.not.have.been.called;
+  });
 });

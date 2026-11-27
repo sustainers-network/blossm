@@ -37,13 +37,22 @@ const channelFor = ({ payload, context }) => {
   )
     throw deps.badRequestError.message("This channel isn't valid.");
 
-  return deps.channelName({
-    name,
-    network,
-    ...(viewContext && { context: viewContext }),
-    ...(key && { key }),
-    ...(principal && { principal }),
-  });
+  // The name's format has one owner, which refuses parts it can't write
+  // unambiguously. Anything it refuses beyond the checks above is the
+  // caller's mistake too.
+  try {
+    return deps.channelName({
+      name,
+      network,
+      ...(viewContext && { context: viewContext }),
+      ...(key && { key }),
+      ...(principal && { principal }),
+    });
+  } catch (error) {
+    if (error instanceof TypeError)
+      throw deps.badRequestError.message("This channel isn't valid.");
+    throw error;
+  }
 };
 
 export default async ({ payload, context }) => {
