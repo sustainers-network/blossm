@@ -9,11 +9,9 @@ The command can be called via the account command gateway at:
 
 ## Requirements
 
-- The request must be made with a valid token that contains an `account` context
-- The token must have the `core:account:update` permission
-- The account context in the token must match the account being modified
-- The account must not already have a password set
-- The password must be a non-empty string
+- The request must be made with a valid token that contains an `account` context. No role or permission is needed: the command only ever acts on the account in the caller's own token.
+- The account must not already have a password set. A password cannot be changed or reset by this command.
+- The password must be between 8 and 72 bytes long.
 
 ## Payload
 
@@ -39,23 +37,12 @@ The command can be called via the account command gateway at:
 ```
 
 ### Error (400)
-If the account already has a password set:
+If the password is too short or too long (`reason: password_length`), or if the account already has a password set:
 ```json
 {
   "error": "Account already has a password set.",
   "info": {
     "reason": "password_already_set"
-  }
-}
-```
-
-### Error (403)
-If the user doesn't have permission or is trying to modify a different account:
-```json
-{
-  "error": "Can only modify your own account.",
-  "info": {
-    "reason": "unauthorized_account_modification"
   }
 }
 ```
@@ -66,8 +53,7 @@ When successful, this command emits a `set-password` event to the account event 
 
 ## Security
 
-- The password is hashed using the system's cryptographic hash function before being stored
-- The command can only be called by the account owner (requires account context in the token)
-- The command requires the `core:account:update` permission
-- The command verifies that the account context matches the account being modified
-- The command prevents setting a password if one already exists 
+- The password is hashed with bcrypt before being stored, in an event store whose blocks are not public.
+- The command acts only on the account in the caller's token.
+- The event is numbered, so two requests at once cannot both set a password.
+- Whoever holds a session for a passwordless account can set its password, and nothing here can undo that. Treat a stolen session on such an account as a stolen account.

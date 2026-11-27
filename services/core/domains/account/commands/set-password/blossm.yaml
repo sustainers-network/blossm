@@ -2,8 +2,8 @@ name: set-password
 domain: account
 service: core
 
-# This command must be issued from an account context
-# and requires core:account:update permission
+# This command must be issued from an account context. It needs no permission:
+# it only acts on the account in the caller's own token.
 contexts:
   - account
 
