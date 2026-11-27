@@ -7,10 +7,13 @@ commands:
     protection: context
   - name: save
     privileges: none
+  # These two take any valid session token and check the session themselves.
+  # A strict route refuses a token whose scene has been deleted, which would
+  # leave a session that is in a deleted scene unable to leave it or log out.
   - name: terminate
-    privileges: none
+    protection: context
   - name: change-scene
-    privileges: none
+    protection: context
 
 # Runtime identity of this service only, see docs/SESSION_START_DEPLOYMENT.md.
 # Invokes the commands above, so it needs roles/run.invoker on each of their

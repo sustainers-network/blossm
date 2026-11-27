@@ -24,9 +24,26 @@ submits a Cloud Build. Agents prepare commands and read the returned output.
 
 The session command gateway as deployed here listed only `start`, with
 `protection: context` unchanged. Its source now routes `save`, `terminate` and
-`change-scene` again. Before the gateway is redeployed, each of those commands
-has to be deployed and `blossm-session-gateway` needs `roles/run.invoker` on
-its service, as it has on `start`.
+`change-scene` again. **Do not redeploy the gateway from this source until
+all of the following exist**, or its build fails or it routes to services that
+are not there:
+
+- The `save`, `terminate` and `change-scene` commands, each with a runtime
+  identity of its own (`runtimeServiceAccounts` in its `blossm.yaml`). Without
+  one a command deploys as the environment default, the event store's
+  identity. `change-scene` signs tokens and needs the access key's signer role.
+- `roles/run.invoker` for `blossm-session-gateway` on each of those three
+  services, as it has on `start`.
+- For `save`, a strict route: the `session.terminated`, `scene.deleted`,
+  `principal.roles` and `role.permissions` facts the gateway asks on every
+  request, and invoker on each for the gateway.
+- What `save` calls: `challenge.issue`, `challenge.answer` and its gateway,
+  `session.upgrade`, the email command, and the account, principal, group and
+  challenge event stores.
+- What `change-scene` reads: the scene and group event stores.
+
+`tasks/session-start/render-evidence.json` records the gateway as deployed,
+with one route. It does not describe this source.
 `config.yaml` keeps `blossm-session` as the environment default, and it stays
 the event store's identity.
 
