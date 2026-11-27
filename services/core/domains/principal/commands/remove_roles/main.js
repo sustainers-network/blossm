@@ -1,7 +1,6 @@
 import { forbidden } from "@blossm/errors";
 
 // The roles a scene admin may hand out, and only for the scene their session is in.
-// The gateway has already checked that the caller administers that scene.
 const sceneRoles = ["SceneAdmin", "SceneViewer"];
 const isCallersScene = (subject, scene) =>
   scene != undefined &&
@@ -9,6 +8,17 @@ const isCallersScene = (subject, scene) =>
   subject.root == scene.root &&
   subject.service == scene.service &&
   subject.network == scene.network;
+
+// The gateway's answer can be minutes old, so read the caller's roles now.
+const administers = async ({ context, aggregateFn }) => {
+  const caller = await aggregateFn(context.principal.root, {
+    notFoundThrows: false,
+  });
+  return ((caller && caller.state.roles) || []).some(
+    (role) =>
+      role.id == "SceneAdmin" && isCallersScene(role.subject, context.scene)
+  );
+};
 
 export default async ({ payload, root, context, aggregateFn }) => {
   if (
@@ -19,6 +29,9 @@ export default async ({ payload, root, context, aggregateFn }) => {
     ) ||
     !payload.subjects.every((subject) => isCallersScene(subject, context.scene))
   )
+    throw forbidden.message("These roles can't be removed from this scene.");
+
+  if (!(await administers({ context, aggregateFn })))
     throw forbidden.message("These roles can't be removed from this scene.");
 
   // An admin can't remove their own admin role, so a scene always keeps one.
@@ -95,6 +108,10 @@ export default async ({ payload, root, context, aggregateFn }) => {
           ],
         },
         root,
+        // Numbered, so the roles are gone before this answers. Queued, a
+        // removed admin would still pass the fresh check above until the
+        // queue delivered the removal.
+        correctNumber: principalAggregate.lastEventNumber + 1,
       },
     ],
   };

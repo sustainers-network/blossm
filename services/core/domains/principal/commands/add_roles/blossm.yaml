@@ -85,6 +85,19 @@ testing:
   steps:
     # 0. A scene admin changes a role of the scene their session is in.
     - pre:
+        # The caller administers the scene.
+        - domain: principal
+          service: core
+          root: some-admin-root
+          action: add-roles
+          payload:
+            roles:
+              - id: SceneAdmin
+                subject:
+                  root: some-scene-root
+                  domain: scene
+                  service: core
+                  network: some.network
         - domain: principal
           service: core
           root: some-root

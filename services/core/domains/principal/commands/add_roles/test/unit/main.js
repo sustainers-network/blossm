@@ -11,12 +11,19 @@ const root = "some-principal-root";
 const scene = { root: "some-scene-root", service: "core", network: "some.network" };
 const context = {
   scene,
-  principal: { root: "some-admin-root", service: "core", network: "some.network" },
+  principal: { root: "some-caller-root", service: "core", network: "some.network" },
 };
 const sceneRole = (id, overrides = {}) => ({
   id,
   subject: { ...scene, domain: "scene", ...overrides },
 });
+// The caller administers the scene; every other root gets the given aggregate.
+const store = (aggregate, callerRoles = [sceneRole("SceneAdmin")]) =>
+  fake(async (aggregateRoot) =>
+    aggregateRoot == "some-caller-root"
+      ? { state: { roles: callerRoles } }
+      : aggregate
+  );
 const forbidden = async (args) => {
   try {
     await main(args);
@@ -31,7 +38,7 @@ describe("Command handler unit tests", () => {
     restore();
   });
   it("should add a role of the caller's scene", async () => {
-    const aggregateFn = fake.resolves({ state: { roles: [] } });
+    const aggregateFn = store({ state: { roles: [] } });
     const roles = [sceneRole("SceneViewer")];
     const result = await main({ payload: { roles }, root, context, aggregateFn });
 
@@ -41,7 +48,7 @@ describe("Command handler unit tests", () => {
     });
   });
   it("should only add the roles the principal doesn't have", async () => {
-    const aggregateFn = fake.resolves({
+    const aggregateFn = store({
       state: { roles: [sceneRole("SceneViewer")] },
     });
     const result = await main({
@@ -56,7 +63,7 @@ describe("Command handler unit tests", () => {
     ]);
   });
   it("should add a role that differs from an existing one only by subject domain", async () => {
-    const aggregateFn = fake.resolves({
+    const aggregateFn = store({
       state: { roles: [sceneRole("SceneAdmin", { domain: "group" })] },
     });
     const result = await main({
@@ -71,7 +78,7 @@ describe("Command handler unit tests", () => {
     ]);
   });
   it("should return nothing if the principal has every role", async () => {
-    const aggregateFn = fake.resolves({
+    const aggregateFn = store({
       state: { roles: [sceneRole("SceneAdmin")] },
     });
     const result = await main({
@@ -84,7 +91,7 @@ describe("Command handler unit tests", () => {
     expect(result).to.be.undefined;
   });
   it("should refuse anything but a scene role of the caller's scene", async () => {
-    const aggregateFn = fake.resolves({ state: { roles: [] } });
+    const aggregateFn = store({ state: { roles: [] } });
     for (const [role, callerContext] of [
       // Another scene.
       [sceneRole("SceneAdmin", { root: "some-other-scene-root" }), context],
@@ -108,5 +115,20 @@ describe("Command handler unit tests", () => {
         JSON.stringify(role)
       ).to.be.true;
     expect(aggregateFn).to.not.have.been.called;
+  });
+  it("should refuse a caller that no longer administers the scene", async () => {
+    for (const callerRoles of [
+      [],
+      [sceneRole("SceneViewer")],
+      [sceneRole("SceneAdmin", { root: "some-other-scene-root" })],
+    ])
+      expect(
+        await forbidden({
+          payload: { roles: [sceneRole("SceneViewer")], subjects: [] },
+          root,
+          context,
+          aggregateFn: store({ state: { roles: [sceneRole("SceneViewer")] } }, callerRoles),
+        })
+      ).to.be.true;
   });
 });

@@ -1,7 +1,6 @@
 import { forbidden } from "@blossm/errors";
 
 // The roles a scene admin may hand out, and only for the scene their session is in.
-// The gateway has already checked that the caller administers that scene.
 const sceneRoles = ["SceneAdmin", "SceneViewer"];
 const isCallersScene = (subject, scene) =>
   scene != undefined &&
@@ -9,6 +8,17 @@ const isCallersScene = (subject, scene) =>
   subject.root == scene.root &&
   subject.service == scene.service &&
   subject.network == scene.network;
+
+// The gateway's answer can be minutes old, so read the caller's roles now.
+const administers = async ({ context, aggregateFn }) => {
+  const caller = await aggregateFn(context.principal.root, {
+    notFoundThrows: false,
+  });
+  return ((caller && caller.state.roles) || []).some(
+    (role) =>
+      role.id == "SceneAdmin" && isCallersScene(role.subject, context.scene)
+  );
+};
 
 export default async ({ payload, root, context, aggregateFn }) => {
   if (
@@ -18,6 +28,10 @@ export default async ({ payload, root, context, aggregateFn }) => {
         isCallersScene(role.subject, context.scene)
     )
   )
+    throw forbidden.message("These roles can't be added from this scene.");
+
+
+  if (!(await administers({ context, aggregateFn })))
     throw forbidden.message("These roles can't be added from this scene.");
 
   // Get the principal's aggregate.
