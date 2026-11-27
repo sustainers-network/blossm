@@ -8,7 +8,7 @@ import deps from "../../deps.js";
 chai.use(sinonChai);
 const { expect } = chai;
 
-const payloadNetwork = "some-payload-network";
+const payloadNetwork = "some.payload-network";
 const payload = { network: payloadNetwork };
 const account = "some-account";
 const context = { account };
@@ -299,11 +299,33 @@ describe("Command handler unit tests", () => {
     const uuidFake = fake.throws(errorMessage);
     replace(deps, "uuid", uuidFake);
     try {
-      await main({});
+      await main({ payload });
       //shouldn't get called
       expect(2).to.equal(3);
     } catch (e) {
       expect(e.message).to.equal(errorMessage);
     }
+  });
+  it("should refuse a network that isn't a plain host name", async () => {
+    const commandFn = fake();
+    for (const network of [
+      "example.com.",
+      "example",
+      "exa mple.com",
+      "example.com/a",
+      "a..b",
+      "-a.com",
+      "ex_ample.com",
+      `${"a".repeat(250)}.com`,
+    ]) {
+      let error;
+      try {
+        await main({ payload: { network }, context, commandFn });
+      } catch (e) {
+        error = e;
+      }
+      expect(error && error.statusCode, network).to.equal(400);
+    }
+    expect(commandFn).to.not.have.been.called;
   });
 });

@@ -3,4 +3,8 @@ export default {
     ...state,
     ...payload,
   }),
+  verify: (state, payload) => ({
+    ...state,
+    ...payload,
+  }),
 };

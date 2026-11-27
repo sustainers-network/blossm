@@ -68,6 +68,12 @@ testing:
           action: register
           payload:
             network: some.node-network
+        - domain: node
+          service: system
+          root: some-node-root
+          action: verify
+          payload:
+            verified: 2020-01-01T00:00:00.000Z
       payload:
         name: some name
         roles:

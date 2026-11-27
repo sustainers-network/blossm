@@ -1,6 +1,15 @@
 import deps from "./deps.js";
 
+// A network is a host name, written one way only. A trailing dot or a stray
+// character would give one network two names that prove against the same DNS
+// record, and a name that channels and tokens can't carry.
+const hostname =
+  /^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$/;
+
 export default async ({ payload, context, commandFn }) => {
+  if (!hostname.test(payload.network) || payload.network.length > 253)
+    throw deps.badRequestError.message("This network isn't a host name.");
+
   // Create new roots for the node.
   const nodeRoot = deps.uuid();
 

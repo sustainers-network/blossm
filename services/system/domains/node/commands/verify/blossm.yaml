@@ -1,0 +1,30 @@
+name: verify
+domain: node
+service: system
+
+# Checks the DNS proof that the node speaks for its network. See main.js.
+contexts:
+  - node
+
+payload: {}
+
+dependencies:
+  "@blossm/datetime": "*"
+  "@blossm/errors": "*"
+
+devDependencies:
+  "mocha": "^11.6.0"
+  "chai": "^5.2.0"
+  "sinon": "^21.0.0"
+  "sinon-chai": "^4.0.0"
+
+testing:
+  steps:
+    # A session that isn't in a node. The other outcomes depend on DNS and are
+    # covered by the unit suite.
+    - context:
+        domain: bogus
+      code: 403
+
+#don't change
+procedure: command

@@ -5,9 +5,11 @@ isPublic: true
 
 actions:
   - register
+  - verify
 
 schema:
   network: String
+  verified: Date
   scene:
     root: String
     service: String
@@ -51,6 +53,15 @@ testing:
               root: some-other-scene
               service: some-other-scene-service
               network: some.other-scene-network
+    - action: verify
+      examples:
+        - state:
+            network: some.network
+          payload:
+            verified: 2020-01-01T00:00:00.000Z
+          result:
+            network: some.network
+            verified: 2020-01-01T00:00:00.000Z
 
 #don't change
 procedure: event-store
