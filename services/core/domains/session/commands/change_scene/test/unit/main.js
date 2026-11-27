@@ -623,6 +623,7 @@ describe("Command handler unit tests", () => {
       "principal",
       "account",
       "session",
+      "device",
       "scene",
       "domain",
       "network",

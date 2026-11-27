@@ -4,6 +4,7 @@ import deps from "./deps.js";
 // context key, so it must never be one of these.
 const RESERVED = [
   "session",
+  "device",
   "principal",
   "account",
   "scene",
@@ -66,7 +67,7 @@ export default async ({ payload, context, claims, aggregateFn, queryAggregatesFn
   const subjectDomain = sceneAggregate.state.subject.domain;
   if (
     typeof subjectDomain != "string" ||
-    !/^[a-z][a-z0-9-]*$/.test(subjectDomain) ||
+    !/^[a-z][a-z0-9_-]*$/.test(subjectDomain) ||
     RESERVED.includes(subjectDomain) ||
     Object.hasOwn(context, subjectDomain)
   )
