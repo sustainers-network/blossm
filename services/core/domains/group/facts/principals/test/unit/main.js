@@ -40,7 +40,6 @@ describe("Fact unit tests", () => {
       [{}, context],
       [{ principals: [{ ...caller, root: "some-other" }] }, context],
       [{ principals: [caller] }, {}],
-      [{ principals: [caller] }, undefined],
       [{ principals: [{}] }, {}],
     ]) {
       const streamFake = fake();
@@ -85,6 +84,17 @@ describe("Fact unit tests", () => {
     expect(streamFake).to.have.callCount(102);
     for (const principal of principals) {
       expect(streamFake).to.have.been.calledWith(principal);
+    }
+  });
+  it("should answer a projection: no context, or a node's key", async () => {
+    const principals = [{ root: "some-member" }];
+    for (const ctx of [undefined, { key: { root: "some-key" }, principal: caller }]) {
+      const result = await main({
+        root: "some-root",
+        context: ctx,
+        aggregateFn: fake.returns({ state: { principals } }),
+      });
+      expect(result).to.deep.equal({ response: principals });
     }
   });
 });
