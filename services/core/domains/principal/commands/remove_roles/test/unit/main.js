@@ -42,6 +42,7 @@ describe("Command handler unit tests", () => {
   it("should remove a role of the caller's scene", async () => {
     const aggregateFn = store({
       state: { roles: [sceneRole("SceneViewer"), otherRole] },
+      lastEventNumber: 6,
     });
     const roles = [sceneRole("SceneViewer")];
     const result = await main({
@@ -53,7 +54,10 @@ describe("Command handler unit tests", () => {
 
     expect(aggregateFn).to.have.been.calledWith(root);
     expect(result).to.deep.equal({
-      events: [{ action: "remove-roles", payload: { roles }, root }],
+      // On the principal's next number, so it is written before the answer.
+      events: [
+        { action: "remove-roles", payload: { roles }, root, correctNumber: 7 },
+      ],
     });
   });
   it("should remove every role the principal has for the caller's scene", async () => {

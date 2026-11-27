@@ -108,6 +108,10 @@ export default async ({ payload, root, context, aggregateFn }) => {
           ],
         },
         root,
+        // Numbered, so the roles are gone before this answers. Queued, a
+        // removed admin would still pass the fresh check above until the
+        // queue delivered the removal.
+        correctNumber: principalAggregate.lastEventNumber + 1,
       },
     ],
   };
