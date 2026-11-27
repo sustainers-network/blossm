@@ -6,6 +6,10 @@ commands:
     context: node
     privileges:
       - create
+  - name: revoke
+    context: node
+    privileges:
+      - delete
 
 #don't change
 procedure: command-gateway

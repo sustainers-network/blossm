@@ -3,4 +3,8 @@ export default {
     ...state,
     ...payload,
   }),
+  revoke: (state, payload) => ({
+    ...state,
+    ...payload,
+  }),
 };

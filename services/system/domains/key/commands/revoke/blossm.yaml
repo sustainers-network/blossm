@@ -1,0 +1,80 @@
+name: revoke
+domain: key
+service: system
+
+# The root is the key being revoked.
+contexts:
+  - node
+
+payload: {}
+
+dependencies:
+  "@blossm/datetime": "*"
+  "@blossm/errors": "*"
+
+devDependencies:
+  "mocha": "^11.6.0"
+  "chai": "^5.2.0"
+  "sinon": "^21.0.0"
+  "sinon-chai": "^4.0.0"
+
+testing:
+  dependencies:
+    - domain: principal
+      service: core
+      procedure: event-store
+
+  steps:
+    # 0. A node revokes one of its keys.
+    - pre:
+        - domain: key
+          service: system
+          root: some-key-root
+          action: create
+          payload:
+            name: some-name
+            network: some.node-network
+            domain:
+              root: some-node-root
+              name: node
+              service: system
+              network: local.network
+            principal:
+              root: some-key-principal-root
+              service: core
+              network: local.network
+            secret: some-secret-hash
+      root: some-key-root
+      context:
+        domain: node
+        node:
+          root: some-node-root
+          service: system
+          network: local.network
+      code: 202
+    # 1. Nothing left to revoke.
+    - root: some-key-root
+      context:
+        domain: node
+        node:
+          root: some-node-root
+          service: system
+          network: local.network
+      code: 204
+    # 2. Another node's key.
+    - root: some-key-root
+      context:
+        domain: node
+        node:
+          root: some-other-node-root
+          service: system
+          network: local.network
+      code: 403
+    # 3. A session that isn't in a node.
+    - root: some-key-root
+      context:
+        domain: bogus
+      code: 403
+
+#don't change
+procedure: command

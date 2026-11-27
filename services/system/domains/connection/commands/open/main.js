@@ -5,6 +5,11 @@ const NINETY_DAYS = 90 * MILLISECONDS_IN_DAY;
 import deps from "./deps.js";
 
 export default async ({ context }) => {
+  // Only a key opens a connection. A token that a connection already issued
+  // would otherwise renew itself for as long as it liked, key revoked or not.
+  if (!context.key || context.connection)
+    throw deps.forbiddenError.message("A connection can only be opened by a key.");
+
   const root = deps.uuid();
 
   const token = await deps.createJwt({
