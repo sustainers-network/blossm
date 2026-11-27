@@ -55,18 +55,6 @@ export default async ({ context, payload, root, aggregateFn }) => {
   // If there are no principals to remove, return.
   if (!existingPrincipals.length) return;
 
-  // Get the roles that apply to this group for each principal.
-  const rolesByPrincipal = {};
-  await Promise.all(
-    existingPrincipals.map(async (principal) => {
-      rolesByPrincipal[principal.root] = await groupRoles({
-        principal,
-        root,
-        aggregateFn,
-      });
-    })
-  );
-
   return {
     events: [
       // Remove the roles that apply to this group from each principal being removed.
@@ -76,8 +64,18 @@ export default async ({ context, payload, root, aggregateFn }) => {
         network: process.env.NETWORK,
         action: "remove-roles",
         root: principal.root,
+        // Every role for this group, held or not: a role granted while this
+        // command runs would otherwise outlive the membership.
         payload: {
-          roles: rolesByPrincipal[principal.root],
+          roles: ["GroupAdmin", "GroupMember"].map((id) => ({
+            id,
+            subject: {
+              root,
+              domain: "group",
+              service: process.env.SERVICE,
+              network: process.env.NETWORK,
+            },
+          })),
         },
       })),
 

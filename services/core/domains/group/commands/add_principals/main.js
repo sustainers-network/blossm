@@ -24,6 +24,19 @@ const groupRoles = async ({ principal, root, aggregateFn }) => {
 };
 
 export default async ({ context, payload, root, aggregateFn }) => {
+  // A member always holds a role, and the group store keys a member by
+  // "root:service:network", so none of those can be empty or hold a colon.
+  if (
+    payload.principals.some(
+      (p) =>
+        !p.roles.length ||
+        [p.root, p.service, p.network].some((v) => !v || v.includes(":"))
+    )
+  )
+    throw deps.badRequestError.message(
+      "Each principal needs a root, a service, a network and a role."
+    );
+
   // The principals joining the group, and the members gaining a role in it.
   const principalsToAdd = [];
   const principalsToPromote = [];
